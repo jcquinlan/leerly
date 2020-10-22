@@ -47,7 +47,7 @@ export const Button = styled.button`
     color: #fff;
     cursor: pointer;
     font-size: 16px;
-    transition: 0.3s;
+    transition: background-color linear 0.3s;
 
     &:hover {
         background-color: #375ebf;

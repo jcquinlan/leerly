@@ -181,4 +181,3 @@ const PriceDescription = styled.p`
 const SignUpButton = styled(Button)`
   margin-top: 60px;
 `;
-
