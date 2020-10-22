@@ -1,7 +1,8 @@
 import {useState} from 'react';
 
 const initialAppState = {
-    user: null
+    user: null,
+    navOpen: false
 };
 const useAppContext = () => {
     const [appState, setAppState] = useState(initialAppState);
@@ -10,9 +11,14 @@ const useAppContext = () => {
         setAppState(state => ({...state, user}));
     };
 
+    const setNavOpen = (boolean) => {
+        setAppState(state => ({...state, navOpen: boolean}));
+    };
+
     return {
         ...appState,
-        setUser
+        setUser,
+        setNavOpen
     }
 }
 
