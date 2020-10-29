@@ -46,7 +46,6 @@ const Warning = styled.span`
 `;
 const SignupWrapper = styled.div`
     margin: 80px 0 60px 0;
-    min-width: 500px;
 
     h3 {
         margin: 0px;
