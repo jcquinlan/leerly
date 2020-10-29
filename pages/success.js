@@ -29,6 +29,10 @@ function SuccessPage () {
 
         <Divider />
 
+        <Button>
+            <a href="/">Start reading articles</a>
+        </Button>
+
         </Container>
         </>
     );

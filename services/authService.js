@@ -13,3 +13,11 @@ export const signInUser = async (email, password) => {
             console.error(error);
         });
 };
+
+export const signOutUser = async () => {
+    return auth.signOut()
+        .catch(function(error) {
+            // An error happened.
+            console.error(error);
+        });
+}

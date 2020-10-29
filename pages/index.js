@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button} from '../components/styled';
+import BetaSignupForm from '../components/BetaSignupForm';
 
 function App() {
   return (
@@ -10,8 +11,11 @@ function App() {
         <HeroContent>
             <Title>leerly.</Title>
             <Subtitle>
-              Popular articles from around the web, summarized and translated to 
-              intermediate Spanish, delivered to you daily. <Faint>Qué guay</Faint>.</Subtitle>
+              Popular articles from around the web, summarized and translated by native speakers to 
+              intermediate Spanish, delivered to you throughout the week.
+              <br></br>
+              <Faint>Qué guay</Faint>.
+            </Subtitle>
           </HeroContent>
       </HeroWrapper>
 
@@ -21,11 +25,11 @@ function App() {
       <Step>
         <StepNumber>1.)</StepNumber>
         <div>
-          <StepTitle>Every day, we find some popular articles from around the web.</StepTitle>
+          <StepTitle>We search for popular, current, widely-shared articles from around the web.</StepTitle>
           <DescriptionText>
             We try to use articles that are being shared a lot, and cover a wide range of topics, like tech,
             business, art, news, science, culture, etc. We source news outlets, reddit, Hacker News, and more
-            to find what's being read around the web.
+            to find what's being read around the web each day.
           </DescriptionText>   
         </div>
       </Step>
@@ -36,7 +40,8 @@ function App() {
           <StepTitle>We summarize and translate them to B1/B2 Spanish.</StepTitle>
           <DescriptionText>
             The crucial step. We aim to have everything accessible to intermediate learners. And no machine translations here,
-            just natural language from a native speaker.
+            just natural language from a native speaker. This way we can make sure you learn how native speakers actually talk,
+            and not how Google's fancy machine-learning models talk.
           </DescriptionText>   
         </div>
       </Step>
@@ -44,24 +49,23 @@ function App() {
       <Step>
         <StepNumber>3.)</StepNumber>
         <div>
-          <StepTitle>We send them to you. That's it.</StepTitle>
+          <StepTitle>We send them to you throughout the week. That's it.</StepTitle>
           <DescriptionText>
-            You get to practice reading Spanish that's not <i>too</i> challenging, without needing to find
-            kid's books or young adult novels in Spanish.
+            You get to practice reading Spanish that's not <i>too</i> challenging while reading stuff you probably
+            already would have read in English, and without needing to find kid's books or young adult novels in Spanish.
           </DescriptionText>   
         </div>
       </Step>
 
       <HeroWrapper>
           <HeroContent>
-            <SignUpButton>Start Reading Now</SignUpButton>
+            {/* <SignUpButton>Start Reading Now</SignUpButton> */}
+            <BetaSignupForm />
           </HeroContent>
         </HeroWrapper>
 
-      <Divider />
-
-      <Subtitle>Pricing</Subtitle>
-      <DescriptionText>It's just <Free>$10/month</Free>.</DescriptionText>
+      {/* <Subtitle>Pricing</Subtitle>
+      <DescriptionText>It's just <Free>$10/month</Free>.</DescriptionText> */}
       {/* <PricingWrapper>
         <PricingBlock>
           <PriceTitle>Free</PriceTitle>
@@ -70,6 +74,7 @@ function App() {
           </PriceDescription>
         </PricingBlock>
       </PricingWrapper> */}
+
 
       <Divider />
 
@@ -86,8 +91,8 @@ function App() {
       <Question>
         <Subtitle>How much does it cost?</Subtitle>
         <DescriptionText>
-          You're in luck. For now, it's free. Soon, we'll ask for a monthly subscription, based on how often you want articles. But don't worry,
-          if you sign up now, you'll be grandfathered into a free account.
+          When we launch, access to leerly will cost <Free>$15/month</Free>. For this price, you'll receive summarized and translated versions of
+          viral articles throughout the week. You'll also get access to neat features we're currently working on ;)
         </DescriptionText>
       </Question>
 
@@ -95,7 +100,7 @@ function App() {
         <Subtitle>Can't I just use Google Translate or something?</Subtitle>
         <DescriptionText>
           Sure! But we've found that it's best to have a native Spanish speaker rewrite the articles, to ensure that the Spanish
-          is targeted specifically for intermediate learners. If you're an advanced speaker, this might not be super useful.
+          is targeted specifically for intermediate learners. If you're an advanced speaker, you might not need this.
         </DescriptionText>
       </Question>
     </Container>

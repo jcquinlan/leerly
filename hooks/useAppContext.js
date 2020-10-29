@@ -2,6 +2,7 @@ import {useState} from 'react';
 
 const initialAppState = {
     user: null,
+    claims: null,
     navOpen: false
 };
 const useAppContext = () => {
@@ -15,10 +16,15 @@ const useAppContext = () => {
         setAppState(state => ({...state, navOpen: boolean}));
     };
 
+    const setClaims = (claims) => {
+        setAppState(state => ({...state, claims}));
+    }
+
     return {
         ...appState,
         setUser,
-        setNavOpen
+        setNavOpen,
+        setClaims
     }
 }
 

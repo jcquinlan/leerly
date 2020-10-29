@@ -1,15 +1,37 @@
-import React, {useState} from 'react';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button} from '../components/styled';
+import React, {useState, useMemo} from 'react';
+import {
+    Container,
+    HeroWrapper,
+    HeroContent,
+    Divider,
+    Title,
+    Button,
+    Input,
+    Card,
+    HelpText
+} from '../components/styled';
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
-import {createCustomerDocument} from '../services/userService';
+import {createUserProfileDocument} from '../services/userService';
 
 function RegisterPage () {
     const [formState, setFormState] = useState({});
+    const formIsFilled = useMemo(() => {
+        return !!(formState.name && formState.email && formState.password);
+    }, [formState]);
+
     const handleClick = async () => {
+        if (!formIsFilled) {
+            throw Error('Please fill out all information');
+        }
+
         try {
             const userDocument = await registerUser(formState.email, formState.password);
-            const customerDocumentRef = await createCustomerDocument({email: userDocument.user.email, user_uid: userDocument.user.uid});
+            const customerDocumentRef = await createUserProfileDocument({
+                email: userDocument.user.email,
+                user_uid: userDocument.user.uid,
+                name: formState.name
+            });
             const customerDocument = await customerDocumentRef.get();
             redirectToStripeCheckout(customerDocument.id);
         } catch (error) {
@@ -36,9 +58,16 @@ function RegisterPage () {
 
         <Divider />
 
-        <input type='email' name='email' placeholder='email' onChange={handleFormState}/>
-        <input type='password' name='password' placeholder='password' onChange={handleFormState}/>
-        <Button onClick={handleClick}>Register</Button>
+        <Card>
+            <HelpText>
+                After submitting your email and password, you'll be redirected to our payment page to provide
+                billing information.
+            </HelpText>
+            <Input type='text' name='name' placeholder='your name' required onChange={handleFormState}/>
+            <Input type='email' name='email' placeholder='email' required onChange={handleFormState}/>
+            <Input type='password' name='password' placeholder='password' required onChange={handleFormState}/>
+            <Button onClick={handleClick} disabled={!formIsFilled}>Continue to Billing</Button>
+        </Card>
 
         </Container>
         </>

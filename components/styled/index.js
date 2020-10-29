@@ -52,4 +52,41 @@ export const Button = styled.button`
     &:hover {
         background-color: #375ebf;
     }
+
+    &:disabled {
+      background-color: #ddd;
+      color: #666;
+      border-color: #ddd;
+      cursor: initial;
+    }
+`;
+
+export const Card = styled.div`
+  background-color: #fff;
+  border-radius: 5px;
+  padding: ${props => props.padding || '30px'};
+  box-shadow: 0px 7px 5px -5px rgba(0,0,0,0.3);
+  border: 1px solid #eee;
+`;
+
+export const Flex = styled.div`
+    display: flex;
+    justify-content: ${props => props.justifyContent || 'initial'};
+    align-items: ${props => props.alignItems || 'initial'};
+    flex-direction: ${props => props.flexDirection || 'row'};
+`;
+
+export const Input = styled.input`
+    width: 100%;
+    margin-bottom: 20px;
+    background-color: #efefef;
+    border: 1px solid #eee;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+`;
+
+export const HelpText = styled.p`
+    font-size: 14px;
+    color: #888;
 `;

@@ -1,11 +1,12 @@
 import {db} from './index';
 
-export const createCustomerDocument = async ({email, user_uid}) => {
-    return db.collection("customer_records").add({
+export const createUserProfileDocument = async ({email, user_uid, name}) => {
+    return db.collection("user_profiles").doc(user_uid).set({
         email,
-        user_uid,
+        name,
         active: true,
-        subscribed: false
+        subscribed: false,
+        is_admin: false
     })
     .catch(error => {
         throw error;
@@ -13,7 +14,7 @@ export const createCustomerDocument = async ({email, user_uid}) => {
 }
 
 export const updateCustomerSubscribedStatus = async (id, subscribed) => {
-    const doc = await db.collection("customer_records").doc(id)
+    const doc = await db.collection("user_profiles").doc(id)
     const docData = await doc.get();
 
     if (!docData.data()) {
@@ -24,4 +25,12 @@ export const updateCustomerSubscribedStatus = async (id, subscribed) => {
         .catch(error => {
             throw error;
         });
+}
+
+export const getUserProfile = async (uid) => {
+    return db.collection('user_profiles').doc(uid).get();
+}
+
+export const getUserClaims = async (uid) => {
+    return db.collection('user_claims').doc(uid).get();
 }

@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@sendgrid/client": "^7.3.0",
     "@stripe/stripe-js": "^1.10.0",
     "@types/styled-components": "^5.1.4",
     "firebase": "^7.24.0",
