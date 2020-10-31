@@ -35,6 +35,10 @@ function MyApp({ Component, pageProps }) {
       } else {
         appContextApi.setUser(null);
         appContextApi.setClaims(null);
+        // If the user is not logged in, we don't need to fetch their profile data
+        // so we have nothing to load, and need to set loading to false to unblock
+        // the rest of the UI from rendering.
+        appContextApi.setLoading(false);
       }
     });
   }, []);
