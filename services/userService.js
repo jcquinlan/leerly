@@ -5,8 +5,7 @@ export const createUserProfileDocument = async ({email, user_uid, name}) => {
         email,
         name,
         active: true,
-        subscribed: false,
-        is_admin: false
+        subscribed: false
     })
     .catch(error => {
         throw error;

@@ -86,6 +86,16 @@ export const Input = styled.input`
     font-size: 16px;
 `;
 
+export const TextArea = styled.textarea`
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #efefef;
+  border: 1px solid #eee;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-size: 16px;
+`;
+
 export const HelpText = styled.p`
     font-size: 14px;
     color: #888;

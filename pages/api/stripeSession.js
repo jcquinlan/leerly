@@ -12,7 +12,6 @@ export default async (req, res) => {
   if (req.method === 'POST') {
     try {
       const id = req.body.id;
-      console.log(req.body);
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],

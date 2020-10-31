@@ -1,6 +1,7 @@
 import {useState} from 'react';
 
 const initialAppState = {
+    loading: true,
     user: null,
     claims: null,
     navOpen: false
@@ -20,11 +21,19 @@ const useAppContext = () => {
         setAppState(state => ({...state, claims}));
     }
 
+    const setLoading = (boolean) => {
+        setAppState(state => ({...state, loading: boolean}));
+    }
+
+    const isAdmin = appState.claims && appState.claims.is_admin;
+
     return {
         ...appState,
         setUser,
         setNavOpen,
-        setClaims
+        setClaims,
+        setLoading,
+        isAdmin
     }
 }
 
