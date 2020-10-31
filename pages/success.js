@@ -10,9 +10,6 @@ function SuccessPage () {
     useEffect(() => {
         if (id) {
             updateCustomerSubscribedStatus(id, true)
-                .then(res => {
-                    console.log('Customer subscribed status updated');
-                })
                 .catch(err => console.error(err));
         }
     }, [id]);

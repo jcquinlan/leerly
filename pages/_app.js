@@ -1,15 +1,19 @@
 import '../styles/globals.css'
 import React, {useEffect, useMemo} from 'react';
 import styled from 'styled-components';
+import { slide as Menu } from 'react-burger-menu'
+import {ToastProvider} from 'react-toast-notifications'
 import {auth} from '../services/index';
 import AppContext from '../contexts/appContext';
+import Link from '../components/Link';
+import LoadingPage from '../components/LoadingPage';
 import useAppContext from '../hooks/useAppContext';
-import { slide as Menu } from 'react-burger-menu'
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims } from '../services/userService';
 
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
+  const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
 
   useEffect(() => {
     auth.onAuthStateChanged(function(user) {
@@ -24,9 +28,13 @@ function MyApp({ Component, pageProps }) {
             if (claimData) {
               appContextApi.setClaims(claimData)
             }
+          })
+          .finally(() => {
+            appContextApi.setLoading(false);
           });
       } else {
         appContextApi.setUser(null);
+        appContextApi.setClaims(null);
       }
     });
   }, []);
@@ -35,6 +43,7 @@ function MyApp({ Component, pageProps }) {
     signOutUser()
       .then(() => {
         appContextApi.setUser(null);
+        appContextApi.setClaims(null);
       });
   }
 
@@ -44,32 +53,49 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedOutLinks = () => {
     return [
-        <a id="/free" className="menu-item" href="/free">free articles</a>,
-        <a id="/register" className="menu-item" href="/register">register</a>,
-        <a id="/sign-in" className="menu-item" href="/sign-in">sign in</a>
+        <Link id="/free" className="menu-item" href="/free">free articles</Link>,
+        <Link id="/register" className="menu-item" href="/register">register</Link>,
+        <Link id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]
   };
 
   const renderSignedInLinks = () => {
-    return [
-        <a id="/dashboard" className="menu-item" href="/dashboard">dashboard</a>,
+    const links = [
+        <Link id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
+    ];
+
+    if (isAdmin) {
+      links.push([
+        <Link id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
+      ])
+    }
+
+    links.push([
         <a id="/sign-out" className="menu-item" onClick={handleSignOut}>sign out</a>
-    ]
+    ]);
+
+    return links;
   };
 
   return (
     <>
-      {/* <MobileNav>
-        <Menu isOpen={appContextApi.navOpen} disableAutoFocus>
-          {appContextApi.user && <span>{appContextApi.user.email}</span>}
-          <a id="/" className="menu-item" href="/">home</a>
-          {isSignedIn ? renderSignedInLinks() : null}
-          {!isSignedIn ? renderSignedOutLinks() : null}
-        </Menu>
-      </MobileNav> */}
-
     <AppContext.Provider value={appContextApi}>
-      <Component {...pageProps} />
+      <ToastProvider>
+        <MobileNav>
+          <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
+            {appContextApi.user && <span>{appContextApi.user.email}</span>}
+            <Link id="/" className="menu-item" href="/">home</Link>
+            {isSignedIn ? renderSignedInLinks() : null}
+            {!isSignedIn ? renderSignedOutLinks() : null}
+          </Menu>
+        </MobileNav>
+
+        {appContextApi.loading ? (
+          <LoadingPage />
+        ) : (
+          <Component {...pageProps} />
+        )}
+      </ToastProvider>
     </AppContext.Provider>
     </>
   )
@@ -78,7 +104,12 @@ function MyApp({ Component, pageProps }) {
 export default MyApp
 
 const MobileNav = styled.div`
-  // @media (min-width: 900px) {
-  //   display: none;
-  // }
+  a {
+    color: inherit;
+    cursor: pointer;
+  }
+
+  span {
+    cursor: pointer;
+  }
 `;
