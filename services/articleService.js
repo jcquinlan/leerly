@@ -43,3 +43,13 @@ export const getArticle = (articleId) => {
             throw error;
         });
 }
+
+export const getArticles = () => {
+    return db.collection("articles")
+        .orderBy('added_at', 'desc')
+        .limit(50)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}

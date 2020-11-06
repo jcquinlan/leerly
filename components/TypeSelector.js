@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {ArticleTypes} from '../services/articleService';
+import {ArticleTypeList} from '../services/articleService';
 
 const TypeSelector = ({onSelect, selectedTypes}) => {
     return (
@@ -8,7 +8,7 @@ const TypeSelector = ({onSelect, selectedTypes}) => {
             <h6>What type of article is this?</h6>
             <p>Select all that apply</p>
 
-            {ArticleTypes.map(type => {
+            {ArticleTypeList.map(type => {
                 return (
                     <Pill
                         key={type.type}

@@ -7,15 +7,11 @@ import {
     HeroContent,
     Divider,
     Title,
-    Button,
-    Input,
-    Card,
-    HelpText
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
+import TypeList from '../../components/TypeList';
 import useGetArticle from '../../hooks/useGetArticle';
 import useGuardRoute from '../../hooks/useGuardRoute';
-import {ArticleTypes} from '../../services/articleService';
 
 function ArticlePage () {
     useGuardRoute();
@@ -38,12 +34,7 @@ function ArticlePage () {
 
         <Divider />
 
-        <ArticleData>
-            <span>Genres: </span>
-            {article.types.map(type => {
-                return ArticleTypes[type];
-            }).join(', ')}
-        </ArticleData>
+        <TypeList types={article.types} />
 
         <ArticleData>
             <span>Original article: </span>
@@ -65,6 +56,8 @@ const ArticleBody = styled.div`
     border: 1px solid #eee;
     border-radius: 5px;
     padding: 30px;
+    margin-top: 30px;
+    line-height: 30px;
 `;
 
 const ArticleData = styled.div`
