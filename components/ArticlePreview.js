@@ -13,13 +13,19 @@ const ArticlePreview = ({article}) => {
             </Header>
 
             <TypeList types={article.types} />
-            <BodyPreview>
-                <BodyPreviewMask></BodyPreviewMask>
-                <p>{article.body}</p>
-            </BodyPreview>
+            <MaskedText>{article.body}</MaskedText>
         </ArticlePreviewWrapper>
     )
 };
+
+export const MaskedText = ({children, maxHeight}) => {
+    return (
+        <BodyPreview maxHeight={maxHeight}>
+            <BodyPreviewMask></BodyPreviewMask>
+            <p>{children}</p>
+        </BodyPreview>
+    )
+}
 
 export default ArticlePreview;
 
@@ -49,7 +55,7 @@ const ArticlePreviewWrapper = styled.div`
 
 const BodyPreview = styled.div`
     position: relative;
-    max-height: 100px;
+    max-height: ${props => props.maxHeight || '100px'};
     overflow: hidden;
 
     p {

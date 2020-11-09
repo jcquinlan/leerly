@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button} from '../components/styled';
 import BetaSignupForm from '../components/BetaSignupForm';
+import {MaskedText} from '../components/ArticlePreview';
 
 function App() {
   return (
@@ -78,6 +79,22 @@ function App() {
 
       <Divider />
 
+      <div>
+        <Subtitle>Want an example?</Subtitle>
+        <DescriptionText>
+          We take articles, like <a href="https://www.theguardian.com/australia-news/2020/oct/15/the-great-unravelling-i-never-thought-id-live-to-see-the-horror-of-planetary-collapse" target="_blank">this one</a> about the Australian wildfires from The Guardian, extract the core information and facts,
+          and present them in intermediate Spanish:
+        </DescriptionText>
+
+        <Example>
+          <MaskedText maxHeight="500px">
+              {exampleArticle}
+          </MaskedText>
+        </Example>
+      </div>
+
+      <Divider />
+
       <Question>
       <Subtitle>But why do I want this?</Subtitle>
         <DescriptionText>
@@ -110,6 +127,16 @@ function App() {
 
 export default App;
 
+const exampleArticle = `Estos días pienso mucho en las últimas semanas de la vida de mi padre. Recuerdo su lucha contra la enfermedad y sus ganas de vivir. También recuerdo el día en que supe que íbamos a perderlo. Fue como un punto de no retorno: un día vi la muerte en su cara, y me di cuenta de que ya no podíamos hacer nada más por él.
+
+Soy científica, e investigo sobre el calentamiento global. Mi trabajo consiste en elaborar informes para el Grupo Intergubernamental de Expertos sobre el Cambio Climático (IPCC), un organismo de las Naciones Unidas (ONU). Gracias a mis conocimientos, comprendo muy bien el estado de nuestro planeta, y ahora mismo estoy aterrorizada. Reconozco los incendios del verano pasado en Australia: son un punto de no retorno, como el que vi aquel día en la cara de mi padre.
+
+Durante el Verano Negro Australiano se quemó el 20% del matorral del país. Más de tres mil millones de animales murieron quemados o perdieron su hábitat para siempre. El Gran Arrecife de Coral enfermó gravemente. La tierra necesitará varias generaciones humanas para curarse de todo ese daño. Las consecuencias del calentamiento global ya no son amenazas lejanas e improbables. Están aquí. Forman parte de nuestra experiencia vivida.
+
+Los científicos intentamos movilizar a la sociedad con hechos y datos, pero en estos momentos siento que nuestros esfuerzos son inútiles. Los gobernantes no nos escuchan; prefieren proteger a las industrias de combustibles fósiles y a las empresas contaminantes. La ciudadanía sí comprende el problema y quiere ayudar, pero las soluciones prácticas o individuales como el reciclaje o las energías renovables no son suficientes. Creo que los datos científicos tampoco bastan: es necesaria una revolución emocional.
+Más que comprenderla, necesitamos sentir la enorme pérdida de nuestro planeta Tierra. Debemos vivir el luto colectivo de un mundo que amamos y que nunca va a volver a ser igual. Tenemos que llorar por nuestro futuro y el de nuestros hijos. Cuando abrimos la puerta a todos esos sentimientos intensos y complejos, nos llenan de energía y de ganas de actuar. Aceptar nuestra tristeza profunda, sin evitarla ni racionalizarla, es la clave para frenar el desastre.
+No sé cómo vivir al borde del colapso planetario. No sé cómo continuar creyendo en mi trabajo cuando me siento tan cansada y apenada. A veces, intento consolarme pensando que la muerte forma parte de la vida: que igual que no pudimos salvar a mi padre, no podemos salvar el planeta. Pero en esos momentos de intenso dolor también siento esperanza. Quizás, si conseguimos que nuestra pena compartida nos despierte, encontraremos la fuerza necesaria para actuar urgentemente y salvar la Tierra y a nosotros mismos.`;
+
 const Faint = styled.span`
   color: #666;
   font-family: 'Poppins', sans-serif;
@@ -131,6 +158,13 @@ const StepNumber = styled.div`
 const StepTitle = styled.h5`
   font-size: 18px;
   margin: 0;
+`;
+
+const Example = styled.div`
+  margin: 10px 0 30px 0;
+  white-space: pre-wrap;
+  border-radius: 5px;
+  padding: 30px;
 `;
 
 const DescriptionText = styled.p`
