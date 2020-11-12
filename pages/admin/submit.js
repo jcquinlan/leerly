@@ -41,7 +41,7 @@ function SubmitPage () {
             router.push(`/articles/${article.id}`);
         })
         .catch(() => {
-            addToast('Article submitted', {appearance: 'error'});
+            addToast('An error occurred', {appearance: 'error'});
         });
     };
 

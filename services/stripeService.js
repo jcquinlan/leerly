@@ -2,14 +2,14 @@ import {loadStripe} from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_CLIENT_KEY);
 
-export const redirectToStripeCheckout = async (id) => {
+export const redirectToStripeCheckout = async (id, email) => {
     const stripe = await stripePromise;
     const response = await fetch('/api/stripeSession', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id})
+        body: JSON.stringify({id, email})
     });
 
     const session = await response.json();

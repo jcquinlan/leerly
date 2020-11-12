@@ -3,26 +3,22 @@ const baseUrl = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ?
   'http://localhost:3000' :
   'https://leerly.io';
 
-const price = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ?
-  'price_1He9kjAeNWZT3wuvbwWbJuHC' :
-  'prod_price';
-
-
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
       const id = req.body.id;
+      const email = req.body.email;
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
-            price,
+            price: process.env.MONTHLY_PRICE,
             quantity: 1,
           },
         ],
         mode: 'subscription',
-        success_url: `${baseUrl}/success?id=${id}`,
+        success_url: `${baseUrl}/success?id=${id}&email=${encodeURIComponent(email)}`,
         cancel_url: `${baseUrl}/cancel`,
       });
 

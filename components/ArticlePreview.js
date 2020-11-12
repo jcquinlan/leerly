@@ -1,12 +1,18 @@
 import React from 'react';
+import {useRouter} from 'next/router';
 import styled from 'styled-components';
 import moment from 'moment';
 import TypeList from './TypeList';
 
 const ArticlePreview = ({article}) => {
-    console.log(article);
+    const router = useRouter();
+
+    const goToArticle = () => {
+        router.push(`/articles/${article.id}`);
+    };
+
     return (
-        <ArticlePreviewWrapper>
+        <ArticlePreviewWrapper onClick={goToArticle}>
             <Header>
                 <span>{article.title || 'Placeholder Title'}</span>
                 <ArticleTimestamp>{moment(article.added_at.seconds * 1000).format('MM/DD/YYYY')}</ArticleTimestamp>
@@ -29,7 +35,12 @@ export const MaskedText = ({children, maxHeight}) => {
 
 export default ArticlePreview;
 
-const Header = styled.div`
+export const ArticlesList = styled.div`
+    padding: 30px;
+    margin-top: 30px;
+`;
+
+export const Header = styled.div`
     display: flex;
     justify-content: space-between;
 
@@ -39,18 +50,19 @@ const Header = styled.div`
     } 
 `;
 
-const ArticleTimestamp = styled.div`
+export const ArticleTimestamp = styled.div`
     color: #aaa;
     font-size: 14px;
 `;
 
-const ArticlePreviewWrapper = styled.div`
+export const ArticlePreviewWrapper = styled.div`
     padding: 30px;
     border: 1px solid #eee;
     border-radius: 5px;
     margin-bottom: 30px;
     cursor: pointer;
     box-shadow: 0px 10px 30px -30px rgba(0,0,0,0.3);
+    ${props => props.selected ? 'border-color: blue;' : ''}
 `;
 
 const BodyPreview = styled.div`

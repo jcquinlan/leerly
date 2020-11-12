@@ -35,6 +35,13 @@ export const createNewArticle = async ({body, title, url, types, added_by}) => {
     });
 }
 
+export const updateArticle = async (id, content) => {
+    return db.collection("articles").doc(id).set(content, {merge: true})
+    .catch(error => {
+        throw error;
+    });
+}
+
 export const getArticle = (articleId) => {
     return db.collection("articles")
         .doc(articleId)
@@ -48,6 +55,15 @@ export const getArticles = () => {
     return db.collection("articles")
         .orderBy('added_at', 'desc')
         .limit(50)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const getUnsentArticles = () => {
+    return db.collection("articles")
+        .where('sent', '==', false)
         .get()
         .catch(error => {
             throw error;

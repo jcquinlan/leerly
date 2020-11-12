@@ -12,7 +12,7 @@ export const createUserProfileDocument = async ({email, user_uid, name}) => {
     });
 }
 
-export const updateCustomerSubscribedStatus = async (id, subscribed) => {
+export const updateCustomerSubscribedStatus = async (id) => {
     const doc = await db.collection("user_profiles").doc(id)
     const docData = await doc.get();
 

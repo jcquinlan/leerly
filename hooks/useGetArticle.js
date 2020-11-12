@@ -11,7 +11,7 @@ const useGetArticle = (articleId) => {
             getArticle(articleId)
                 .then(articleDoc => {
                     const articleData = articleDoc.data();
-                    setArticle(articleData);
+                    setArticle({id: articleDoc.id, ...articleData});
                 })
                 .catch(err => {
                     setError(err);

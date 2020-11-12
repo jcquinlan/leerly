@@ -14,21 +14,18 @@ import {
     Subtitle
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
-import ArticlePreview from '../components/ArticlePreview';
+import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
 
 function ArticlePage () {
     useGuardRoute();
 
-    const router = useRouter();
-    const {articles, loading, error} = useGetArticles(router.query.articleId);
+    const {articles, loading, error} = useGetArticles();
 
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
-
-    console.log(articles);
 
     return (
         <>
@@ -54,8 +51,3 @@ function ArticlePage () {
 }
 
 export default ArticlePage;
-
-const ArticlesList = styled.div`
-    padding: 30px;
-    margin-top: 30px;
-`;

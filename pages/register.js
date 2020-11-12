@@ -27,13 +27,12 @@ function RegisterPage () {
 
         try {
             const userDocument = await registerUser(formState.email, formState.password);
-            const customerDocumentRef = await createUserProfileDocument({
+            await createUserProfileDocument({
                 email: userDocument.user.email,
                 user_uid: userDocument.user.uid,
                 name: formState.name
             });
-            const customerDocument = await customerDocumentRef.get();
-            redirectToStripeCheckout(customerDocument.id);
+            redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email);
         } catch (error) {
             console.error(error);
         }

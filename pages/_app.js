@@ -85,14 +85,14 @@ function MyApp({ Component, pageProps }) {
     <>
     <AppContext.Provider value={appContextApi}>
       <ToastProvider>
-        {/* <MobileNav>
+        <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
             {appContextApi.user && <span>{appContextApi.user.email}</span>}
             <Link id="/" className="menu-item" href="/">home</Link>
             {isSignedIn ? renderSignedInLinks() : null}
             {!isSignedIn ? renderSignedOutLinks() : null}
           </Menu>
-        </MobileNav> */}
+        </MobileNav>
 
         {appContextApi.loading ? (
           <LoadingPage />

@@ -10,7 +10,7 @@ export default async (req, res) => {
             method: 'PUT',
             url: '/v3/marketing/contacts',
             body: {
-                list_ids: ['f4c9c87b-0f59-4248-bf18-c3c553441e27'],
+                list_ids: ['e678bbe3-ac53-4c62-8769-64e26d5c6ecf'],
                 contacts: [{email}]
             }
         };
