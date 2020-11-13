@@ -3,15 +3,20 @@ import { useRouter } from 'next/router'
 import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Subtitle} from '../components/styled';
 import {updateCustomerSubscribedStatus} from '../services/userService';
 import {addUserToProductionMailingList} from '../services/emailService';
+import {getStripeSession} from '../services/stripeService';
 
 function SuccessPage () {
     const router = useRouter()
-    const {id, email} = router.query
+    const {id, email, session_id} = router.query
 
     useEffect(() => {
-        if (id && email) {
+        if (id && email && session_id) {
             addUserToProductionMailingList(email)
-                .then(() => updateCustomerSubscribedStatus(id, true))
+                .then(() => getStripeSession(session_id))
+                .then((session) => {
+                    const customerId = session.customer;
+                    updateCustomerSubscribedStatus(id, {subscribed: true, customerId})
+                })
                 .catch(err => console.error(err));
         }
     }, [id]);

@@ -12,7 +12,7 @@ export const createUserProfileDocument = async ({email, user_uid, name}) => {
     });
 }
 
-export const updateCustomerSubscribedStatus = async (id) => {
+export const updateCustomerSubscribedStatus = async (id, attributes) => {
     const doc = await db.collection("user_profiles").doc(id)
     const docData = await doc.get();
 
@@ -20,7 +20,7 @@ export const updateCustomerSubscribedStatus = async (id) => {
         throw new Error('Customer record not found.')
     }
 
-    doc.set({subscribed: true}, {merge: true})
+    doc.set(attributes, {merge: true})
         .catch(error => {
             throw error;
         });

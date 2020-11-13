@@ -21,6 +21,7 @@ function MyApp({ Component, pageProps }) {
         getUserProfile(user.uid)
           .then(profile => {
             appContextApi.setUser(user);
+            appContextApi.setUserProfile(profile.data());
           })
           .then(() => getUserClaims(user.uid))
           .then(res => {
@@ -29,6 +30,7 @@ function MyApp({ Component, pageProps }) {
               appContextApi.setClaims(claimData)
             }
           })
+          .then(() => getUserProfile(user.uid))
           .finally(() => {
             appContextApi.setLoading(false);
           });
@@ -73,6 +75,10 @@ function MyApp({ Component, pageProps }) {
         <Link id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
       ])
     }
+
+    links.push([
+        <Link id="/settings" className="menu-item" href="/settings">settings</Link>,
+    ]);
 
     links.push([
         <a id="/sign-out" className="menu-item" onClick={handleSignOut}>sign out</a>

@@ -74,8 +74,10 @@ const AdminButtons = styled.div`
 const ArticleBody = styled.div`
     padding: 30px;
     margin-top: 30px;
+    font-size: 18px;
     line-height: 30px;
     white-space: pre-wrap;
+    font-family: 'Source Sans Pro', sans-serif;
 `;
 
 const ArticleData = styled.div`
