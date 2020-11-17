@@ -3,6 +3,7 @@ import {useState} from 'react';
 const initialAppState = {
     loading: true,
     user: null,
+    userProfile: null,
     claims: null,
     navOpen: false
 };
@@ -21,6 +22,10 @@ const useAppContext = () => {
         setAppState(state => ({...state, claims}));
     }
 
+    const setUserProfile = (userProfile) => {
+        setAppState(state => ({...state, userProfile}));
+    }
+
     const setLoading = (boolean) => {
         setAppState(state => ({...state, loading: boolean}));
     }
@@ -32,6 +37,7 @@ const useAppContext = () => {
         setUser,
         setNavOpen,
         setClaims,
+        setUserProfile,
         setLoading,
         isAdmin
     }

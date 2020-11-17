@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import {useRouter} from 'next/router';
 import {
@@ -7,17 +7,30 @@ import {
     HeroContent,
     Divider,
     Title,
+    Button
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
 import useGetArticle from '../../hooks/useGetArticle';
 import useGuardRoute from '../../hooks/useGuardRoute';
+import AppContext from '../../contexts/appContext';
 
 function ArticlePage () {
     useGuardRoute();
 
     const router = useRouter();
+    const {isAdmin} = useContext(AppContext);
     const {article, loading, error} = useGetArticle(router.query.articleId);
+
+    const renderAdminUI = () => {
+        if (isAdmin) {
+            return (
+                <AdminButtons>
+                    <Button onClick={() => router.push(`/articles/${router.query.articleId}/edit`)}>Edit Article</Button>
+                </AdminButtons>
+            )
+        }
+    }
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -33,6 +46,8 @@ function ArticlePage () {
         </HeroWrapper>
 
         <Divider />
+
+        {renderAdminUI()}
 
         <TypeList types={article.types} />
 
@@ -52,12 +67,17 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const AdminButtons = styled.div`
+    margin-bottom: 30px;
+`;
+
 const ArticleBody = styled.div`
-    border: 1px solid #eee;
-    border-radius: 5px;
     padding: 30px;
     margin-top: 30px;
+    font-size: 18px;
     line-height: 30px;
+    white-space: pre-wrap;
+    font-family: 'Source Sans Pro', sans-serif;
 `;
 
 const ArticleData = styled.div`

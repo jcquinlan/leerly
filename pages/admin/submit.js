@@ -16,6 +16,8 @@ import TypeSelector from '../../components/TypeSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle} from '../../services/articleService';
 
+import TextareaAutosize from 'react-textarea-autosize';
+
 function SubmitPage () {
     useGuardAdminRoute();
 
@@ -41,7 +43,7 @@ function SubmitPage () {
             router.push(`/articles/${article.id}`);
         })
         .catch(() => {
-            addToast('Article submitted', {appearance: 'error'});
+            addToast('An error occurred', {appearance: 'error'});
         });
     };
 
@@ -62,6 +64,16 @@ function SubmitPage () {
         setFormState(newState);
     }
 
+    const textAreaStyles = {
+        width: '100%',
+        fontSize: '16px',
+        padding: '15px',
+        marginBottom: '30px',
+        border: 'none',
+        backgroundColor: '#eee',
+        borderRadius: '8px'
+    }
+
     return (
         <>
         <Container>
@@ -76,7 +88,7 @@ function SubmitPage () {
         <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
-        <TextArea name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
+        <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
         <Button onClick={handleClick} disabled={!formIsFilled}>Submit article</Button>
 
         </Container>

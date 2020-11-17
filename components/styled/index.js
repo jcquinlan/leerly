@@ -59,6 +59,11 @@ export const Button = styled.button`
       border-color: #ddd;
       cursor: initial;
     }
+
+    a {
+      color: #fff;
+      text-decoration: none;
+    }
 `;
 
 export const Card = styled.div`
@@ -94,6 +99,7 @@ export const TextArea = styled.textarea`
   padding: 10px 10px;
   border-radius: 5px;
   font-size: 16px;
+  white-space: pre-wrap;
 `;
 
 export const HelpText = styled.p`
