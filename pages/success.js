@@ -37,6 +37,7 @@ function SuccessPage () {
         <Divider />
 
         <Button>
+            {/* TODO -- Replace with the next router link */}
             <a href="/dashboard">Start reading articles</a>
         </Button>
 

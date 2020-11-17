@@ -24,6 +24,7 @@ function SettingsPage () {
 
             <Section>
                 <SectionTitle>Billing</SectionTitle>
+                <SectionSubtitle>Note: Ending your subscription will delete your account completely.</SectionSubtitle>
                 <ul>
                     <li><Link href={billingUrl}>Manage billing</Link></li>
                 </ul>
@@ -45,5 +46,10 @@ const Section = styled.div`
     margin-bottom: 30px;
 `;
 const SectionTitle = styled.h4`
-
+    margin-bottom: 5px;
 `;
+const SectionSubtitle = styled.p`
+    font-size: 14px;
+    color: #666;
+    margin-top: 0;
+`
