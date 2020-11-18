@@ -1,4 +1,5 @@
 import React, {useState, useContext} from 'react';
+import {useToasts} from 'react-toast-notifications';
 import styled from 'styled-components';
 import AppStateContext from '../contexts/appContext';
 import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input, HelpText, Card} from '../components/styled';
@@ -7,15 +8,18 @@ import {useRouter} from 'next/router';
 
 function RegisterPage () {
     const router = useRouter();
-    const {setUser} = useContext(AppStateContext);
+    const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
-    const handleClick = async () => {
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
         try {
-            const response = await signInUser(formState.email, formState.password);
-            setUser(response.user);
+            await signInUser(formState.email, formState.password);
             router.push('/dashboard');
         } catch (error) {
             console.error(error);
+            addToast(error.message, {appearance: 'error'});
         }
     };
 
@@ -42,9 +46,14 @@ function RegisterPage () {
             <HelpText>
                 No account yet? <RegisterLink href="/register">Register here.</RegisterLink>
             </HelpText>
-            <Input type='email' name='email' placeholder='email' onChange={handleFormState}/>
-            <Input type='password' name='password' placeholder='password' onChange={handleFormState}/>
-            <Button onClick={handleClick}>sign in</Button>
+            <HelpText>
+                Forget your password? <RegisterLink href="/settings/reset-password">Reset it here.</RegisterLink>
+            </HelpText>
+            <form onSubmit={handleSubmit}>
+                <Input type='email' name='email' placeholder='email' onChange={handleFormState}/>
+                <Input type='password' name='password' placeholder='password' onChange={handleFormState}/>
+                <Button type='submit' disabled={!formState.email || !formState.password}>sign in</Button>
+            </form>
         </Card>
 
         </Container>

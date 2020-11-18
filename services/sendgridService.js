@@ -6,14 +6,14 @@ export const getRecipientFromEmail = async (email) => {
             method: 'POST',
             url: `/v3/marketing/contacts/search`,
             body: {
-                query: `email LIKE '${email}' AND CONTAINS(list_ids, 'f4c9c87b-0f59-4248-bf18-c3c553441e27')`
+                query: `email LIKE '${email}' AND CONTAINS(list_ids, '${process.env.MAILING_LIST_ID}')`
             }
         };
 
         const [response, body] = await client.request(request)
 
         if (response.statusCode !== 200) {
-            throw new Error(`Failed to search for recipients in list f4c9c87b-0f59-4248-bf18-c3c553441e27`)
+            throw new Error(`Failed to search for recipients in list ${process.env.MAILING_LIST_ID}`)
         }
 
         return body.result;

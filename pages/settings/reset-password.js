@@ -1,18 +1,28 @@
-import React from 'react';
-import {useRouter} from 'next/router';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button} from '../../components/styled';
+import React, {useState} from 'react';
+import {useToasts} from 'react-toast-notifications';
+import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input} from '../../components/styled';
 import {auth} from '../../services';
 
 function ResetPasswordPage () {
-    const router = useRouter();
-    const sendResetEmail = () => {
-        auth.sendPasswordResetEmail('jcquinlan.dev@gmail.com').then(function() {
+    const {addToast} = useToasts();
+    const [formState, setFormState] = useState({});
+
+    const sendResetEmail = (e) => {
+        e.preventDefault();
+
+        auth.sendPasswordResetEmail(formState.email).then(function() {
             // Email sent.
-            console.log('EMAIL SENT')
+            addToast('Email sent.', {appearance: 'success'});
+            setFormState({});
           }).catch(function(error) {
             // An error happened.
             console.error(error);
+            addToast(error.message, {appearance: 'error'});
           });
+    }
+
+    const handleInputChange = (e) => {
+        setFormState({...formState, [e.target.name]: e.target.value});
     }
 
     return (
@@ -26,7 +36,10 @@ function ResetPasswordPage () {
 
         <Divider />
 
-        <Button onClick={sendResetEmail}>Send Reset Email</Button>
+        <form onSubmit={sendResetEmail}>
+            <Input name='email' type='email' placeholder='account email' onChange={handleInputChange}/>
+            <Button type='submit' disabled={!formState.email}>Send password reset email</Button>
+        </form>
 
         </Container>
         </>

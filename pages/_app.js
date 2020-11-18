@@ -15,25 +15,20 @@ function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
   const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
 
-  useEffect(() => {
-    auth.onAuthStateChanged(function(user) {
+  useEffect(async () => {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
-        getUserProfile(user.uid)
-          .then(profile => {
-            appContextApi.setUser(user);
-            appContextApi.setUserProfile(profile.data());
-          })
-          .then(() => getUserClaims(user.uid))
-          .then(res => {
-            const claimData = res.data();
-            if (claimData) {
-              appContextApi.setClaims(claimData)
-            }
-          })
-          .then(() => getUserProfile(user.uid))
-          .finally(() => {
-            appContextApi.setLoading(false);
-          });
+        const profile = await getUserProfile(user.uid);
+        appContextApi.setUser(user);
+        appContextApi.setUserProfile(profile.data());
+        const claimRef = await getUserClaims(user.uid)
+        const claimData = claimRef.data();
+
+        if (claimData) {
+          appContextApi.setClaims(claimData)
+        }
+
+        appContextApi.setLoading(false);
       } else {
         appContextApi.setUser(null);
         appContextApi.setClaims(null);
@@ -59,7 +54,6 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedOutLinks = () => {
     return [
-        <Link id="/free" className="menu-item" href="/free">free articles</Link>,
         <Link id="/register" className="menu-item" href="/register">register</Link>,
         <Link id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]

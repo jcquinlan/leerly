@@ -19,7 +19,7 @@ export default async (req, res) => {
         ],
         mode: 'subscription',
         success_url: `${baseUrl}/success?id=${id}&email=${encodeURIComponent(email)}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/cancel`,
+        cancel_url: `${baseUrl}/cancel?id=${id}&email=${encodeURIComponent(email)}`
       });
 
       res.statusCode = 200;

@@ -5,8 +5,11 @@ import {Container, HeroWrapper, HeroContent, Divider, Title, Button} from '../..
 import useAsync from '../../hooks/useAsync';
 import { getBillingURL } from '../../services/stripeService';
 import AppContext from '../../contexts/appContext';
+import useGuardRoute from '../../hooks/useGuardRoute';
 
 function SettingsPage () {
+    useGuardRoute();
+
     const {userProfile} = useContext(AppContext);
     const {data, loading, error} = useAsync(() => getBillingURL(userProfile.customerId), (data) => data);
 
@@ -27,13 +30,6 @@ function SettingsPage () {
                 <SectionSubtitle>Note: Ending your subscription will delete your account completely.</SectionSubtitle>
                 <ul>
                     <li><Link href={billingUrl}>Manage billing</Link></li>
-                </ul>
-            </Section>
-
-            <Section>
-                <SectionTitle>Account</SectionTitle>
-                <ul>
-                    <li><Link href="/settings/reset-password">Reset password</Link></li>
                 </ul>
             </Section>
         </Container>

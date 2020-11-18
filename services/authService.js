@@ -10,7 +10,7 @@ export const registerUser = async (email, password) => {
 export const signInUser = async (email, password) => {
     return auth.signInWithEmailAndPassword(email, password)
         .catch(function(error) {
-            console.error(error);
+            throw error;
         });
 };
 
