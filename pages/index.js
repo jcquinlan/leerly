@@ -60,7 +60,7 @@ function App() {
 
       <HeroWrapper>
         <HeroContent>
-          <SignUpButton>Start Reading Now</SignUpButton>
+          <a href="/register"><SignUpButton>Start Reading Now</SignUpButton></a>
           {/* <BetaSignupForm /> */}
         </HeroContent>
       </HeroWrapper>
@@ -133,8 +133,7 @@ function App() {
 
       <HeroWrapper>
         <HeroContent>
-          <SignUpButton>Access leerly now</SignUpButton>
-          {/* <BetaSignupForm /> */}
+          <a href="/register"><SignUpButton>Access leerly now</SignUpButton></a>
         </HeroContent>
       </HeroWrapper>
     </Container>
