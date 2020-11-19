@@ -53,7 +53,12 @@ export default async (req, res) => {
                             // Step 2 - Remove the user from the Production SendGrid mailing list
                             const recipients = await getRecipientFromEmail(email);
                             const contactIds = recipients.map(recip => recip.id);
-                            await deleteContacts(contactIds);
+
+                            if (!contactIds.length) {
+                                console.log('NO CONTACT IDS TO DELETE');
+                            } else {
+                                await deleteContacts(contactIds);
+                            }
                         });
                     })
                     .catch(err => {
