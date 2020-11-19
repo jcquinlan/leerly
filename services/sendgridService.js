@@ -20,14 +20,15 @@ export const getRecipientFromEmail = async (email) => {
 }
 
 export const deleteContacts = async (contactIds) => {
+    console.log('CONTACT IDS TO DELETE: ', contactIds);
+
     try {
         const request = {
             method: 'DELETE',
             url: `/v3/marketing/contacts?ids=${contactIds.join(',')}`,
         };
 
-        const [response, body] = await client.request(request)
-        console.log(response, body);
+        await client.request(request);
     } catch (e) {
         console.log(e);
     }
