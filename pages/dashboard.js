@@ -1,17 +1,13 @@
 import React, {useState, useMemo, useEffect} from 'react';
 import styled from 'styled-components';
-import {useRouter} from 'next/router';
 import {
     Container,
     HeroWrapper,
     HeroContent,
     Divider,
     Title,
-    Button,
-    Input,
-    Card,
-    HelpText,
-    Subtitle
+    Subtitle,
+    Card
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -40,6 +36,13 @@ function ArticlePage () {
         <Divider />
 
         <ArticlesList>
+            <a href="https://forms.gle/Je6gXA1tLGT1bxRh6" target="_blank">
+                <FeedbackCard>
+                    <span>How did you hear about leerly?</span> <br />
+                    <LetUsKnow>Let us know ⟶</LetUsKnow>
+                </FeedbackCard>
+            </a>
+
             {articles.map(article => (
                 <ArticlePreview key={article.id} article={article}/>
             ))}
@@ -51,3 +54,16 @@ function ArticlePage () {
 }
 
 export default ArticlePage;
+
+const FeedbackCard = styled(Card)`
+    background-color: #1f4ab8;
+    color: #fff;
+    margin-bottom: 30px;
+    border: none;
+`;
+
+const LetUsKnow = styled.span`
+    color: #fff;
+    margin-top: 15px;
+    font-size: 24px;
+`;

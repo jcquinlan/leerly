@@ -10,6 +10,7 @@ import LoadingPage from '../components/LoadingPage';
 import useAppContext from '../hooks/useAppContext';
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims } from '../services/userService';
+import {Container} from '../components/styled';
 
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
@@ -85,20 +86,28 @@ function MyApp({ Component, pageProps }) {
     <>
     <AppContext.Provider value={appContextApi}>
       <ToastProvider>
-        {/* <MobileNav>
+        <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
             {appContextApi.user && <span>{appContextApi.user.email}</span>}
             <Link id="/" className="menu-item" href="/">home</Link>
             {isSignedIn ? renderSignedInLinks() : null}
             {!isSignedIn ? renderSignedOutLinks() : null}
           </Menu>
-        </MobileNav> */}
+        </MobileNav>
 
         {appContextApi.loading ? (
           <LoadingPage />
         ) : (
           <Component {...pageProps} />
         )}
+
+        <Container>
+          <Footer>
+            <span><strong><Link href="/dashboard">leerly.</Link></strong></span>
+            <span><Link href="/privacy">privacy</Link></span>
+            <span><Link href="/terms">terms of service</Link></span>
+          </Footer>
+        </Container>
       </ToastProvider>
     </AppContext.Provider>
     </>
@@ -106,6 +115,17 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp
+
+const Footer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  span {
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 15px;
+  }
+`;
 
 const MobileNav = styled.div`
   a {

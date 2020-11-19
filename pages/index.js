@@ -26,7 +26,7 @@ function App() {
       <Step>
         <StepNumber>1.)</StepNumber>
         <div>
-          <StepTitle>We search for popular, current, widely-shared articles from around the web.</StepTitle>
+          <StepTitle>We search for popular, relevant, widely-shared articles from around the web.</StepTitle>
           <DescriptionText>
             We try to use articles that are being shared a lot, and cover a wide range of topics, like tech,
             business, art, news, science, culture, etc. We source news outlets, reddit, Hacker News, and more
@@ -59,11 +59,11 @@ function App() {
       </Step>
 
       <HeroWrapper>
-          <HeroContent>
-            {/* <SignUpButton>Start Reading Now</SignUpButton> */}
-            <BetaSignupForm />
-          </HeroContent>
-        </HeroWrapper>
+        <HeroContent>
+          <SignUpButton>Start Reading Now</SignUpButton>
+          {/* <BetaSignupForm /> */}
+        </HeroContent>
+      </HeroWrapper>
 
       {/* <Subtitle>Pricing</Subtitle>
       <DescriptionText>It's just <Free>$10/month</Free>.</DescriptionText> */}
@@ -96,6 +96,15 @@ function App() {
       <Divider />
 
       <Question>
+      <Subtitle>That's it?</Subtitle>
+        <DescriptionText>
+          As if. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
+          long list of things we want to finish building: a private chat group with native speakers, recorded audio of native speakers
+          reciting each article, comments and discussion on each article, questions and quizzes for the material to ensure comprehension, etc.
+        </DescriptionText>
+      </Question>
+
+      <Question>
       <Subtitle>But why do I want this?</Subtitle>
         <DescriptionText>
           For intermediate Spanish learners, it can be hard to find reading material which is understandable, but still interesting. We would know, we're trying
@@ -108,8 +117,8 @@ function App() {
       <Question>
         <Subtitle>How much does it cost?</Subtitle>
         <DescriptionText>
-          When we launch, access to leerly will cost <Free>$15/month</Free>. For this price, you'll receive summarized and translated versions of
-          viral articles throughout the week. You'll also get access to neat features we're currently working on ;)
+          leerly costs a paltry <Free>$5/month</Free> with the coupon code "LISTO". Sign up now to lock in this price forever, since prices will
+          be increasing as new features are rolled out.
         </DescriptionText>
       </Question>
 
@@ -117,9 +126,17 @@ function App() {
         <Subtitle>Can't I just use Google Translate or something?</Subtitle>
         <DescriptionText>
           Sure! But we've found that it's best to have a native Spanish speaker rewrite the articles, to ensure that the Spanish
-          is targeted specifically for intermediate learners. If you're an advanced speaker, you might not need this.
+          is targeted specifically for intermediate learners. If you're an advanced speaker, you might not need this. Plus,
+          you woudn't get all the other neat features we're building.
         </DescriptionText>
       </Question>
+
+      <HeroWrapper>
+        <HeroContent>
+          <SignUpButton>Access leerly now</SignUpButton>
+          {/* <BetaSignupForm /> */}
+        </HeroContent>
+      </HeroWrapper>
     </Container>
     </>
   );
@@ -170,7 +187,7 @@ const Example = styled.div`
 const DescriptionText = styled.p`
   color: #666;
   margin: 0;
-  line-height: 28px;
+  line-height: 32px;
 `;
 
 const Question = styled.div`
@@ -218,5 +235,5 @@ const PriceDescription = styled.p`
 `;
 
 const SignUpButton = styled(Button)`
-  margin-top: 60px;
+  margin: 60px 0;
 `;

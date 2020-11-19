@@ -20,6 +20,7 @@ export const Container = styled.div`
   max-width: 900px;
   padding: 30px;
   padding-bottom: 90px;
+  width: 100%;
 `;
 
 export const HeroWrapper = styled.div`
