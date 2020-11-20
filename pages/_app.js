@@ -46,6 +46,7 @@ function MyApp({ Component, pageProps }) {
       .then(() => {
         appContextApi.setUser(null);
         appContextApi.setClaims(null);
+        appContextApi.setNavOpen(false);
       });
   }
 
