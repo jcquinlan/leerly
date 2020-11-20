@@ -8,7 +8,7 @@ import {useRouter} from 'next/router';
 
 function RegisterPage () {
     const router = useRouter();
-    const {setUser} = useContext(AppStateContext);
+    const {setLoading} = useContext(AppStateContext);
     const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
 
@@ -16,8 +16,8 @@ function RegisterPage () {
         e.preventDefault();
 
         try {
-            const response = await signInUser(formState.email, formState.password);
-            setUser(response.user);
+            await signInUser(formState.email, formState.password);
+            setLoading(true);
             router.push('/dashboard');
         } catch (error) {
             console.error(error);
