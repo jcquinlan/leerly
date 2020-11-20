@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import {
     Container,
@@ -13,11 +13,29 @@ import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
+import { getArticleReadStatuses } from '../services/articleService';
+import AppContext from '../contexts/appContext';
 
 function ArticlePage () {
     useGuardRoute();
 
+    const {user} = useContext(AppContext);
     const {articles, loading, error} = useGetArticles();
+    const [readStatuses, setReadStatuses] = useState({});
+
+    useEffect(() => {
+        if (articles.length) {
+            getArticleReadStatuses(user.uid, articles.map(article => article.id))
+                .then(readStatusesRef => {
+                    const readStatusesById = readStatusesRef.docs.reduce((memo, current) => {
+                        const data = current.data();
+                        memo[data.articleId] = current;
+                        return memo;
+                    }, {});
+                    setReadStatuses(readStatusesById);
+                })
+        }
+    }, [articles]);
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -44,7 +62,7 @@ function ArticlePage () {
             </a>
 
             {articles.map(article => (
-                <ArticlePreview key={article.id} article={article}/>
+                <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
             ))}
         </ArticlesList>
 

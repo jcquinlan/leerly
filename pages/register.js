@@ -14,8 +14,11 @@ import {
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
 import {createUserProfileDocument} from '../services/userService';
+import useEnforceSignedOut from '../hooks/useEnforceSignedOut';
 
 function RegisterPage () {
+    useEnforceSignedOut();
+
     const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
     const [submitting, setSubmitting] = useState(false);
