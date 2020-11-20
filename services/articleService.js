@@ -69,3 +69,45 @@ export const getUnsentArticles = () => {
             throw error;
         });
 }
+
+export const getArticleReadStatus = (userId, articleId) => {
+    return db.collection("read_statuses")
+        .where('userId', '==', userId)
+        .where('articleId', '==', articleId)
+        .limit(1)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const getArticleReadStatuses = (userId, articleIds) => {
+    return db.collection("read_statuses")
+        .where('userId', '==', userId)
+        .where('articleId', 'in', articleIds)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const createArticleReadStatus = (userId, articleId) => {
+    return db.collection("read_statuses")
+        .add({
+            articleId,
+            userId,
+            readAt: new Date()
+        })
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const deleteArticleReadStatus = (readStatusId) => {
+    return db.collection("read_statuses")
+        .doc(readStatusId)
+        .delete()
+        .catch(error => {
+            throw error;
+        });
+}

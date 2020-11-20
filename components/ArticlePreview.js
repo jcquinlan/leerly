@@ -3,8 +3,9 @@ import {useRouter} from 'next/router';
 import styled from 'styled-components';
 import moment from 'moment';
 import TypeList from './TypeList';
+import {ReadCheck} from './styled';
 
-const ArticlePreview = ({article}) => {
+const ArticlePreview = ({article, read}) => {
     const router = useRouter();
 
     const goToArticle = () => {
@@ -14,7 +15,10 @@ const ArticlePreview = ({article}) => {
     return (
         <ArticlePreviewWrapper onClick={goToArticle}>
             <Header>
-                <span>{article.title || 'Placeholder Title'}</span>
+                <div>
+                    <ReadCheck checked={read}/>
+                    <span>{article.title || 'Placeholder Title'}</span>
+                </div>
                 <ArticleTimestamp>{moment(article.added_at.seconds * 1000).format('MM/DD/YYYY')}</ArticleTimestamp>
             </Header>
 

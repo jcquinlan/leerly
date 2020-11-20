@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect, useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {useRouter} from 'next/router';
 import {
@@ -7,20 +7,34 @@ import {
     HeroContent,
     Divider,
     Title,
-    Button
+    Button,
+    Colors
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
 import useGetArticle from '../../hooks/useGetArticle';
 import useGuardRoute from '../../hooks/useGuardRoute';
 import AppContext from '../../contexts/appContext';
+import { createArticleReadStatus, getArticleReadStatus, deleteArticleReadStatus } from '../../services/articleService';
 
 function ArticlePage () {
     useGuardRoute();
 
     const router = useRouter();
-    const {isAdmin} = useContext(AppContext);
+    const {isAdmin, user} = useContext(AppContext);
     const {article, loading, error} = useGetArticle(router.query.articleId);
+    const [readStatus, setReadStatus] = useState(null);
+
+    useEffect(() => {
+        if (article) {
+            getArticleReadStatus(user.uid, article.id)
+                .then(readStatusRef => {
+                    if (readStatusRef.docs.length > 0) {
+                        setReadStatus(readStatusRef.docs[0]);
+                    }
+                })
+        }
+    }, [article]);
 
     const renderAdminUI = () => {
         if (isAdmin) {
@@ -32,6 +46,16 @@ function ArticlePage () {
         }
     }
 
+    const handleMarkAsRead = async () => {
+        if (readStatus) {
+            await deleteArticleReadStatus(readStatus.id);
+            setReadStatus(null);
+        } else {
+            const readStatusRef = await createArticleReadStatus(user.uid, article.id);
+            setReadStatus(readStatusRef);
+        }
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -40,9 +64,7 @@ function ArticlePage () {
         <>
         <Container>
         <HeroWrapper>
-            <HeroContent>
-                <Title>{loading ? 'Loading...' : article.title ? article.title : 'Placeholder Title'}</Title>
-            </HeroContent>
+            <Title>{loading ? 'Loading...' : article.title ? article.title : 'Placeholder Title'}</Title>
         </HeroWrapper>
 
         <Divider />
@@ -60,12 +82,35 @@ function ArticlePage () {
             {article.body}
         </ArticleBody>
 
+        <ButtonRow>
+            <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
+                {!!readStatus ? 'Article read ✓' : 'Mark as read'}
+            </MarkAsReadButton>
+        </ButtonRow>
+
         </Container>
         </>
     );
 }
 
 export default ArticlePage;
+
+const ButtonRow = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+`;
+const MarkAsReadButton = styled(Button)`
+    ${props => props.read ? `
+        background-color: ${Colors.Green};
+        border-color: ${Colors.Green};
+
+        &:hover {
+            background-color: ${Colors.DarkerGreen};
+        }
+    `: ''}
+
+`;
 
 const AdminButtons = styled.div`
     margin-bottom: 30px;
