@@ -117,7 +117,7 @@ function App() {
       <Question>
         <Subtitle>How much does it cost?</Subtitle>
         <DescriptionText>
-          leerly costs a paltry <Free>$5/month</Free> with the coupon code "LISTO". Sign up now to lock in this price forever, since prices will
+          leerly costs a paltry <Free>$5/month</Free>. Sign up now to lock in this price forever, since prices will
           be increasing as new features are rolled out.
         </DescriptionText>
       </Question>
