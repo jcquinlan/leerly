@@ -94,6 +94,10 @@ export const Input = styled.input`
     font-size: 16px;
 `;
 
+export const Checkbox = styled(Input)`
+    width: auto;
+`;
+
 export const TextArea = styled.textarea`
   width: 100%;
   margin-bottom: 20px;
@@ -108,4 +112,17 @@ export const TextArea = styled.textarea`
 export const HelpText = styled.p`
     font-size: 14px;
     color: #888;
+`;
+
+export const NoticeCard = styled(Card)`
+    background-color: #1f4ab8;
+    color: #fff;
+    margin-bottom: 30px;
+    border: none;
+`;
+
+export const NoticeCardMain = styled.span`
+    color: #fff;
+    margin-top: 15px;
+    font-size: 24px;
 `;

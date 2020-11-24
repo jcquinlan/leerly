@@ -89,6 +89,7 @@ function SubmitPage () {
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
+        <Input type='checkbox' name='free' onChange={handleFormState} />
         <Button onClick={handleClick} disabled={!formIsFilled}>Submit article</Button>
 
         </Container>
