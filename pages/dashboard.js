@@ -7,7 +7,8 @@ import {
     Divider,
     Title,
     Subtitle,
-    Card
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -55,10 +56,10 @@ function ArticlePage () {
 
         <ArticlesList>
             <a href="https://forms.gle/Je6gXA1tLGT1bxRh6" target="_blank">
-                <FeedbackCard>
+                <NoticeCard>
                     <span>How did you hear about leerly?</span> <br />
-                    <LetUsKnow>Let us know ⟶</LetUsKnow>
-                </FeedbackCard>
+                    <NoticeCardMain>Let us know ⟶</NoticeCardMain>
+                </NoticeCard>
             </a>
 
             {articles.map(article => (
@@ -73,15 +74,3 @@ function ArticlePage () {
 
 export default ArticlePage;
 
-const FeedbackCard = styled(Card)`
-    background-color: #1f4ab8;
-    color: #fff;
-    margin-bottom: 30px;
-    border: none;
-`;
-
-const LetUsKnow = styled.span`
-    color: #fff;
-    margin-top: 15px;
-    font-size: 24px;
-`;

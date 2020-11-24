@@ -1,4 +1,5 @@
 import React, {useState, useMemo, useEffect} from 'react';
+import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {useRouter} from 'next/router';
 import {
@@ -9,7 +10,8 @@ import {
     Title,
     Input,
     TextArea,
-    Button
+    Button,
+    Checkbox
 } from '../../../components/styled';
 import useGuardAdminRoute from '../../../hooks/useGuardAdminRoute';
 import TypeSelector from '../../../components/TypeSelector';
@@ -36,16 +38,18 @@ function ArticlePage () {
         setFormState({
           url: article.url,
           title: article.title,
-          article: article.body
+          article: article.body,
+          free: article.free
         });
       }
     }, [article]);
 
     const handleClick = async () => {
         updateArticle(article.id, {
-            article: formState.article,
+            body: formState.article,
             url: formState.url,
             title: formState.title,
+            free: formState.free,
             types: selectedTypes
         })
         .then(() => {
@@ -75,6 +79,14 @@ function ArticlePage () {
         setFormState(newState);
     }
 
+    const handleCheckboxChange = (event) => {
+        const newState = {
+            ...formState,
+            [event.target.name]: event.target.checked
+        };
+        setFormState(newState);
+    }
+
     if (loading) {
       return <LoadingPage></LoadingPage>;
     }
@@ -84,16 +96,20 @@ function ArticlePage () {
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>submit article</Title>
+                <Title>edit article</Title>
             </HeroContent>
         </HeroWrapper>
 
         <Divider />
 
         <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
-        <Input type="text" name="url" placeholder="url of original article" defaultValue={formState.url} required onChange={handleFormState} />
-        <Input type="text" name="title" placeholder="title of the article" defaultValue={formState.title} required onChange={handleFormState} />
-        <TextArea name='article' placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />
+        <Input type="text" name="url" value={formState.url || ''} placeholder="url of original article" defaultValue={formState.url} required onChange={handleFormState} />
+        <Input type="text" name="title" value={formState.title || ''} placeholder="title of the article" defaultValue={formState.title} required onChange={handleFormState} />
+        <TextArea name='article' value={formState.article || ''} placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />
+        <CheckboxContainer>
+            <label for='free'>Article is free?</label>
+            <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
+        </CheckboxContainer>
         <Button onClick={handleClick} disabled={!formIsFilled}>Save article</Button>
 
         </Container>
@@ -102,3 +118,7 @@ function ArticlePage () {
 }
 
 export default ArticlePage;
+
+const CheckboxContainer = styled.div`
+
+`

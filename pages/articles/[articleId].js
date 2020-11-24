@@ -4,35 +4,34 @@ import {useRouter} from 'next/router';
 import {
     Container,
     HeroWrapper,
-    HeroContent,
     Divider,
     Title,
     Button,
-    Colors
+    Colors,
+    NoticeCard,
+    NoticeCardMain
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
-import useGetArticle from '../../hooks/useGetArticle';
-import useGuardRoute from '../../hooks/useGuardRoute';
+import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import { createArticleReadStatus, getArticleReadStatus, deleteArticleReadStatus } from '../../services/articleService';
 
 function ArticlePage () {
-    useGuardRoute();
-
     const router = useRouter();
+    const {article, loading, error} = useGuardArticle(router.query.articleId);
+
     const {isAdmin, user} = useContext(AppContext);
-    const {article, loading, error} = useGetArticle(router.query.articleId);
     const [readStatus, setReadStatus] = useState(null);
 
     useEffect(() => {
-        if (article) {
+        if (article && (!article.free || user)) {
             getArticleReadStatus(user.uid, article.id)
                 .then(readStatusRef => {
                     if (readStatusRef.docs.length > 0) {
                         setReadStatus(readStatusRef.docs[0]);
                     }
-                })
+                });
         }
     }, [article]);
 
@@ -82,11 +81,20 @@ function ArticlePage () {
             {article.body}
         </ArticleBody>
 
-        <ButtonRow>
-            <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
-                {!!readStatus ? 'Article read ✓' : 'Mark as read'}
-            </MarkAsReadButton>
-        </ButtonRow>
+        {!article.free || user && (
+            <ButtonRow>
+                <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
+                    {!!readStatus ? 'Article read ✓' : 'Mark as read'}
+                </MarkAsReadButton>
+            </ButtonRow>
+        )}
+
+        {article.free && !user && (
+            <UpgradeWrapper>
+                <p>Enjoyed reading this? Want to improve your Spanish?</p>
+                <Button onClick={() => router.push('/register')}>Join leerly</Button>
+            </UpgradeWrapper>
+        )}
 
         </Container>
         </>
@@ -95,6 +103,16 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const UpgradeWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+
+    span {
+        max-width: 300px;
+    }
+`;
 const ButtonRow = styled.div`
     display: flex;
     justify-content: center;
