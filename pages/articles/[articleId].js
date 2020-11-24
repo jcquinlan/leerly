@@ -81,7 +81,7 @@ function ArticlePage () {
             {article.body}
         </ArticleBody>
 
-        {!article.free || user && (
+        {(!article.free || user) && (
             <ButtonRow>
                 <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
                     {!!readStatus ? 'Article read ✓' : 'Mark as read'}

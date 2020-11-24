@@ -9,9 +9,9 @@ import {
     Divider,
     Title,
     Button,
-    Input
+    Input,
+    Checkbox
 } from '../../components/styled';
-import TextArea from '../../components/TextArea';
 import TypeSelector from '../../components/TypeSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle} from '../../services/articleService';
@@ -36,6 +36,7 @@ function SubmitPage () {
             body: formState.article,
             url: formState.url,
             title: formState.title,
+            free: formState.free || false,
             types: selectedTypes
         })
         .then((article) => {
@@ -60,6 +61,14 @@ function SubmitPage () {
         const newState = {
             ...formState,
             [event.target.name]: event.target.value
+        };
+        setFormState(newState);
+    }
+
+    const handleCheckboxChange = (event) => {
+        const newState = {
+            ...formState,
+            [event.target.name]: event.target.checked
         };
         setFormState(newState);
     }
@@ -89,7 +98,12 @@ function SubmitPage () {
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
-        <Input type='checkbox' name='free' onChange={handleFormState} />
+
+        <div>
+            <label for='free'>Article is free?</label>
+            <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
+        </div>
+
         <Button onClick={handleClick} disabled={!formIsFilled}>Submit article</Button>
 
         </Container>

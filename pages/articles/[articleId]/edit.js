@@ -49,7 +49,7 @@ function ArticlePage () {
             body: formState.article,
             url: formState.url,
             title: formState.title,
-            free: formState.free,
+            free: formState.free || false,
             types: selectedTypes
         })
         .then(() => {
@@ -106,10 +106,12 @@ function ArticlePage () {
         <Input type="text" name="url" value={formState.url || ''} placeholder="url of original article" defaultValue={formState.url} required onChange={handleFormState} />
         <Input type="text" name="title" value={formState.title || ''} placeholder="title of the article" defaultValue={formState.title} required onChange={handleFormState} />
         <TextArea name='article' value={formState.article || ''} placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />
-        <CheckboxContainer>
+
+        <div>
             <label for='free'>Article is free?</label>
             <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
-        </CheckboxContainer>
+        </div>
+
         <Button onClick={handleClick} disabled={!formIsFilled}>Save article</Button>
 
         </Container>
@@ -118,7 +120,3 @@ function ArticlePage () {
 }
 
 export default ArticlePage;
-
-const CheckboxContainer = styled.div`
-
-`
