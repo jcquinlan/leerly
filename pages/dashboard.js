@@ -26,7 +26,7 @@ function ArticlePage () {
 
     useEffect(() => {
         if (articles.length) {
-            getArticleReadStatuses(user.uid, articles.map(article => article.id))
+            getArticleReadStatuses(user.uid)
                 .then(readStatusesRef => {
                     const readStatusesById = readStatusesRef.docs.reduce((memo, current) => {
                         const data = current.data();

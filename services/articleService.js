@@ -81,10 +81,9 @@ export const getArticleReadStatus = (userId, articleId) => {
         });
 }
 
-export const getArticleReadStatuses = (userId, articleIds) => {
+export const getArticleReadStatuses = (userId) => {
     return db.collection("read_statuses")
         .where('userId', '==', userId)
-        .where('articleId', 'in', articleIds)
         .get()
         .catch(error => {
             throw error;
