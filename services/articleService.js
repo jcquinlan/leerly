@@ -1,4 +1,4 @@
-import {db} from './index';
+import {db, storage} from './index';
 
 export const ArticleTypes = {
     'business': 'Business',
@@ -110,4 +110,9 @@ export const deleteArticleReadStatus = (readStatusId) => {
         .catch(error => {
             throw error;
         });
+}
+
+export const getArticleAudioURL = (fileName) => {
+    const storageRef = storage.ref();
+    return storageRef.child(fileName).getDownloadURL();
 }

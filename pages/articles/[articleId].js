@@ -15,7 +15,12 @@ import TypeList from '../../components/TypeList';
 import useGetArticle from '../../hooks/useGetArticle';
 import useGuardRoute from '../../hooks/useGuardRoute';
 import AppContext from '../../contexts/appContext';
-import { createArticleReadStatus, getArticleReadStatus, deleteArticleReadStatus } from '../../services/articleService';
+import {
+    createArticleReadStatus,
+    getArticleReadStatus,
+    deleteArticleReadStatus,
+    getArticleAudioURL
+} from '../../services/articleService';
 
 function ArticlePage () {
     useGuardRoute();
@@ -24,6 +29,7 @@ function ArticlePage () {
     const {isAdmin, user} = useContext(AppContext);
     const {article, loading, error} = useGetArticle(router.query.articleId);
     const [readStatus, setReadStatus] = useState(null);
+    const [audioURL, setAudioURL] = useState(null);
 
     useEffect(() => {
         if (article) {
@@ -32,7 +38,13 @@ function ArticlePage () {
                     if (readStatusRef.docs.length > 0) {
                         setReadStatus(readStatusRef.docs[0]);
                     }
-                })
+                });
+            
+            if (article.audio) {
+                getArticleAudioURL(article.audio)
+                    .then(url => console.log(url) || setAudioURL(url))
+                    .catch(error => console.log(error))
+            }
         }
     }, [article]);
 
