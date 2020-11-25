@@ -55,15 +55,23 @@ function ArticlePage () {
         }
     }
 
+    console.log('--------------------')
+    console.log('LOADING: ', loading)
+    console.log('ARTICLE: ', article)
+    console.log('USER: ', user)
+    console.log('--------------------')
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
+
+    if (!article) return null;
 
     return (
         <>
         <Container>
         <HeroWrapper>
-            <Title>{loading ? 'Loading...' : article.title ? article.title : 'Placeholder Title'}</Title>
+            <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
         </HeroWrapper>
 
         <Divider />

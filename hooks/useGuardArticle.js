@@ -14,13 +14,18 @@ const useGuardArticle = (articleId) => {
             return;
         }
 
-        if (!article.free) {
+        // If we aren't loading anything, and there isn't an article
+        // it's because its not accessible to users who aren't logged in
+        // thus it isn't free.
+        if (!article || (article && !article.free)) {
             if (!user) {
-                router.replace('/');
+                router.replace(`/sign-in?redirect=${router.asPath}`);
+                return;
             }
 
             if (!userProfile.subscribed) {
                 router.replace('/cancel');
+                return;
             }
         }
     }, [user, userProfile, articleLoading, userLoading, article]);

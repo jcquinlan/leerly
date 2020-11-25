@@ -12,13 +12,19 @@ function RegisterPage () {
     const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
 
+    const redirect = router.query.redirect;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
             await signInUser(formState.email, formState.password);
             setLoading(true);
-            router.push('/dashboard');
+            if (redirect) {
+                router.push(redirect);
+            } else {
+                router.push('/dashboard');
+            }
         } catch (error) {
             console.error(error);
             addToast(error.message, {appearance: 'error'});
