@@ -8,8 +8,7 @@ import {
     Title,
     Button,
     Colors,
-    NoticeCard,
-    NoticeCardMain
+    devices
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
@@ -55,12 +54,6 @@ function ArticlePage () {
         }
     }
 
-    console.log('--------------------')
-    console.log('LOADING: ', loading)
-    console.log('ARTICLE: ', article)
-    console.log('USER: ', user)
-    console.log('--------------------')
-
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -70,9 +63,9 @@ function ArticlePage () {
     return (
         <>
         <Container>
-        <HeroWrapper>
+        <TitleWrapper>
             <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
-        </HeroWrapper>
+        </TitleWrapper>
 
         <Divider />
 
@@ -111,6 +104,8 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const TitleWrapper = styled(HeroWrapper)``;
+
 const UpgradeWrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -143,12 +138,16 @@ const AdminButtons = styled.div`
 `;
 
 const ArticleBody = styled.div`
-    padding: 30px;
+    padding: 10px;
     margin-top: 30px;
     font-size: 18px;
     line-height: 30px;
     white-space: pre-wrap;
     font-family: 'Source Sans Pro', sans-serif;
+
+    @media ${devices.laptop} {
+        padding: 30px;
+    }
 `;
 
 const ArticleData = styled.div`

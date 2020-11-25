@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button} from '../components/styled';
-import BetaSignupForm from '../components/BetaSignupForm';
+import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button, devices, Colors} from '../components/styled';
 import {MaskedText} from '../components/ArticlePreview';
 
 function App() {
@@ -154,21 +153,32 @@ Más que comprenderla, necesitamos sentir la enorme pérdida de nuestro planeta 
 No sé cómo vivir al borde del colapso planetario. No sé cómo continuar creyendo en mi trabajo cuando me siento tan cansada y apenada. A veces, intento consolarme pensando que la muerte forma parte de la vida: que igual que no pudimos salvar a mi padre, no podemos salvar el planeta. Pero en esos momentos de intenso dolor también siento esperanza. Quizás, si conseguimos que nuestra pena compartida nos despierte, encontraremos la fuerza necesaria para actuar urgentemente y salvar la Tierra y a nosotros mismos.`;
 
 const Faint = styled.span`
-  color: #666;
+  color: ${Colors.Primary};
   font-family: 'Poppins', sans-serif;
 `;
 
 const Step = styled.div`
   display: flex;
+  flex-direction: column;
   margin-top: 30px;
+
+  @media ${devices.laptop} {
+    flex-direction: row;
+  }
 `;
 
 const StepNumber = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
   padding-right: 20px;
-  font-size: 48px;
+  font-size: 24px;
+  margin-bottom: 15px;
+
+  @media ${devices.laptop} {
+    font-size: 48px;
+    justify-content: center;
+    margin-bottom: 0px;
+  }
 `;
 
 const StepTitle = styled.h5`

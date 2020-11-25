@@ -34,8 +34,15 @@ p {
   position: relative;
   width: 36px;
   height: 30px;
-  left: 36px;
-  top: 36px;
+  left: 16px;
+  top: 16px;
+}
+
+@media (min-width: 1024px) {
+  .bm-burger-button {
+    left: 36px;
+    top: 36px;
+  }
 }
 
 /* Color/shape of burger icon bars */

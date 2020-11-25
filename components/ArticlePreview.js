@@ -3,7 +3,7 @@ import {useRouter} from 'next/router';
 import styled from 'styled-components';
 import moment from 'moment';
 import TypeList from './TypeList';
-import {ReadCheck} from './styled';
+import {ReadCheck, devices} from './styled';
 
 const ArticlePreview = ({article, read}) => {
     const router = useRouter();
@@ -40,23 +40,37 @@ export const MaskedText = ({children, maxHeight}) => {
 export default ArticlePreview;
 
 export const ArticlesList = styled.div`
-    padding: 30px;
+    padding: 15px;
     margin-top: 30px;
+
+    @media ${devices.laptop} {
+        padding: 30px;
+    }
 `;
 
 export const Header = styled.div`
     display: flex;
     justify-content: space-between;
+    margin-bottom: 15px;
 
     span {
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
+
+        @media ${devices.laptop} {
+            font-size: 24px;
+        }
     } 
 `;
 
 export const ArticleTimestamp = styled.div`
+    display: none;
     color: #aaa;
     font-size: 14px;
+
+    @media ${devices.laptop} {
+        display: initial;
+    }
 `;
 
 export const ArticlePreviewWrapper = styled.div`

@@ -1,28 +1,45 @@
 import styled from 'styled-components';
+import {devices} from './mediaQueries';
 export {default as Colors} from './colors';
 export {default as ReadCheck} from './ReadCheck';
+export {devices} from './mediaQueries';
 
 export const Title = styled.h1`
-  font-size: 48px;
+  font-size: 30px;
   margin-bottom: 0;
+
+  @media ${devices.laptop} {
+    font-size: 48px;
+  }
 `;
 
 export const Subtitle = styled.h3`
-    font-size: 22px;
+    font-size: 18px;
+    color: #666;
     margin-bottom: 10px;
+    margin-top: 0px;
 
     ${props => props.center ? (
         `text-align: center;`
     ): ``}
+
+    @media ${devices.laptop} {
+      font-size: 22px;
+    }
 `;
 
 export const Container = styled.div`
   position: relative;
   margin: 0 auto;
   max-width: 900px;
-  padding: 30px;
-  padding-bottom: 90px;
+  padding: 15px;
+  padding-top: 60px;
   width: 100%;
+
+  @media ${devices.laptop} {
+    padding: 30px;
+    padding-bottom: 90px;
+  }
 `;
 
 export const HeroWrapper = styled.div`
@@ -72,9 +89,13 @@ export const Button = styled.button`
 export const Card = styled.div`
   background-color: #fff;
   border-radius: 5px;
-  padding: ${props => props.padding || '30px'};
+  padding: ${props => props.padding || '15px'};
   box-shadow: 0px 7px 5px -5px rgba(0,0,0,0.3);
   border: 1px solid #eee;
+
+  @media ${devices.laptop} {
+    padding: ${props => props.padding || '30px'};
+  }
 `;
 
 export const Flex = styled.div`
