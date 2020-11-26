@@ -19,14 +19,10 @@ export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
     }
 });
 
-export const createNewArticle = async ({body, title, url, types, added_by}) => {
+export const createNewArticle = async (articleAttrs) => {
     return db.collection("articles").add({
-        body,
-        url,
-        types,
-        title,
+        ...articleAttrs,
         sent: false,
-        added_by,
         added_at: new Date(),
     })
     .then(articleRef => articleRef.get())

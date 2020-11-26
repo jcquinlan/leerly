@@ -147,3 +147,20 @@ export const NoticeCardMain = styled.span`
     margin-top: 15px;
     font-size: 24px;
 `;
+
+export const ImageWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+
+    img {
+        width: 100%;
+        margin: 0;
+    }
+`;
+
+export const ImageAttribution = styled.p`
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+`;

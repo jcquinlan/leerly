@@ -16,8 +16,10 @@ import {
 import useGuardAdminRoute from '../../../hooks/useGuardAdminRoute';
 import TypeSelector from '../../../components/TypeSelector';
 import LoadingPage from '../../../components/LoadingPage';
+import ArticleImageSelector from '../../../components/ArticleImageSelector';
 import useGetArticle from '../../../hooks/useGetArticle';
 import {updateArticle} from '../../../services/articleService';
+import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
 
 function ArticlePage () {
     useGuardAdminRoute();
@@ -28,13 +30,16 @@ function ArticlePage () {
     const {addToast} = useToasts();
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [formState, setFormState] = useState({});
+    const [image, setImage] = useState(null);
+    const [updatedImage, setUpdatedImage] = useState(false);
     const formIsFilled = useMemo(() => {
-        return !!(formState.article && formState.url);
+        return !!(formState.article && formState.url && formState.title && image && !!selectedTypes.length);
     }, [formState]);
 
     useEffect(() => {
       if (article) {
         setSelectedTypes(article.types);
+        setImage(article.image);
         setFormState({
           url: article.url,
           title: article.title,
@@ -45,21 +50,27 @@ function ArticlePage () {
     }, [article]);
 
     const handleClick = async () => {
-        updateArticle(article.id, {
-            body: formState.article,
-            url: formState.url,
-            title: formState.title,
-            free: formState.free || false,
-            types: selectedTypes
-        })
-        .then(() => {
+        try {
+            await updateArticle(article.id, {
+                body: formState.article,
+                url: formState.url,
+                title: formState.title,
+                free: formState.free || false,
+                types: selectedTypes,
+                image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
+            });
+
+            if (updatedImage) {
+                await triggerUnsplashDownload(image);
+            }
+
             addToast('Article updated', {appearance: 'success'});
             router.push(`/articles/${article.id}`);
-        })
-        .catch((err) => {
+
+        } catch (err) {
             console.log(err);
             addToast('An error occurred', {appearance: 'error'});
-        });
+        };
     };
 
     const handleSelectedType = (newType) => {
@@ -87,6 +98,11 @@ function ArticlePage () {
         setFormState(newState);
     }
 
+    const setImageAndFlagAsNew = (unsplashImage) => {
+        setUpdatedImage(true);
+        setImage(unsplashImage);
+    }
+
     if (loading) {
       return <LoadingPage></LoadingPage>;
     }
@@ -103,6 +119,9 @@ function ArticlePage () {
         <Divider />
 
         <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+
+        <ArticleImageSelector image={image} onSelectImage={(image) => setImageAndFlagAsNew(image)} />
+
         <Input type="text" name="url" value={formState.url || ''} placeholder="url of original article" defaultValue={formState.url} required onChange={handleFormState} />
         <Input type="text" name="title" value={formState.title || ''} placeholder="title of the article" defaultValue={formState.title} required onChange={handleFormState} />
         <TextArea name='article' value={formState.article || ''} placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />

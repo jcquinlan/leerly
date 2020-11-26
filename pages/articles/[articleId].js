@@ -8,7 +8,9 @@ import {
     Title,
     Button,
     Colors,
-    devices
+    devices,
+    ImageAttribution,
+    ImageWrapper
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
@@ -60,6 +62,8 @@ function ArticlePage () {
 
     if (!article) return null;
 
+    const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+
     return (
         <>
         <Container>
@@ -77,6 +81,17 @@ function ArticlePage () {
             <span>Original article: </span>
             <a href={article.url} target='_blank'>{article.url}</a>
         </ArticleData>
+
+        {article.image && (
+            <div>
+                <ImageWrapper>
+                    <img src={article.image.urls.regular} />
+                </ImageWrapper>
+                <ImageAttribution>
+                    Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
+                </ImageAttribution>
+            </div>
+        )}
 
         <ArticleBody>
             {article.body}
