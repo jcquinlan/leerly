@@ -10,7 +10,11 @@ export const ArticleTypes = {
     'fiction': 'Fiction',
     'religion': 'Religion',
     'politics': 'Politics',
-    'self-help': 'Self Help'
+    'self-help': 'Self Help',
+    'culture': 'Culture',
+    'history': 'History',
+    'latin-america': 'Latin America',
+    'spain': 'Spain',
 };
 export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
     return {

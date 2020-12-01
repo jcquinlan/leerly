@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
-import {auth} from '../services/index';
+import {auth, analytics} from '../services/index';
 import AppContext from '../contexts/appContext';
 import Link from '../components/Link';
 import LoadingPage from '../components/LoadingPage';
@@ -17,6 +17,9 @@ function MyApp({ Component, pageProps }) {
   const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
 
   useEffect(() => {
+    // Begin Google Analytics
+    analytics();
+
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         const profile = await getUserProfile(user.uid);
