@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
 import styled from 'styled-components';
+import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
 import {
     Container,
@@ -16,14 +17,21 @@ import LoadingPage from '../../components/LoadingPage';
 import TypeList from '../../components/TypeList';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
-import { createArticleReadStatus, getArticleReadStatus, deleteArticleReadStatus } from '../../services/articleService';
+import {
+    createArticleReadStatus,
+    getArticleReadStatus,
+    deleteArticleReadStatus,
+    getArticleAudioURL
+} from '../../services/articleService';
 
 function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
     const {isAdmin, user} = useContext(AppContext);
+    const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
+    const [audioURL, setAudioURL] = useState(null);
 
     useEffect(() => {
         if (article && (!article.free || user)) {
@@ -33,6 +41,12 @@ function ArticlePage () {
                         setReadStatus(readStatusRef.docs[0]);
                     }
                 });
+            
+            if (article.audio) {
+                getArticleAudioURL(article.audio)
+                    .then(url => console.log(url) || setAudioURL(url))
+                    .catch(error => console.log(error))
+            }
         }
     }, [article]);
 
@@ -77,6 +91,7 @@ function ArticlePage () {
 
         <TypeList types={article.types} />
 
+
         <ArticleData>
             <span>Original article: </span>
             <a href={article.url} target='_blank'>{article.url}</a>
@@ -91,6 +106,26 @@ function ArticlePage () {
                     Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
                 </ImageAttribution>
             </div>
+        )}
+
+
+        {!!audioURL && !playAudio && (
+            <AudioWrapper>
+                <FakeAudioWidget onClick={() => setPlayAudio(true)}>
+                    <span>Play audio</span> &#9658;
+                </FakeAudioWidget>
+            </AudioWrapper>
+        )}
+
+        {!!audioURL && playAudio && (
+            <AudioWrapper>
+                <div>
+                    <ReactAudioPlayer
+                        src={audioURL}
+                        controls
+                    />
+                </div>
+            </AudioWrapper>
         )}
 
         <ArticleBody>
@@ -120,6 +155,27 @@ function ArticlePage () {
 export default ArticlePage;
 
 const TitleWrapper = styled(HeroWrapper)``;
+const AudioWrapper = styled.div`
+    margin: 60px 0;
+    display: flex;
+    justify-content: center;
+`;
+
+const FakeAudioWidget = styled.div`
+    width: 300px;
+    border-radius: 50px;
+    padding: 14px;
+    background: #F1F3F4;
+    text-align: center;
+    color: #444;
+    cursor: pointer;
+    box-shadow: 0px 4px 5px 0px #e0e0e0;
+
+    span {
+        margin-right: 10px;
+        font-size: 18px;
+    }
+`;
 
 const UpgradeWrapper = styled.div`
     display: flex;
