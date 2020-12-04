@@ -3,20 +3,23 @@ import React, {useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
-import {auth} from '../services/index';
+import {auth, analytics} from '../services/index';
 import AppContext from '../contexts/appContext';
 import Link from '../components/Link';
 import LoadingPage from '../components/LoadingPage';
 import useAppContext from '../hooks/useAppContext';
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims } from '../services/userService';
-import {Container} from '../components/styled';
+import {Container, devices} from '../components/styled';
 
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
   const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
 
-  useEffect(async () => {
+  useEffect(() => {
+    // Begin Google Analytics
+    analytics();
+
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         const profile = await getUserProfile(user.uid);
@@ -102,13 +105,13 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
         )}
 
-        <Container>
+        <FooterContainer>
           <Footer>
             <span><strong><Link href="/dashboard">leerly.</Link></strong></span>
             <span><Link href="/privacy">privacy</Link></span>
             <span><Link href="/terms">terms of service</Link></span>
           </Footer>
-        </Container>
+        </FooterContainer>
       </ToastProvider>
     </AppContext.Provider>
     </>
@@ -117,14 +120,26 @@ function MyApp({ Component, pageProps }) {
 
 export default MyApp
 
+const FooterContainer = styled(Container)`
+  padding-bottom: 30px;
+
+  @media ${devices.laptop} {
+    padding-bottom: 60px;
+  }
+`;
 const Footer = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
 
   span {
     cursor: pointer;
     font-size: 14px;
     margin-right: 15px;
+  }
+
+  @media ${devices.laptop} {
+    justify-content: left;
   }
 `;
 

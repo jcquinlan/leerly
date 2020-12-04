@@ -1,7 +1,7 @@
 import React from 'react';
+// import Image from 'next/image';
 import styled from 'styled-components';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button} from '../components/styled';
-import BetaSignupForm from '../components/BetaSignupForm';
+import {Container, HeroWrapper, HeroContent, Divider, Title, Subtitle, Button, devices, Colors} from '../components/styled';
 import {MaskedText} from '../components/ArticlePreview';
 
 function App() {
@@ -9,20 +9,23 @@ function App() {
     <>
     <Container>
       <HeroWrapper>
-        <HeroContent>
-            <Title>leerly.</Title>
-            <Subtitle>
-              Popular articles from around the web, summarized and translated by native speakers to 
-              intermediate Spanish, delivered to you throughout the week.
-              <br></br>
-              <Faint>Qué guay</Faint>.
-            </Subtitle>
-          </HeroContent>
+        <MainHeroContent>
+          <Title>leerly.</Title>
+          <Subtitle>
+            Improve your Spanish by reading popular articles, all summarized and translated to B1/B2 Spanish by native speakers. 
+            <Faint> Qué guay.</Faint>
+          </Subtitle>
+
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            <a href="/register"><SignUpButton>Start now for $5/month</SignUpButton></a>
+          </div>
+        </MainHeroContent>
       </HeroWrapper>
 
-      <Divider />
+      {/* <Divider /> */}
 
-      <Subtitle>Here's how it works:</Subtitle>
+      {/* <SectionHeader>How it works</SectionHeader>
+      <DescriptionText>We summarize and translate articles from your favorite sites, like the ones below.</DescriptionText>
       <Step>
         <StepNumber>1.)</StepNumber>
         <div>
@@ -56,38 +59,19 @@ function App() {
             already would have read in English, and without needing to find kid's books or young adult novels in Spanish.
           </DescriptionText>   
         </div>
-      </Step>
-
-      <HeroWrapper>
-        <HeroContent>
-          <a href="/register"><SignUpButton>Start Reading Now</SignUpButton></a>
-          {/* <BetaSignupForm /> */}
-        </HeroContent>
-      </HeroWrapper>
-
-      {/* <Subtitle>Pricing</Subtitle>
-      <DescriptionText>It's just <Free>$10/month</Free>.</DescriptionText> */}
-      {/* <PricingWrapper>
-        <PricingBlock>
-          <PriceTitle>Free</PriceTitle>
-          <PriceDescription>
-            Receive an article a day, in basic Spanish.
-          </PriceDescription>
-        </PricingBlock>
-      </PricingWrapper> */}
-
+      </Step> */}
 
       <Divider />
 
       <div>
-        <Subtitle>Want an example?</Subtitle>
+        <SectionHeader>Want an example?</SectionHeader>
         <DescriptionText>
           We take articles, like <a href="https://www.theguardian.com/australia-news/2020/oct/15/the-great-unravelling-i-never-thought-id-live-to-see-the-horror-of-planetary-collapse" target="_blank">this one</a> about the Australian wildfires from The Guardian, extract the core information and facts,
           and present them in intermediate Spanish:
         </DescriptionText>
 
         <Example>
-          <MaskedText maxHeight="500px">
+          <MaskedText maxHeight="800px">
               {exampleArticle}
           </MaskedText>
         </Example>
@@ -96,16 +80,21 @@ function App() {
       <Divider />
 
       <Question>
-      <Subtitle>That's it?</Subtitle>
-        <DescriptionText>
-          As if. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
-          long list of things we want to finish building: a private chat group with native speakers, recorded audio of native speakers
-          reciting each article, comments and discussion on each article, questions and quizzes for the material to ensure comprehension, etc.
-        </DescriptionText>
+      <SectionHeader>What do I get for $5/month?</SectionHeader>
+      <FeaturesList>
+        <li>New articles throughout the week, in B1/B2 Spanish</li>
+        <li>Access to all past articles</li>
+        <li>All future updates (audio for each article, built-in translation, and more)</li>
+      </FeaturesList>
+        {/* <DescriptionText>
+          Throughout the week, we will add new articles to our website, and email out the links in a newsletter to all our customers.
+          You'll also get access to all the past articles, for extra reading practice. Signing up now also ensures you'll have access to all future updates,
+          like audio for each article, built-in translation, and the ability to ask native speakers specific questions about each article.
+        </DescriptionText> */}
       </Question>
 
       <Question>
-      <Subtitle>But why do I want this?</Subtitle>
+      <SectionHeader>But why do I want this?</SectionHeader>
         <DescriptionText>
           For intermediate Spanish learners, it can be hard to find reading material which is understandable, but still interesting. We would know, we're trying
           to learn Spanish ourselves. In order to make language acquisition easier, we wanted to ensure we could practice Spanish while going about our normal lives.
@@ -115,7 +104,20 @@ function App() {
       </Question>
 
       <Question>
-        <Subtitle>How much does it cost?</Subtitle>
+        <SectionHeader>Do you have a trial?</SectionHeader>
+        <DescriptionText>Sure! For a free month, just use the code LISTO at checkout. We won't bill you for 4 weeks, and you can cancel any time before then.</DescriptionText>
+      </Question>
+
+      <Question>
+        <SectionHeader>What about refunds?</SectionHeader>
+        <DescriptionText>
+          We can refund you, no questions asked. Just contact us using 
+          <a target='_blank' href='https://forms.gle/SwWbhoD9mwpQ2JLx9'> this form</a>.
+        </DescriptionText>
+      </Question>
+
+      <Question>
+        <SectionHeader>How much does it cost?</SectionHeader>
         <DescriptionText>
           leerly costs a paltry <Free>$5/month</Free>. Sign up now to lock in this price forever, since prices will
           be increasing as new features are rolled out.
@@ -123,7 +125,7 @@ function App() {
       </Question>
 
       <Question>
-        <Subtitle>Can't I just use Google Translate or something?</Subtitle>
+        <SectionHeader>Can't I just use Google Translate or something?</SectionHeader>
         <DescriptionText>
           Sure! But we've found that it's best to have a native Spanish speaker rewrite the articles, to ensure that the Spanish
           is targeted specifically for intermediate learners. If you're an advanced speaker, you might not need this. Plus,
@@ -131,11 +133,24 @@ function App() {
         </DescriptionText>
       </Question>
 
+
+
       <HeroWrapper>
         <HeroContent>
-          <a href="/register"><SignUpButton>Access leerly now</SignUpButton></a>
+          <a href="/register"><SignUpButton>Start now for $5/month</SignUpButton></a>
         </HeroContent>
       </HeroWrapper>
+
+      <Divider />
+
+      <Question>
+      <SectionHeader>That's it?</SectionHeader>
+        <DescriptionText>
+          As if. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
+          long list of things we want to finish building: a private chat group with native Spanish speakers, audio of native speakers
+          reciting each article, comments and discussion on each article, in-article tranlation, etc.
+        </DescriptionText>
+      </Question>
     </Container>
     </>
   );
@@ -153,22 +168,49 @@ Los científicos intentamos movilizar a la sociedad con hechos y datos, pero en 
 Más que comprenderla, necesitamos sentir la enorme pérdida de nuestro planeta Tierra. Debemos vivir el luto colectivo de un mundo que amamos y que nunca va a volver a ser igual. Tenemos que llorar por nuestro futuro y el de nuestros hijos. Cuando abrimos la puerta a todos esos sentimientos intensos y complejos, nos llenan de energía y de ganas de actuar. Aceptar nuestra tristeza profunda, sin evitarla ni racionalizarla, es la clave para frenar el desastre.
 No sé cómo vivir al borde del colapso planetario. No sé cómo continuar creyendo en mi trabajo cuando me siento tan cansada y apenada. A veces, intento consolarme pensando que la muerte forma parte de la vida: que igual que no pudimos salvar a mi padre, no podemos salvar el planeta. Pero en esos momentos de intenso dolor también siento esperanza. Quizás, si conseguimos que nuestra pena compartida nos despierte, encontraremos la fuerza necesaria para actuar urgentemente y salvar la Tierra y a nosotros mismos.`;
 
-const Faint = styled.span`
+const FeaturesList = styled.ul`
+  font-size: 18px;
   color: #666;
+
+  li {
+    margin-bottom: 15px;
+  }
+`;
+const SectionHeader = styled(Subtitle)`
+  color: black;
+`;
+const MainHeroContent = styled(HeroContent)`
+  @media ${devices.laptop} {
+    margin: 90px 0;
+  }
+`;
+const Faint = styled.span`
+  color: ${Colors.Primary};
   font-family: 'Poppins', sans-serif;
 `;
 
 const Step = styled.div`
   display: flex;
+  flex-direction: column;
   margin-top: 30px;
+
+  @media ${devices.laptop} {
+    flex-direction: row;
+  }
 `;
 
 const StepNumber = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
   padding-right: 20px;
-  font-size: 48px;
+  font-size: 24px;
+  margin-bottom: 15px;
+
+  @media ${devices.laptop} {
+    font-size: 48px;
+    justify-content: center;
+    margin-bottom: 0px;
+  }
 `;
 
 const StepTitle = styled.h5`
@@ -187,6 +229,7 @@ const DescriptionText = styled.p`
   color: #666;
   margin: 0;
   line-height: 32px;
+  font-size: 18px;
 `;
 
 const Question = styled.div`
@@ -201,36 +244,6 @@ const Free = styled.b`
   color: #000;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-`;
-
-const PricingWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 60px;
-`;
-
-const PricingBlock = styled.div`
-  width: 100%;
-  max-width: 250px;
-  margin-right: 30px;
-  border: 1px solid #eee;
-  border-radius: 5px;
-  padding: 15px;
-
-  &:last-child {
-    margin-right: 0;
-  }
-`;
-
-const PriceTitle = styled.h5`
-  text-align: center;
-  margin: 0;
-  font-size: 24px;
-`;
-
-const PriceDescription = styled.p`
-  margin: 0;
-  color: #666;
 `;
 
 const SignUpButton = styled(Button)`

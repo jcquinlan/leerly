@@ -13,7 +13,7 @@ const useGuardRoute = () => {
         }
 
         if (!user) {
-            router.replace('/');
+            router.replace(`/sign-in?redirect=${router.asPath}`);
         }
 
         if (!userProfile.subscribed) {

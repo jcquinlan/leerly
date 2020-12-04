@@ -17,12 +17,14 @@
     "moment": "^2.29.1",
     "next": "9.5.5",
     "react": "16.14.0",
+    "react-audio-player": "^0.14.0",
     "react-burger-menu": "^2.9.0",
     "react-dom": "16.14.0",
     "react-player": "^2.7.0",
     "react-textarea-autosize": "^8.3.0",
     "react-toast-notifications": "^2.4.0",
     "stripe": "^8.115.0",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2.0",
+    "unsplash-js": "^6.3.0"
   }
 }

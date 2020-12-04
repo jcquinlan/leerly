@@ -1,4 +1,5 @@
 import React, {useState, useMemo, useContext} from 'react';
+import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import { useRouter } from 'next/router';
 import useGuardAdminRoute from '../../hooks/useGuardAdminRoute';
@@ -9,14 +10,16 @@ import {
     Divider,
     Title,
     Button,
-    Input
+    Input,
+    Checkbox
 } from '../../components/styled';
-import TextArea from '../../components/TextArea';
 import TypeSelector from '../../components/TypeSelector';
+import ArticleImageSelector from '../../components/ArticleImageSelector';
 import AppContext from '../../contexts/appContext';
-import {createNewArticle} from '../../services/articleService';
+import {createNewArticle, uploadAudio} from '../../services/articleService';
 
 import TextareaAutosize from 'react-textarea-autosize';
+import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
 
 function SubmitPage () {
     useGuardAdminRoute();
@@ -26,25 +29,37 @@ function SubmitPage () {
     const {user} = useContext(AppContext);
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [formState, setFormState] = useState({});
+    const [audioURL, setAudioURL] = useState(null);
+    const [image, setImage] = useState(null);
+    const [audioFile, setAudioFile] = useState(null);
+    const [saving, setSaving] = useState(false);
     const formIsFilled = useMemo(() => {
-        return !!(formState.article && formState.url);
+        return !!(formState.article && formState.url && image && formState.title && !!selectedTypes.length);
     }, [formState]);
 
     const handleClick = async () => {
-        createNewArticle({
-            added_by: user.uid,
-            body: formState.article,
-            url: formState.url,
-            title: formState.title,
-            types: selectedTypes
-        })
-        .then((article) => {
+        setSaving(true);
+        try {
+            await uploadAudio(audioFile);
+            const article = await createNewArticle({
+                added_by: user.uid,
+                body: formState.article,
+                url: formState.url,
+                title: formState.title,
+                free: formState.free || false,
+                types: selectedTypes,
+                audio: `audios/${audioFile.name}`,
+                image: unsplashImageToSimplifiedImage(image)
+            });
+
+            await triggerUnsplashDownload(image);
+
             addToast('Article submitted', {appearance: 'success'});
             router.push(`/articles/${article.id}`);
-        })
-        .catch(() => {
+        } catch (error) {
             addToast('An error occurred', {appearance: 'error'});
-        });
+        };
+        setSaving(false);
     };
 
     const handleSelectedType = (newType) => {
@@ -62,6 +77,19 @@ function SubmitPage () {
             [event.target.name]: event.target.value
         };
         setFormState(newState);
+    }
+
+    const handleCheckboxChange = (event) => {
+        const newState = {
+            ...formState,
+            [event.target.name]: event.target.checked
+        };
+        setFormState(newState);
+    }
+
+    const handleSelectedFile = async (e) => {
+        const file = e.target.files[0];
+        setAudioFile(file);
     }
 
     const textAreaStyles = {
@@ -86,10 +114,26 @@ function SubmitPage () {
         <Divider />
 
         <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+
+        <ArticleImageSelector image={image} onSelectImage={(image) => setImage(image)} />
+
+        {!audioURL && (
+            <AudioWrapper>
+                <label for='audio'>Audio file upload (mp3 only)</label>
+                <input type='file' name='audio' accept='audio/mp3' onChange={handleSelectedFile} />
+            </AudioWrapper>
+        )}
+
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
-        <Button onClick={handleClick} disabled={!formIsFilled}>Submit article</Button>
+
+        <div>
+            <label for='free'>Article is free?</label>
+            <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
+        </div>
+
+        <Button onClick={handleClick} disabled={saving || !formIsFilled}>Submit article</Button>
 
         </Container>
         </>
@@ -97,3 +141,7 @@ function SubmitPage () {
 }
 
 export default SubmitPage;
+
+const AudioWrapper = styled.div`
+    margin-bottom: 30px;
+`;

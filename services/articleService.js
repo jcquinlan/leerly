@@ -10,7 +10,11 @@ export const ArticleTypes = {
     'fiction': 'Fiction',
     'religion': 'Religion',
     'politics': 'Politics',
-    'self-help': 'Self Help'
+    'self-help': 'Self Help',
+    'culture': 'Culture',
+    'history': 'History',
+    'latin-america': 'Latin America',
+    'spain': 'Spain',
 };
 export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
     return {
@@ -19,14 +23,10 @@ export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
     }
 });
 
-export const createNewArticle = async ({body, title, url, types, added_by}) => {
+export const createNewArticle = async (articleAttrs) => {
     return db.collection("articles").add({
-        body,
-        url,
-        types,
-        title,
+        ...articleAttrs,
         sent: false,
-        added_by,
         added_at: new Date(),
     })
     .then(articleRef => articleRef.get())
@@ -81,10 +81,9 @@ export const getArticleReadStatus = (userId, articleId) => {
         });
 }
 
-export const getArticleReadStatuses = (userId, articleIds) => {
+export const getArticleReadStatuses = (userId) => {
     return db.collection("read_statuses")
         .where('userId', '==', userId)
-        .where('articleId', 'in', articleIds)
         .get()
         .catch(error => {
             throw error;
@@ -115,4 +114,9 @@ export const deleteArticleReadStatus = (readStatusId) => {
 export const getArticleAudioURL = (fileName) => {
     const storageRef = storage.ref();
     return storageRef.child(fileName).getDownloadURL();
+}
+
+export const uploadAudio = (file) => {
+    const storageRef = storage.ref().child(`audios/${file.name}`);
+    return storageRef.put(file);
 }
