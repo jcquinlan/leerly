@@ -119,7 +119,7 @@ function App() {
       <Question>
         <SectionHeader>How much does it cost?</SectionHeader>
         <DescriptionText>
-          leerly costs a paltry <Free>$5/month</Free>. Sign up now to lock in this price forever, since prices will
+          leerly costs <Free>$5/month</Free>. Sign up now to lock in this price forever, since prices will
           be increasing as new features are rolled out.
         </DescriptionText>
       </Question>
@@ -148,7 +148,7 @@ function App() {
         <DescriptionText>
           As if. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
           long list of things we want to finish building: a private chat group with native Spanish speakers, audio of native speakers
-          reciting each article, comments and discussion on each article, in-article tranlation, etc.
+          reciting each article, comments and discussion on each article, in-article translation, etc.
         </DescriptionText>
       </Question>
     </Container>
