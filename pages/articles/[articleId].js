@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
@@ -14,6 +14,7 @@ import {
     ImageWrapper
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
+import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
@@ -32,6 +33,7 @@ function ArticlePage () {
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
+    const articleBodyRef = useRef();
 
     useEffect(() => {
         if (article && (!article.free || user)) {
@@ -69,6 +71,8 @@ function ArticlePage () {
             setReadStatus(readStatusRef);
         }
     }
+
+    
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -128,7 +132,9 @@ function ArticlePage () {
             </AudioWrapper>
         )}
 
-        <ArticleBody>
+
+        <SelectedTextPopover elementRef={articleBodyRef} />
+        <ArticleBody ref={articleBodyRef}>
             {article.body}
         </ArticleBody>
 
@@ -155,6 +161,7 @@ function ArticlePage () {
 export default ArticlePage;
 
 const TitleWrapper = styled(HeroWrapper)``;
+
 const AudioWrapper = styled.div`
     margin: 60px 0;
     display: flex;
