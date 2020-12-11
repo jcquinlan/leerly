@@ -1,4 +1,5 @@
 import React, {useState, useMemo} from 'react';
+import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {
     Container,
@@ -9,7 +10,8 @@ import {
     Button,
     Input,
     Card,
-    HelpText
+    HelpText,
+    Colors
 } from '../components/styled';
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
@@ -72,6 +74,10 @@ function RegisterPage () {
 
         <Divider />
 
+        <ExplanationText>
+            <Primary>$5/month.</Primary> First month <b>free</b> with the code LISTO during checkout.
+        </ExplanationText>
+
         <Card>
             <HelpText>
                 After submitting your email and password, you'll be redirected to our payment page to provide
@@ -93,3 +99,17 @@ function RegisterPage () {
 }
 
 export default RegisterPage;
+
+const ExplanationText = styled.div`
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 30px;
+    font-weight: 200;
+`;
+
+const Primary = styled.span`
+    color: ${Colors.Primary};
+    font-weight: bold;
+    font-size: 24px;
+    margin-right: 5px;
+`;
