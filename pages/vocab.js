@@ -51,6 +51,9 @@ function VocabPage () {
         <Divider />
 
         <div>
+            {!vocabList.length && (
+                <p>Save vocab by highlighting text in an article and saving it.</p>
+            )}
             {vocabList.map(vocab => (
                 <VocabCard>
                     <Foreign>

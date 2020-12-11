@@ -9,7 +9,9 @@ const TypeList = ({types}) => {
             <TypeListContainer>
             {
                 types.map(type => {
-                    return <TypePill color={Colors.ArticleTypes[type]}>{ArticleTypes[type]}</TypePill>
+                    return <TypePill
+                        color={Colors.ArticleTypes.copy[type]}
+                        backgroundColor={Colors.ArticleTypes.background[type]}>{ArticleTypes[type]}</TypePill>
                 })
             }
             </TypeListContainer>
@@ -22,7 +24,8 @@ export default TypeList;
 const TypeListContainer = styled.div``
 const TypePill = styled.div`
     display: inline-block;
-    background-color: ${props => props.color || '#666'};
+    background-color: ${props => props.backgroundColor || '#666'};
+    color: ${props => props.color || '#000'};
     margin-right: 5px;
     padding: 5px 15px;
     border-radius: 20px;

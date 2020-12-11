@@ -14,7 +14,8 @@ import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
-import { getArticleReadStatuses } from '../services/articleService';
+import {getArticleReadStatuses} from '../services/articleService';
+import {getAllVocab} from '../services/vocabService';
 import AppContext from '../contexts/appContext';
 
 function ArticlePage () {
@@ -23,6 +24,7 @@ function ArticlePage () {
     const {user} = useContext(AppContext);
     const {articles, loading, error} = useGetArticles();
     const [readStatuses, setReadStatuses] = useState({});
+    const [vocabList, setVocabList] = useState([]);
 
     useEffect(() => {
         if (articles.length) {
@@ -35,6 +37,14 @@ function ArticlePage () {
                     }, {});
                     setReadStatuses(readStatusesById);
                 })
+
+            getAllVocab(user.uid)
+                .then(vocabListRef => {
+                    const vocabListData = vocabListRef.docs.map(vocabRef => {
+                        return vocabRef.data();
+                    });
+                    setVocabList(vocabListData);
+                });
         }
     }, [articles]);
 
@@ -54,13 +64,25 @@ function ArticlePage () {
 
         <Divider />
 
+        <StatsRow>
+            <Stat>
+                <p>{Object.keys(readStatuses).length}</p>
+                Articles read
+            </Stat> 
+
+            <Stat>
+                <p>{vocabList.length}</p>
+                Vocab cards
+            </Stat> 
+        </StatsRow>
+
         <ArticlesList>
-            <a href="https://forms.gle/Je6gXA1tLGT1bxRh6" target="_blank">
+            {/* <a href="https://forms.gle/Je6gXA1tLGT1bxRh6" target="_blank">
                 <NoticeCard>
                     <span>How did you hear about leerly?</span> <br />
                     <NoticeCardMain>Let us know ⟶</NoticeCardMain>
                 </NoticeCard>
-            </a>
+            </a> */}
 
             {articles.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
@@ -73,3 +95,24 @@ function ArticlePage () {
 }
 
 export default ArticlePage;
+
+const StatsRow = styled.div`
+    padding: 0 30px;
+`;
+const Stat = styled.div`
+    display: inline-block;
+    margin-right: 15px;
+    padding: 10px 15px;
+    background-color: #eee;
+    border-radius: 8px;
+    width: fit-content;
+    min-width: 100px;
+    color: #666;
+
+    p {
+        font-size: 30px;
+        margin: 0;
+        color: #000;
+        font-weight: bold;
+    }
+`;

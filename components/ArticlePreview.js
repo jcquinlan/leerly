@@ -41,7 +41,6 @@ export default ArticlePreview;
 
 export const ArticlesList = styled.div`
     padding: 15px;
-    margin-top: 30px;
 
     @media ${devices.laptop} {
         padding: 30px;

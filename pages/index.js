@@ -131,7 +131,7 @@ function App() {
         <DescriptionText>
           Sure! But we've found that it's best to have a native Spanish speaker rewrite the articles, to ensure that the Spanish
           is targeted specifically for intermediate learners. If you're an advanced speaker, you might not need this. Plus,
-          you woudn't get all the other neat features we're building.
+          you wouldn't get all the other neat features we're building.
         </DescriptionText>
       </Question>
 
