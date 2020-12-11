@@ -36,17 +36,19 @@ function ArticlePage () {
     const articleBodyRef = useRef();
 
     useEffect(() => {
-        if (article && (!article.free || user)) {
-            getArticleReadStatus(user.uid, article.id)
-                .then(readStatusRef => {
-                    if (readStatusRef.docs.length > 0) {
-                        setReadStatus(readStatusRef.docs[0]);
-                    }
-                });
+        if (article) {
+            if (!article.free || user) {
+                getArticleReadStatus(user.uid, article.id)
+                    .then(readStatusRef => {
+                        if (readStatusRef.docs.length > 0) {
+                            setReadStatus(readStatusRef.docs[0]);
+                        }
+                    });
+            }
             
             if (article.audio) {
                 getArticleAudioURL(article.audio)
-                    .then(url => console.log(url) || setAudioURL(url))
+                    .then(url => setAudioURL(url))
                     .catch(error => console.log(error))
             }
         }
