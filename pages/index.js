@@ -84,7 +84,9 @@ function App() {
       <FeaturesList>
         <li>New articles throughout the week, in B1/B2 Spanish</li>
         <li>Access to all past articles</li>
-        <li>All future updates (audio for each article, built-in translation, and more)</li>
+        <li>Audio for each article, slowly read by a native speaker</li>
+        <li>Highlight to translate any text instantly while you read</li>
+        <li>Save vocab directly from articles for reviewing later</li>
       </FeaturesList>
         {/* <DescriptionText>
           Throughout the week, we will add new articles to our website, and email out the links in a newsletter to all our customers.
