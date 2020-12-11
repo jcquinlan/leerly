@@ -72,8 +72,6 @@ function ArticlePage () {
         }
     }
 
-    
-
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -95,10 +93,8 @@ function ArticlePage () {
 
         <TypeList types={article.types} />
 
-
         <ArticleData>
-            <span>Original article: </span>
-            <a href={article.url} target='_blank'>{article.url}</a>
+            <a href={article.url} target='_blank'>Read original article ⟶</a>
         </ArticleData>
 
         {article.image && (
@@ -133,7 +129,7 @@ function ArticlePage () {
         )}
 
 
-        <SelectedTextPopover elementRef={articleBodyRef} />
+        <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
         <ArticleBody ref={articleBodyRef}>
             {article.body}
         </ArticleBody>
