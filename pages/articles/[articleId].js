@@ -2,6 +2,7 @@ import React, {useContext, useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
+import {StickyContainer, Sticky} from 'react-sticky';
 import {
     Container,
     HeroWrapper,
@@ -34,6 +35,7 @@ function ArticlePage () {
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
     const articleBodyRef = useRef();
+    const windowHeight = !!window ? window.innerHeight - 50 : 800;
 
     useEffect(() => {
         if (article) {
@@ -83,76 +85,88 @@ function ArticlePage () {
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
-        <>
-        <Container>
-        <TitleWrapper>
-            <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
-        </TitleWrapper>
+        <StickyContainer>
+            <Container>
+            <TitleWrapper>
+                <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
+            </TitleWrapper>
 
-        <Divider />
+            <Divider />
 
-        {renderAdminUI()}
+            {renderAdminUI()}
 
-        <TypeList types={article.types} />
+            <TypeList types={article.types} />
 
-        <ArticleData>
-            <a href={article.url} target='_blank'>Read original article ⟶</a>
-        </ArticleData>
+            <ArticleData>
+                <a href={article.url} target='_blank'>Read original article ⟶</a>
+            </ArticleData>
 
-        {article.image && (
-            <div>
-                <ImageWrapper>
-                    <img src={article.image.urls.regular} />
-                </ImageWrapper>
-                <ImageAttribution>
-                    Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
-                </ImageAttribution>
-            </div>
-        )}
-
-
-        {!!audioURL && !playAudio && (
-            <AudioWrapper>
-                <FakeAudioWidget onClick={() => setPlayAudio(true)}>
-                    <span>Play audio</span> &#9658;
-                </FakeAudioWidget>
-            </AudioWrapper>
-        )}
-
-        {!!audioURL && playAudio && (
-            <AudioWrapper>
+            {article.image && (
                 <div>
-                    <ReactAudioPlayer
-                        src={audioURL}
-                        controls
-                    />
+                    <ImageWrapper>
+                        <img src={article.image.urls.regular} />
+                    </ImageWrapper>
+                    <ImageAttribution>
+                        Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
+                    </ImageAttribution>
                 </div>
-            </AudioWrapper>
-        )}
+            )}
 
 
-        <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
-        <ArticleBody ref={articleBodyRef}>
-            {article.body}
-        </ArticleBody>
+            {!!audioURL && !playAudio && (
+                <Sticky topOffset={windowHeight}>
+                    {({style}) => (
+                        <div style={style}>
+                            <AudioWrapper>
+                                <FakeAudioWidget onClick={() => setPlayAudio(true)}>
+                                    <span>Play audio</span> &#9658;
+                                </FakeAudioWidget>
+                            </AudioWrapper>
+                        </div>
+                    )}
+                </Sticky>
+            )}
 
-        {(!article.free || user) && (
-            <ButtonRow>
-                <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
-                    {!!readStatus ? 'Article read ✓' : 'Mark as read'}
-                </MarkAsReadButton>
-            </ButtonRow>
-        )}
+            {!!audioURL && playAudio && (
+                <Sticky topOffset={windowHeight}>
+                    {({style}) => (
+                        <div style={style}>
+                            <AudioWrapper>
+                                <div>
+                                    <ReactAudioPlayer
+                                        src={audioURL}
+                                        controls
+                                    />
+                                </div>
+                            </AudioWrapper>
+                        </div>
+                    )}
+                </Sticky>
+            )}
 
-        {article.free && !user && (
-            <UpgradeWrapper>
-                <p>Enjoyed reading this? Want to improve your Spanish?</p>
-                <Button onClick={() => router.push('/register')}>Join leerly</Button>
-            </UpgradeWrapper>
-        )}
 
-        </Container>
-        </>
+            <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
+            <ArticleBody ref={articleBodyRef}>
+                {article.body}
+            </ArticleBody>
+
+            {(!article.free || user) && (
+                <ButtonRow>
+                    <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
+                        {!!readStatus ? 'Article read ✓' : 'Mark as read'}
+                    </MarkAsReadButton>
+                </ButtonRow>
+            )}
+
+            {article.free && !user && (
+                <UpgradeWrapper>
+                    <p>Enjoyed reading this? Want to improve your Spanish?</p>
+                    <Button onClick={() => router.push('/register')}>Join leerly</Button>
+                </UpgradeWrapper>
+            )}
+
+            </Container>
+        </StickyContainer>
     );
 }
 
