@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import React, {useEffect, useMemo} from 'react';
 import styled from 'styled-components';
+import Router, {useRouter} from 'next/router';
 import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
 import {auth, analytics} from '../services/index';
@@ -15,10 +16,18 @@ import {Container, devices} from '../components/styled';
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
   const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
+  const router = useRouter();
+  // If we are just loading the landing page, lets not wait to fetch all the user's data, since
+  // we dont need it to render the component.
+  const isLandingPage = useMemo(() => {
+    return router.pathname === '/';
+  }, [router]);
 
   useEffect(() => {
     // Begin Google Analytics
     analytics();
+
+    Router.events.on('routeChangeComplete', () => { !!window && window.scrollTo(0, 0); });
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -100,7 +109,7 @@ function MyApp({ Component, pageProps }) {
           </Menu>
         </MobileNav>
 
-        {appContextApi.loading ? (
+        {appContextApi.loading && !isLandingPage ? (
           <LoadingPage />
         ) : (
           <Component {...pageProps} />
