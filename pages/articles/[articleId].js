@@ -144,6 +144,7 @@ function ArticlePage () {
                 </Sticky>
             )}
 
+            <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
             <ArticleBody ref={articleBodyRef}>
@@ -172,10 +173,16 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const Psst = styled.p`
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+`;
 const TitleWrapper = styled(HeroWrapper)``;
 
 const AudioWrapper = styled.div`
-    margin: 60px 0;
+    margin-top: 60px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: center;
 `;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {useDebouncedCallback} from 'use-debounce';
 import dynamic from 'next/dynamic';
+import {useRouter} from 'next/router';
 import placeRightBelow from 'react-text-selection-popover/lib/placeRightBelow'
 
 import {createNewVocab} from '../services/vocabService';
@@ -25,6 +26,7 @@ const getTextSelection = () => {
 }
 
 const SelectedTextPopover = ({elementRef, articleBody}) => {
+    const router = useRouter();
     const {addToast} = useToasts();
     const {user} = useContext(AppContext);
     const [isSavingVocab, setIsSavingVocab] = useState(false);
@@ -102,10 +104,14 @@ const SelectedTextPopover = ({elementRef, articleBody}) => {
             onTextSelect={debouncedHandleTextSelect.callback}
             onTextUnselect={resetPopoverState}>
             <PopoverBody>
-                <span>{!!user ? popoverText : 'Subscribe to leerly to unlock highlight-to-translate'}</span>
-                {!!user && translatedText && <br />}
+                <span>{popoverText}</span>
+                {translatedText && <br />}
                 {!!user && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
                     {hasSavedVocab ? 'Vocab saved!' : 'Add to vocab'}
+                </button>}
+
+                {!user && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/register')}>
+                    Sign up to save vocab words
                 </button>}
             </PopoverBody>
         </Popover>
