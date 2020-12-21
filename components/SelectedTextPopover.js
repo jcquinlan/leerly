@@ -25,6 +25,44 @@ const getTextSelection = () => {
     }
 }
 
+export const SimplifiedSelectedTextPopover = ({elementRef}) => {
+    const [isSelecting, setIsSelecting] = useState(true);
+    const [translatedText, setTranslatedText] = useState('');
+    const debouncedHandleTextSelect = useDebouncedCallback(async () => {
+        setIsSelecting(false);
+        const textToTranslate = getTextSelection();
+
+        if (textToTranslate) {
+            const translatedText = await translateText(textToTranslate);
+            setTranslatedText(translatedText.translation);
+        }
+    }, 1000);
+
+    const resetPopoverState = () => {
+        setIsSelecting(true);
+        setTranslatedText('');
+    }
+
+    const popoverText = isSelecting || !translatedText ? 'highlight text to translate' : translatedText;
+
+    return (
+        <Popover
+            placementStrategy={placeRightBelow}
+            selectionRef={elementRef}
+            onTextSelect={debouncedHandleTextSelect.callback}
+            onTextUnselect={resetPopoverState}>
+            <PopoverBody>
+                <span>{popoverText}</span>
+                {translatedText && <br />}
+
+                {translatedText && <button onClick={() => router.push('/register')}>
+                    Sign up to save vocab words
+                </button>}
+            </PopoverBody>
+        </Popover>
+    );
+}
+
 const SelectedTextPopover = ({elementRef, articleBody}) => {
     const router = useRouter();
     const {addToast} = useToasts();

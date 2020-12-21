@@ -12,7 +12,9 @@ import {
     Colors,
     devices,
     ImageAttribution,
-    ImageWrapper
+    ImageWrapper,
+    AudioWrapper,
+    FakeAudioWidget
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -179,29 +181,6 @@ const Psst = styled.p`
     font-size: 16px;
 `;
 const TitleWrapper = styled(HeroWrapper)``;
-
-const AudioWrapper = styled.div`
-    margin-top: 60px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-`;
-
-const FakeAudioWidget = styled.div`
-    width: 300px;
-    border-radius: 50px;
-    padding: 14px;
-    background: #F1F3F4;
-    text-align: center;
-    color: #444;
-    cursor: pointer;
-    box-shadow: 0px 4px 5px 0px #e0e0e0;
-
-    span {
-        margin-right: 10px;
-        font-size: 18px;
-    }
-`;
 
 const UpgradeWrapper = styled.div`
     display: flex;

@@ -162,3 +162,27 @@ export const ImageAttribution = styled.p`
     color: #666;
     margin-bottom: 15px;
 `;
+
+
+export const AudioWrapper = styled.div`
+    margin-top: 60px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+`;
+
+export const FakeAudioWidget = styled.div`
+    width: 300px;
+    border-radius: 50px;
+    padding: 14px;
+    background: #F1F3F4;
+    text-align: center;
+    color: #444;
+    cursor: pointer;
+    box-shadow: 0px 4px 5px 0px #e0e0e0;
+
+    span {
+        margin-right: 10px;
+        font-size: 18px;
+    }
+`;
