@@ -10,6 +10,7 @@ const TypeList = ({types}) => {
             {
                 types.map(type => {
                     return <TypePill
+                        key={type}
                         color={Colors.ArticleTypes.copy[type]}
                         backgroundColor={Colors.ArticleTypes.background[type]}>{ArticleTypes[type]}</TypePill>
                 })
