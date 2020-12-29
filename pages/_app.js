@@ -68,29 +68,29 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedOutLinks = () => {
     return [
-        <Link id="/register" className="menu-item" href="/register">register</Link>,
-        <Link id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
+        <Link key="register" id="/register" className="menu-item" href="/register">register</Link>,
+        <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]
   };
 
   const renderSignedInLinks = () => {
     const links = [
-        <Link id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
-        <Link id="/vocab" className="menu-item" href="/vocab">vocab</Link>,
+        <Link key="dashbaord" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
+        <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab</Link>,
     ];
 
     if (isAdmin) {
       links.push([
-        <Link id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
+        <Link key="adminSubmit" id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
       ])
     }
 
     links.push([
-        <Link id="/settings" className="menu-item" href="/settings">settings</Link>,
+        <Link key="settings" id="/settings" className="menu-item" href="/settings">settings</Link>,
     ]);
 
     links.push([
-        <a id="/sign-out" className="menu-item" onClick={handleSignOut}>sign out</a>
+        <a key="signOut" id="/sign-out" className="menu-item" onClick={handleSignOut}>sign out</a>
     ]);
 
     return links;
