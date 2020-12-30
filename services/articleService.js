@@ -61,10 +61,25 @@ export const getArticles = () => {
         });
 }
 
-export const getUnsentArticles = () => {
-    return db.collection("articles")
-        .where('sent', '==', false)
+export const getUserListeningTime = (userId) => {
+    return db.collection("listening_metrics")
+        .doc(userId)
         .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const updateUserListeningTime = async (userId, newTime) => {
+    // Sanity check to make sure we never accidentally somehow delete someone's
+    // listening time metric.
+    if (!newTime) return;
+
+    return db.collection("listening_metrics")
+        .doc(userId)
+        .set({
+            value: newTime
+        })
         .catch(error => {
             throw error;
         });

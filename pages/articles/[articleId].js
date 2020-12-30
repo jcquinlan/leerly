@@ -25,8 +25,13 @@ import {
     createArticleReadStatus,
     getArticleReadStatus,
     deleteArticleReadStatus,
-    getArticleAudioURL
+    getArticleAudioURL,
+    getUserListeningTime,
+    updateUserListeningTime
 } from '../../services/articleService';
+
+// Every 30 seconds, we update the user's time metric in Firebase.
+const TIME_METRIC_BATCH_LENGTH = 30;
 
 function ArticlePage () {
     const router = useRouter();
@@ -36,8 +41,26 @@ function ArticlePage () {
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
+    const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
+
+    useEffect(() => {
+        if (user) {
+            const getUserListeningMetric = async () => {
+                const listeningTime = await getUserListeningTime(user.uid) 
+                if (!listeningTime.exists) {
+                    setTotalPlaytime(0);
+                } else {
+                    setTotalPlaytime(listeningTime.data().value);
+                }
+            }
+     
+             getUserListeningMetric();
+        }
+    }, [user]);
 
     useEffect(() => {
         if (article) {
@@ -57,6 +80,42 @@ function ArticlePage () {
             }
         }
     }, [article]);
+
+    useEffect(() => {
+        // If the audio has been playing for 30 seconds since the last sync
+        // go ahead and update the user's listening time.
+        if (elapsedPlayTime >= TIME_METRIC_BATCH_LENGTH) {
+            updateListeningMetric(elapsedPlayTime);
+        }
+    }, [elapsedPlayTime]);
+
+    useEffect(() => {
+        const playingInterval = setInterval(() => {
+            if (isPlaying) {
+                setElapsedPlayTime(currentPlayTime => currentPlayTime + 1);
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(playingInterval);
+        }
+    }, [isPlaying]);
+
+    const updateListeningMetric = (timeDelta) => {
+        updateUserListeningTime(user.uid, totalPlayTime + timeDelta)
+            .then(() => {
+                setTotalPlaytime(totalPlayTime + timeDelta);
+                setElapsedPlayTime(0);
+            })
+    }
+
+    const handlePlay = () => {
+        setIsPlaying(true);
+    }
+
+    const handleStop = () => {
+        setIsPlaying(false);
+    }
 
     const renderAdminUI = () => {
         if (isAdmin) {
@@ -137,6 +196,9 @@ function ArticlePage () {
                                 <div>
                                     <ReactAudioPlayer
                                         src={audioURL}
+                                        onPlay={handlePlay}
+                                        onPause={handleStop}
+                                        onEnded={handleStop}
                                         controls
                                     />
                                 </div>

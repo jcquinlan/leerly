@@ -6,15 +6,13 @@ import {
     HeroContent,
     Divider,
     Title,
-    Subtitle,
-    NoticeCard,
-    NoticeCardMain
+    Subtitle
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
-import {getArticleReadStatuses} from '../services/articleService';
+import {getArticleReadStatuses, getUserListeningTime} from '../services/articleService';
 import {getAllVocab} from '../services/vocabService';
 import AppContext from '../contexts/appContext';
 
@@ -25,6 +23,35 @@ function ArticlePage () {
     const {articles, loading, error} = useGetArticles();
     const [readStatuses, setReadStatuses] = useState({});
     const [vocabList, setVocabList] = useState([]);
+    const [playTime, setPlayTime] = useState(0);
+
+    const timeString = useMemo(() => {
+        if (playTime < 60) {
+            return <p>{playTime} <TimeUnit>seconds</TimeUnit></p>;
+        }
+        
+        const minutes = Math.floor(playTime / 60);
+
+        if (minutes < 60) {
+            return <p>{minutes} <TimeUnit>mins.</TimeUnit></p>;
+        }
+
+        const hours = Math.floor(minutes / 60);
+        const leftoverMinutes = minutes % 60;
+
+        return <p>{hours} <TimeUnit>hrs.</TimeUnit> {leftoverMinutes} <TimeUnit>mins.</TimeUnit></p>;
+    }, [playTime]);
+
+    useEffect(() => {
+        if (user) {
+            getUserListeningTime(user.uid)
+                .then(listeningMetricRef => {
+                    if (listeningMetricRef.exists) {
+                        setPlayTime(listeningMetricRef.data().value);
+                    }
+                });
+        }
+    }, [user]);
 
     useEffect(() => {
         if (articles.length) {
@@ -74,6 +101,12 @@ function ArticlePage () {
                 <p>{vocabList.length}</p>
                 Vocab cards
             </Stat> 
+
+
+            <Stat>
+                {timeString}
+                Time spent listening
+            </Stat>
         </StatsRow>
 
         <ArticlesList>
@@ -99,6 +132,11 @@ export default ArticlePage;
 const StatsRow = styled.div`
     padding: 0 30px;
 `;
+
+const TimeUnit = styled.span`
+    font-size: 14px;
+`;
+
 const Stat = styled.div`
     display: inline-block;
     margin-right: 15px;
