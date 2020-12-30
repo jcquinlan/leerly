@@ -118,6 +118,25 @@ function App() {
             </Quote>
           </TestimonialWrapper>
         </Testimonial>
+
+        <Testimonial>
+          <Portrait>
+            <img src="/images/testimonials/dougie.png" />
+          </Portrait>
+          <TestimonialWrapper>
+            <Name>
+              Douglas R.
+            </Name>
+
+            <Location>
+              Advanced speaker
+            </Location>
+
+            <Quote>
+              leerly has been incredible in helping me brush up on my Spanish in a formal manner. Articles are engaging, informative and translated wonderfully.
+              </Quote>
+          </TestimonialWrapper>
+        </Testimonial>
 {/* 
         <Testimonial>
           <Portrait>
