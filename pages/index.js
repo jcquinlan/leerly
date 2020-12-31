@@ -31,7 +31,7 @@ function App() {
           <Title>leerly.</Title>
           <Subtitle>
             Improve your Spanish by listening to and reading popular articles from major
-            news sites, all summarized and translated to B1/B2 Spanish by native speakers. 
+            news sites, all summarized and translated to intermediate Spanish by native speakers. 
             <br /><Faint> Qué guay.</Faint>
           </Subtitle>
 
