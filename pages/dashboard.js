@@ -102,7 +102,6 @@ function ArticlePage () {
                 Vocab cards
             </Stat> 
 
-
             <Stat>
                 {timeString}
                 Time spent listening
@@ -140,6 +139,7 @@ const TimeUnit = styled.span`
 const Stat = styled.div`
     display: inline-block;
     margin-right: 15px;
+    margin-bottom: 15px;
     padding: 10px 15px;
     background-color: #eee;
     border-radius: 8px;
