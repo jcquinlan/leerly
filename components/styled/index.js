@@ -33,14 +33,19 @@ export const Container = styled.div`
   margin: 0 auto;
   max-width: 900px;
   padding: 15px;
-  padding-top: 60px;
+  padding-top: ${props => props.paddingTop || '60px'};
   width: 100%;
 
   @media ${devices.laptop} {
     padding: 30px;
-    padding-bottom: 90px;
   }
 `;
+
+export const PageContainer = styled(Container)`
+  @media ${devices.laptop} {
+    padding-bottom: 90px;
+  }
+`
 
 export const HeroWrapper = styled.div`
   display: flex;
@@ -55,7 +60,7 @@ export const Divider = styled.div`
   width: 100%;
   height: 2px;
   background-color: #eee;
-  margin: 30px 0;
+  margin: 60px 0;
 `;
 
 export const Button = styled.button`

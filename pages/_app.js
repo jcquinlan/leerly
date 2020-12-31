@@ -68,6 +68,7 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedOutLinks = () => {
     return [
+        <Link key="free" id="/free" className="menu-item" href="/free">free articles</Link>,
         <Link key="register" id="/register" className="menu-item" href="/register">register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]

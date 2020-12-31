@@ -1,18 +1,21 @@
 import {useState, useEffect} from 'react';
-import {getArticles} from '../services/articleService';
+import {getArticles, getFreeArticles} from '../services/articleService';
 
-const useGetArticles = () => {
+const useGetArticles = ({free} = {free: false}) => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        getArticles()
+        const articlesPromise = free ? getFreeArticles() : getArticles();
+
+        articlesPromise
             .then(articlesRef => {
                 const articleData = articlesRef.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 setArticles(articleData);
             })
             .catch(err => {
+                console.log(err)
                 setError(err);
             })
             .finally(() => {

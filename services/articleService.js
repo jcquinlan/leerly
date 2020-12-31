@@ -51,6 +51,17 @@ export const getArticle = (articleId) => {
         });
 }
 
+export const getFreeArticles = () => {
+    return db.collection("articles")
+        .orderBy('added_at', 'desc')
+        .where('free', '==', true)
+        .limit(50)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
 export const getArticles = () => {
     return db.collection("articles")
         .orderBy('added_at', 'desc')
