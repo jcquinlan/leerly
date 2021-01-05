@@ -83,6 +83,7 @@ function MyApp({ Component, pageProps }) {
     if (isAdmin) {
       links.push([
         <Link key="adminSubmit" id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
+        <Link key="referrals" id="/admin/referrals" className="menu-item" href="/admin/referrals">see open referrals</Link>,
       ])
     }
 

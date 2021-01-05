@@ -1,12 +1,15 @@
 import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
+import Link from 'next/Link';
 import {
     Container,
     HeroWrapper,
     HeroContent,
     Divider,
     Title,
-    Subtitle
+    Subtitle,
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -14,6 +17,7 @@ import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
 import {getArticleReadStatuses, getUserListeningTime} from '../services/articleService';
 import {getAllVocab} from '../services/vocabService';
+import {getAllUserReferralRecords} from '../services/referralService';
 import AppContext from '../contexts/appContext';
 
 function ArticlePage () {
@@ -24,6 +28,7 @@ function ArticlePage () {
     const [readStatuses, setReadStatuses] = useState({});
     const [vocabList, setVocabList] = useState([]);
     const [playTime, setPlayTime] = useState(0);
+    const [referralRecords, setReferralRecords] = useState(0);
 
     const timeString = useMemo(() => {
         if (playTime < 60) {
@@ -50,6 +55,9 @@ function ArticlePage () {
                         setPlayTime(listeningMetricRef.data().value);
                     }
                 });
+
+            getAllUserReferralRecords(user.uid)
+                .then(referralRecords => setReferralRecords(referralRecords.size));
         }
     }, [user]);
 
@@ -106,15 +114,20 @@ function ArticlePage () {
                 {timeString}
                 Time spent listening
             </Stat>
+
+            <Stat>
+                <p>{referralRecords}</p>
+                Free months earned
+            </Stat>
         </StatsRow>
 
         <ArticlesList>
-            {/* <a href="https://forms.gle/Je6gXA1tLGT1bxRh6" target="_blank">
+            <Link href="/referral">
                 <NoticeCard>
-                    <span>How did you hear about leerly?</span> <br />
-                    <NoticeCardMain>Let us know ⟶</NoticeCardMain>
+                    <span>Whenever a friend signs up with your referral code, you get a free month of leerly.</span> <br />
+                    <NoticeCardMain>Earn unlimited free months of leerly  ⟶</NoticeCardMain>
                 </NoticeCard>
-            </a> */}
+            </Link>
 
             {articles.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>

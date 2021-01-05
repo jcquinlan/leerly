@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {
@@ -13,13 +13,19 @@ import {
     HelpText,
     Colors
 } from '../components/styled';
+import {useRouter} from 'next/router';
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
 import {createUserProfileDocument} from '../services/userService';
 import useEnforceSignedOut from '../hooks/useEnforceSignedOut';
+import {useLocalStorage, REFERRAL_CODE_KEY} from '../hooks/useLocalStorage';
 
 function RegisterPage () {
     useEnforceSignedOut();
+
+    const router = useRouter();
+    const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
+    const referralCode = useMemo(() => router.query.referralCode || savedReferralCode, [router, savedReferralCode]);
 
     const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
@@ -27,6 +33,12 @@ function RegisterPage () {
     const formIsFilled = useMemo(() => {
         return !!(formState.name && formState.email && formState.password && formState.confirmPassword);
     }, [formState]);
+
+    useEffect(() => {
+        if (router.query.referralCode) {
+            storeReferralCode(router.query.referralCode);
+        }
+    }, [router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -46,7 +58,7 @@ function RegisterPage () {
                 user_uid: userDocument.user.uid,
                 name: formState.name
             });
-            redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email);
+            redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email, referralCode);
         } catch (error) {
             console.error(error);
             addToast(error.message, {appearance: 'error'})

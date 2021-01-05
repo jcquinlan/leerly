@@ -65,8 +65,10 @@ export const Divider = styled.div`
 
 export const Button = styled.button`
     padding: 10px 20px;
-    border: 2px solid #1f4ab8;
-    background-color: #1f4ab8;
+    border: none;
+
+    background: rgb(31,74,184);
+
     box-shadow: none;
     border-radius: 5px;
     color: #fff;
@@ -79,7 +81,7 @@ export const Button = styled.button`
     }
 
     &:disabled {
-      background-color: #ddd;
+      background: #ddd;
       color: #666;
       border-color: #ddd;
       cursor: initial;
@@ -141,10 +143,12 @@ export const HelpText = styled.p`
 `;
 
 export const NoticeCard = styled(Card)`
-    background-color: #1f4ab8;
+    background: rgb(31,74,184);
+    background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
     color: #fff;
     margin-bottom: 30px;
     border: none;
+    cursor: pointer;
 `;
 
 export const NoticeCardMain = styled.span`
