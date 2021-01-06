@@ -8,6 +8,7 @@ export default async (req, res) => {
     try {
       const id = req.body.id;
       const email = req.body.email;
+      const referralCode = req.body.referralCode;
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -20,7 +21,7 @@ export default async (req, res) => {
         mode: 'subscription',
         allow_promotion_codes: 'true',
         customer_email: email,
-        success_url: `${baseUrl}/success?id=${id}&email=${encodeURIComponent(email)}&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${baseUrl}/success?id=${id}${referralCode ? `&referralCode=${referralCode}` : ''}&email=${encodeURIComponent(email)}&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/cancel?id=${id}&email=${encodeURIComponent(email)}`
       });
 
