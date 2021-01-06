@@ -1,6 +1,6 @@
 import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
-import Link from 'next/Link';
+import Link from 'next/link';
 import {
     Container,
     HeroWrapper,
