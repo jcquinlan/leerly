@@ -4,6 +4,7 @@ export default {
     DarkerGreen: '#2d9c4b',
     LightGrey: '#eee', 
     MediumGrey: '#666',
+    Danger: '#ed594e',
     ArticleTypes: {
         background: {
             'business': '#e1ccff',

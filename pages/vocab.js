@@ -7,12 +7,13 @@ import {
     Divider,
     Title,
     Subtitle,
-    Card
+    Card,
+    Colors
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import useGuardRoute from '../hooks/useGuardRoute';
 import AppContext from '../contexts/appContext';
-import {getAllVocab} from '../services/vocabService';
+import {getAllVocab, deleteVocab} from '../services/vocabService';
 
 function VocabPage () {
     useGuardRoute();
@@ -20,19 +21,29 @@ function VocabPage () {
     const {user} = useContext(AppContext);
     const [loading, setLoading] = useState(true);
     const [vocabList, setVocabList] = useState([]);
+    const [disableDelete, setDisableDelete] = useState(false);
 
     useEffect(() => {
         if (!!user) {
             getAllVocab(user.uid)
                 .then(vocab => {
                     const vocabData = vocab.docs.map(current => {
-                        return current.data();
+                        return {id: current.id, ...current.data()};
                     });
                     setVocabList(vocabData);
                 })
                 .finally(() => setLoading(false));
         }
     }, [user]);
+
+    const handleDeleteVocab = async (vocabId) => {
+        if (disableDelete) return;
+
+        setDisableDelete(true);
+        await deleteVocab(vocabId);
+        setDisableDelete(false);
+        setVocabList(vocabList => vocabList.filter(item => item.id !== vocabId));
+    }
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -56,6 +67,10 @@ function VocabPage () {
             )}
             {vocabList.map(vocab => (
                 <VocabCard>
+                    <VocabHeader onClick={() => handleDeleteVocab(vocab.id)}>
+                        <button>Delete</button>
+                    </VocabHeader>
+
                     <Foreign>
                         {vocab.spanish}
                     </Foreign>
@@ -77,14 +92,46 @@ function VocabPage () {
 
 export default VocabPage;
 
+const VocabHeader = styled.div`
+    position: absolute;
+    display: none;
+    justify-content: flex-end;
+    width: 100%;
+    top: 0;
+    left: 0px;
+    padding: 15px;
+
+    button {
+        background-color: ${Colors.Danger};
+        box-shadow: none;
+        border: none;
+        border-radius: 5px;
+        opacity: .3;
+        padding: 5px 10px;
+        color: #fff;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+`;
 const VocabCard = styled(Card)`
     margin-bottom: 30px;
+    position: relative;
+
+    &:hover {
+        ${VocabHeader} {
+            display: flex;
+        }
+    }
 `;
 
 const Foreign = styled.h4`
     text-align: center;
     font-size: 24px;
     margin-bottom: 0px;
+    margin-top: 0;
 `;
 
 const Translation = styled.p`

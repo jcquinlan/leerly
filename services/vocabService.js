@@ -24,12 +24,12 @@ export const getAllVocab = (userId) => {
         });
 }
 
-// export const deleteArticleReadStatus = (readStatusId) => {
-//     return db.collection("read_statuses")
-//         .doc(readStatusId)
-//         .delete()
-//         .catch(error => {
-//             throw error;
-//         });
-// }
+export const deleteVocab = (vocabId) => {
+    return db.collection("vocab_list")
+        .doc(vocabId)
+        .delete()
+        .catch(error => {
+            throw error;
+        });
+}
 
