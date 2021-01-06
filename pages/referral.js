@@ -26,8 +26,10 @@ function ArticlePage () {
                 .then(referralCodeRef => {
                     if (referralCodeRef.exists) {
                         setReferralCode(referralCodeRef.data().referralCode);
-                        setLoadingReferralCode(false);
                     }
+                })
+                .finally(() => {
+                    setLoadingReferralCode(false);
                 })
         }
     }, [user]);
