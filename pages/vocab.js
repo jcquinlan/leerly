@@ -8,12 +8,15 @@ import {
     Title,
     Subtitle,
     Card,
-    Colors
+    Colors,
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import useGuardRoute from '../hooks/useGuardRoute';
 import AppContext from '../contexts/appContext';
 import {getAllVocab, deleteVocab} from '../services/vocabService';
+import VocabQuiz from '../components/VocabQuiz';
 
 function VocabPage () {
     useGuardRoute();
@@ -22,6 +25,9 @@ function VocabPage () {
     const [loading, setLoading] = useState(true);
     const [vocabList, setVocabList] = useState([]);
     const [disableDelete, setDisableDelete] = useState(false);
+    const [isStudying, setIsStudying] = useState(false);
+
+    const hasSufficientCardsToStudy = vocabList.length > 14;
 
     useEffect(() => {
         if (!!user) {
@@ -55,35 +61,44 @@ function VocabPage () {
         <HeroWrapper>
             <HeroContent>
                 <Title>vocab</Title>
-                <Subtitle>All the vocabulary you wanted to save, for future studying. Coming soon: export to CSV for Anki decks</Subtitle>
+                <Subtitle>All your saved vocab, ready for studying.</Subtitle>
             </HeroContent>
         </HeroWrapper>
 
         <Divider />
+        {!isStudying && (
+            <div>
+                {!vocabList.length && (
+                    <p>Save vocab by highlighting text in an article and saving it.</p>
+                )}
 
-        <div>
-            {!vocabList.length && (
-                <p>Save vocab by highlighting text in an article and saving it.</p>
-            )}
-            {vocabList.map(vocab => (
-                <VocabCard>
-                    <VocabHeader onClick={() => handleDeleteVocab(vocab.id)}>
-                        <button>Delete</button>
-                    </VocabHeader>
+                <NoticeCard theme="Warm" onClick={() => setIsStudying(true)}>
+                    <span>Study your vocab, right here.</span> <br />
+                    <NoticeCardMain>Click here to start studying</NoticeCardMain>
+                </NoticeCard> 
 
-                    <Foreign>
-                        {vocab.spanish}
-                    </Foreign>
-                    <Translation>
-                        "{vocab.english}"
-                    </Translation>
-                    <div>
-                        <Example>Example:</Example>
-                        <Sentence>{vocab.sentence}</Sentence>
-                    </div>
-                </VocabCard>
-            ))}
-        </div>
+                {vocabList.map(vocab => (
+                    <VocabCard>
+                        <VocabHeader onClick={() => handleDeleteVocab(vocab.id)}>
+                            <button>Delete</button>
+                        </VocabHeader>
+
+                        <Foreign>
+                            {vocab.spanish}
+                        </Foreign>
+                        <Translation>
+                            "{vocab.english}"
+                        </Translation>
+                        <div>
+                            <Example>Example:</Example>
+                            <Sentence>{vocab.sentence}</Sentence>
+                        </div>
+                    </VocabCard>
+                ))}
+            </div>
+        )}
+
+        {isStudying && <VocabQuiz vocab={vocabList} onCloseQuiz={() => setIsStudying(false)}/>}
 
         </Container>
         </>

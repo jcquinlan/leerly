@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import {devices} from './mediaQueries';
+import Colors from './colors';
 export {default as Colors} from './colors';
 export {default as ReadCheck} from './ReadCheck';
 export {devices} from './mediaQueries';
@@ -80,6 +81,51 @@ export const Button = styled.button`
         background-color: #375ebf;
     }
 
+    ${props => props.secondary ? `
+      background-color: #eee;
+      color: ${Colors.MediumGrey};
+
+      &:hover {
+          background-color: #ddd;
+      }
+    `: ``}
+
+    ${props => props.type === 'danger' ? `
+      background-color: ${Colors.LightDanger};
+      color: ${Colors.Danger};
+
+      &:hover {
+          background-color: ${Colors.LightDangerHover};
+      }
+    `: ``}
+
+    ${props => props.type === 'hard' ? `
+      background-color: ${Colors.HardLight};
+      color: ${Colors.Hard};
+
+      &:hover {
+          background-color: ${Colors.HardLightHover};
+      }
+    `: ``}
+
+    ${props => props.type === 'medium' ? `
+      background-color: ${Colors.MediumLight};
+      color: ${Colors.Medium};
+
+      &:hover {
+          background-color: ${Colors.MediumLightHover};
+      }
+    `: ``}
+
+    ${props => props.type === 'easy' ? `
+      background-color: ${Colors.EasyLight};
+      color: ${Colors.Easy};
+
+      &:hover {
+          background-color: ${Colors.EasyLightHover};
+      }
+    `: ``}
+
     &:disabled {
       background: #ddd;
       color: #666;
@@ -143,8 +189,13 @@ export const HelpText = styled.p`
 `;
 
 export const NoticeCard = styled(Card)`
-    background: rgb(31,74,184);
-    background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
+    ${props => (props.theme === 'Warm' ? `
+      background: rgb(31,160,184);
+      background: linear-gradient(157deg, rgba(31,160,184,1) 0%, rgba(189,76,233,1) 100%);` : `
+
+      background: rgb(31,74,184);
+      background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
+    `)}
     color: #fff;
     margin-bottom: 30px;
     border: none;

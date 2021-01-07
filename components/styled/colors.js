@@ -4,7 +4,23 @@ export default {
     DarkerGreen: '#2d9c4b',
     LightGrey: '#eee', 
     MediumGrey: '#666',
-    Danger: '#ed594e',
+    Danger: '#eb3a2d',
+    LightDanger: '#ffe0de',
+    LightDangerHover: '#fccdca',
+
+    Hard: '#b58e18',
+    HardLight: '#fff5d9',
+    HardLightHover: '#fff1c9',
+
+    Medium: '#158cbf',
+    MediumLight: '#d1f1ff',
+    MediumLightHover: '#c7eeff',
+
+    Easy: '#1b854c',
+    EasyLight: '#e0ffef',
+    EasyLightHover: '#d1ffe7',
+
+
     ArticleTypes: {
         background: {
             'business': '#e1ccff',
