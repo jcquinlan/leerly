@@ -189,22 +189,33 @@ export const HelpText = styled.p`
 `;
 
 export const NoticeCard = styled(Card)`
-    ${props => (props.theme === 'Warm' ? `
-      background: rgb(31,160,184);
-      background: linear-gradient(157deg, rgba(31,160,184,1) 0%, rgba(189,76,233,1) 100%);` : `
-
-      background: rgb(31,74,184);
-      background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
-    `)}
+    background: rgb(31,74,184);
+    background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
     color: #fff;
     margin-bottom: 30px;
     border: none;
     cursor: pointer;
+
+    ${props => (props.theme === 'Warm' ? `
+      background: rgb(31,160,184);
+      background: linear-gradient(157deg, rgba(31,160,184,1) 0%, rgba(189,76,233,1) 100%);` : ``
+    )}
+
+    ${props => (props.theme === 'Grey' ? `
+      background: #eee;
+      color: #333;
+      cursor: initial;
+      
+      ${NoticeCardMain} {
+        color: #333;
+      }` : ``
+    )}
+
 `;
 
 export const NoticeCardMain = styled.span`
     color: #fff;
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 24px;
 `;
 

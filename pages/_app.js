@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }) {
   const renderSignedInLinks = () => {
     const links = [
         <Link key="dashbaord" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
-        <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab</Link>,
+        <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
     ];
 
     if (isAdmin) {

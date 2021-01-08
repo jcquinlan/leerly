@@ -72,8 +72,8 @@ export const getArticles = () => {
         });
 }
 
-export const getUserListeningTime = (userId) => {
-    return db.collection("listening_metrics")
+export const getUserMetrics = (userId) => {
+    return db.collection("activity_metrics")
         .doc(userId)
         .get()
         .catch(error => {
@@ -81,16 +81,31 @@ export const getUserListeningTime = (userId) => {
         });
 }
 
-export const updateUserListeningTime = async (userId, newTime) => {
+export const updateUserListeningTimeActivityMetric = async (userId, newTime) => {
     // Sanity check to make sure we never accidentally somehow delete someone's
     // listening time metric.
     if (!newTime) return;
 
-    return db.collection("listening_metrics")
+    return db.collection("activity_metrics")
         .doc(userId)
         .set({
-            value: newTime
-        })
+            time_listening: newTime
+        }, {merge: true})
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const updateUserCardsStudiedActivityMetric = async (userId, newCount) => {
+    // Sanity check to make sure we never accidentally somehow delete someone's
+    // listening time metric.
+    if (!newCount) return;
+
+    return db.collection("activity_metrics")
+        .doc(userId)
+        .set({
+            cards_studied: newCount
+        }, {merge: true})
         .catch(error => {
             throw error;
         });

@@ -17,6 +17,8 @@ import useGuardRoute from '../hooks/useGuardRoute';
 import AppContext from '../contexts/appContext';
 import {getAllVocab, deleteVocab} from '../services/vocabService';
 import VocabQuiz from '../components/VocabQuiz';
+import useUserMetrics from '../hooks/useUserMetrics';
+import { updateUserCardsStudiedActivityMetric } from '../services/articleService';
 
 function VocabPage () {
     useGuardRoute();
@@ -26,8 +28,9 @@ function VocabPage () {
     const [vocabList, setVocabList] = useState([]);
     const [disableDelete, setDisableDelete] = useState(false);
     const [isStudying, setIsStudying] = useState(false);
+    const {cardsStudied} = useUserMetrics();
 
-    const hasSufficientCardsToStudy = vocabList.length > 14;
+    const hasSufficientCardsToStudy = vocabList.length > 9;
 
     useEffect(() => {
         if (!!user) {
@@ -51,6 +54,10 @@ function VocabPage () {
         setVocabList(vocabList => vocabList.filter(item => item.id !== vocabId));
     }
 
+    const handleQuizFinished = (completedCards) => {
+        updateUserCardsStudiedActivityMetric(user.uid, completedCards + cardsStudied);
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -60,7 +67,7 @@ function VocabPage () {
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>vocab</Title>
+                <Title>vocab / studying</Title>
                 <Subtitle>All your saved vocab, ready for studying.</Subtitle>
             </HeroContent>
         </HeroWrapper>
@@ -72,10 +79,19 @@ function VocabPage () {
                     <p>Save vocab by highlighting text in an article and saving it.</p>
                 )}
 
-                <NoticeCard theme="Warm" onClick={() => setIsStudying(true)}>
-                    <span>Study your vocab, right here.</span> <br />
-                    <NoticeCardMain>Click here to start studying</NoticeCardMain>
-                </NoticeCard> 
+                {hasSufficientCardsToStudy && (
+                    <NoticeCard theme="Warm" onClick={() => setIsStudying(true)}>
+                        <span>Review your flashcards right in leerly</span> <br />
+                        <NoticeCardMain>Click here to start studying</NoticeCardMain>
+                    </NoticeCard> 
+                )}
+
+                {!hasSufficientCardsToStudy && (
+                    <NoticeCard theme="Grey">
+                        <span>Once you have some vocab saved, you can study it.</span> <br />
+                        <NoticeCardMain>{vocabList.length}/10 vocab cards saved</NoticeCardMain>
+                    </NoticeCard> 
+                )}
 
                 {vocabList.map(vocab => (
                     <VocabCard>
@@ -98,7 +114,7 @@ function VocabPage () {
             </div>
         )}
 
-        {isStudying && <VocabQuiz vocab={vocabList} onCloseQuiz={() => setIsStudying(false)}/>}
+        {isStudying && <VocabQuiz vocab={vocabList} onCloseQuiz={() => setIsStudying(false)} onFinish={handleQuizFinished} />}
 
         </Container>
         </>
