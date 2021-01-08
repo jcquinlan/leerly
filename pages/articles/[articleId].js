@@ -26,8 +26,8 @@ import {
     getArticleReadStatus,
     deleteArticleReadStatus,
     getArticleAudioURL,
-    getUserListeningTime,
-    updateUserListeningTime
+    getUserMetrics,
+    updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
@@ -49,16 +49,15 @@ function ArticlePage () {
 
     useEffect(() => {
         if (user) {
-            const getUserListeningMetric = async () => {
-                const listeningTime = await getUserListeningTime(user.uid) 
-                if (!listeningTime.exists) {
-                    setTotalPlaytime(0);
-                } else {
-                    setTotalPlaytime(listeningTime.data().value);
+            const getUserMetricsAsync = async () => {
+                const userMetrics = await getUserMetrics(user.uid) 
+                if (userMetrics.exists) {
+                    const userMetricData = userMetrics.data();
+                    setTotalPlaytime(userMetricData.time_listening || 0);
                 }
             }
      
-             getUserListeningMetric();
+            getUserMetricsAsync();
         }
     }, [user]);
 
@@ -102,11 +101,11 @@ function ArticlePage () {
     }, [isPlaying]);
 
     const updateListeningMetric = (timeDelta) => {
-        updateUserListeningTime(user.uid, totalPlayTime + timeDelta)
+        updateUserListeningTimeActivityMetric(user.uid, totalPlayTime + timeDelta)
             .then(() => {
                 setTotalPlaytime(totalPlayTime + timeDelta);
                 setElapsedPlayTime(0);
-            })
+            });
     }
 
     const handlePlay = () => {

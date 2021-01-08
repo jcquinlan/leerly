@@ -8,12 +8,17 @@ import {
     Title,
     Subtitle,
     Card,
-    Colors
+    Colors,
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import useGuardRoute from '../hooks/useGuardRoute';
 import AppContext from '../contexts/appContext';
 import {getAllVocab, deleteVocab} from '../services/vocabService';
+import VocabQuiz from '../components/VocabQuiz';
+import useUserMetrics from '../hooks/useUserMetrics';
+import { updateUserCardsStudiedActivityMetric } from '../services/articleService';
 
 function VocabPage () {
     useGuardRoute();
@@ -22,6 +27,10 @@ function VocabPage () {
     const [loading, setLoading] = useState(true);
     const [vocabList, setVocabList] = useState([]);
     const [disableDelete, setDisableDelete] = useState(false);
+    const [isStudying, setIsStudying] = useState(false);
+    const {cardsStudied} = useUserMetrics();
+
+    const hasSufficientCardsToStudy = vocabList.length > 9;
 
     useEffect(() => {
         if (!!user) {
@@ -45,6 +54,10 @@ function VocabPage () {
         setVocabList(vocabList => vocabList.filter(item => item.id !== vocabId));
     }
 
+    const handleQuizFinished = (completedCards) => {
+        updateUserCardsStudiedActivityMetric(user.uid, completedCards + cardsStudied);
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -54,36 +67,54 @@ function VocabPage () {
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>vocab</Title>
-                <Subtitle>All the vocabulary you wanted to save, for future studying. Coming soon: export to CSV for Anki decks</Subtitle>
+                <Title>vocab / studying</Title>
+                <Subtitle>All your saved vocab, ready for studying.</Subtitle>
             </HeroContent>
         </HeroWrapper>
 
         <Divider />
+        {!isStudying && (
+            <div>
+                {!vocabList.length && (
+                    <p>Save vocab by highlighting text in an article and saving it.</p>
+                )}
 
-        <div>
-            {!vocabList.length && (
-                <p>Save vocab by highlighting text in an article and saving it.</p>
-            )}
-            {vocabList.map(vocab => (
-                <VocabCard>
-                    <VocabHeader onClick={() => handleDeleteVocab(vocab.id)}>
-                        <button>Delete</button>
-                    </VocabHeader>
+                {hasSufficientCardsToStudy && (
+                    <NoticeCard theme="Warm" onClick={() => setIsStudying(true)}>
+                        <span>Review your flashcards right in leerly</span> <br />
+                        <NoticeCardMain>Click here to start studying</NoticeCardMain>
+                    </NoticeCard> 
+                )}
 
-                    <Foreign>
-                        {vocab.spanish}
-                    </Foreign>
-                    <Translation>
-                        "{vocab.english}"
-                    </Translation>
-                    <div>
-                        <Example>Example:</Example>
-                        <Sentence>{vocab.sentence}</Sentence>
-                    </div>
-                </VocabCard>
-            ))}
-        </div>
+                {!hasSufficientCardsToStudy && (
+                    <NoticeCard theme="Grey">
+                        <span>Once you have some vocab saved, you can study it.</span> <br />
+                        <NoticeCardMain>{vocabList.length}/10 vocab cards saved</NoticeCardMain>
+                    </NoticeCard> 
+                )}
+
+                {vocabList.map(vocab => (
+                    <VocabCard>
+                        <VocabHeader onClick={() => handleDeleteVocab(vocab.id)}>
+                            <button>Delete</button>
+                        </VocabHeader>
+
+                        <Foreign>
+                            {vocab.spanish}
+                        </Foreign>
+                        <Translation>
+                            "{vocab.english}"
+                        </Translation>
+                        <div>
+                            <Example>Example:</Example>
+                            <Sentence>{vocab.sentence}</Sentence>
+                        </div>
+                    </VocabCard>
+                ))}
+            </div>
+        )}
+
+        {isStudying && <VocabQuiz vocab={vocabList} onCloseQuiz={() => setIsStudying(false)} onFinish={handleQuizFinished} />}
 
         </Container>
         </>

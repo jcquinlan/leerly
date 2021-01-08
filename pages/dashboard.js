@@ -15,7 +15,7 @@ import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
-import {getArticleReadStatuses, getUserListeningTime} from '../services/articleService';
+import {getArticleReadStatuses, getUserMetrics} from '../services/articleService';
 import {getAllVocab} from '../services/vocabService';
 import {getAllUserReferralRecords} from '../services/referralService';
 import AppContext from '../contexts/appContext';
@@ -28,6 +28,7 @@ function ArticlePage () {
     const [readStatuses, setReadStatuses] = useState({});
     const [vocabList, setVocabList] = useState([]);
     const [playTime, setPlayTime] = useState(0);
+    const [cardsStudied, setCardsStudied] = useState(0);
     const [referralRecords, setReferralRecords] = useState(0);
 
     const timeString = useMemo(() => {
@@ -49,10 +50,13 @@ function ArticlePage () {
 
     useEffect(() => {
         if (user) {
-            getUserListeningTime(user.uid)
-                .then(listeningMetricRef => {
-                    if (listeningMetricRef.exists) {
-                        setPlayTime(listeningMetricRef.data().value);
+            getUserMetrics(user.uid)
+                .then(userMetricsRef => {
+                    if (userMetricsRef.exists) {
+                        const userMetricsData = userMetricsRef.data();
+
+                        setPlayTime(userMetricsData.time_listening || 0);
+                        setCardsStudied(userMetricsData.cards_studied || 0);
                     }
                 });
 
@@ -113,6 +117,11 @@ function ArticlePage () {
             <Stat>
                 {timeString}
                 Time spent listening
+            </Stat>
+
+            <Stat>
+                <p>{cardsStudied}</p>
+                Vocab cards reviewed
             </Stat>
 
             <Stat>
