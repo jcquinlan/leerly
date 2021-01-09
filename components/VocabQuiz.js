@@ -10,9 +10,22 @@ const PointValues = {
     unknown: 0
 };
 
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+}
+
 const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
     const cards = useMemo(() => {
-        return vocabItems.map(vocab => {
+        const unshuffledCards = vocabItems.map(vocab => {
             return [
                 {
                     front: vocab.english,
@@ -24,6 +37,8 @@ const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
                 }
             ]
         }).flat();
+
+        return shuffle(unshuffledCards);
     }, [vocabItems]);
     
     useEffect(() => {
