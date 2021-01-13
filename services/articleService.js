@@ -55,7 +55,7 @@ export const getFreeArticles = () => {
     return db.collection("articles")
         .orderBy('added_at', 'desc')
         .where('free', '==', true)
-        .limit(50)
+        .limit(100)
         .get()
         .catch(error => {
             throw error;
@@ -65,7 +65,7 @@ export const getFreeArticles = () => {
 export const getArticles = () => {
     return db.collection("articles")
         .orderBy('added_at', 'desc')
-        .limit(50)
+        .limit(100)
         .get()
         .catch(error => {
             throw error;
