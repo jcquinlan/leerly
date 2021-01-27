@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
+import { DefaultSeo } from 'next-seo';
 import {
   PageContainer,
   Container,
@@ -25,6 +26,25 @@ function App() {
 
   return (
     <>
+    <DefaultSeo
+      title="leerly | learn spanish with comprehensible input"
+      description={`Improve your Spanish by listening to and reading popular articles from major
+news sites, all summarized and translated to intermediate Spanish by native speakers.`}
+      openGraph={{
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://www.leerly.io/',
+        site_name: 'leerly',
+        images: [
+          {
+            url: 'https://firebasestorage.googleapis.com/v0/b/leerly.appspot.com/o/images%2Fleerly.png?alt=media',
+            alt: `Improve your Spanish by listening to and reading popular articles from major
+news sites, all summarized and translated to intermediate Spanish by native speakers.`,
+          },
+        ],
+      }}
+    />
+
     <Container>
       <HeroWrapper>
         <MainHeroContent>
@@ -43,7 +63,7 @@ function App() {
 
       <SectionDivider />
 
-      <SectionHeader>Product demo</SectionHeader>
+      <SectionHeader>How the articles work</SectionHeader>
       <DescriptionText>
         Play the audio, and <Faint>highlight words to translate</Faint> to English.
       </DescriptionText>
@@ -87,7 +107,7 @@ function App() {
       <TestimonialRow>
         <Testimonial>
           <Portrait>
-            <img src="/images/testimonials/marith.jpeg" />
+            <img src="/images/testimonials/marith.jpeg" alt="An image of a leerly customer"/>
           </Portrait>
           <TestimonialWrapper>
             <Name>
@@ -107,7 +127,7 @@ function App() {
 
         <Testimonial>
           <Portrait>
-            <img src="/images/testimonials/elisabeth.jpeg" />
+            <img src="/images/testimonials/elisabeth.jpeg" alt="An image of a leerly customer"/>
           </Portrait>
           <TestimonialWrapper>
             <Name>
@@ -126,7 +146,7 @@ function App() {
 
         <Testimonial>
           <Portrait>
-            <img src="/images/testimonials/dougie.png" />
+            <img src="/images/testimonials/dougie.png" alt="An image of a leerly customer"/>
           </Portrait>
           <TestimonialWrapper>
             <Name>
