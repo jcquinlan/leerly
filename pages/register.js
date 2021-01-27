@@ -14,6 +14,7 @@ import {
     Colors
 } from '../components/styled';
 import {useRouter} from 'next/router';
+import { NextSeo } from 'next-seo';
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
 import {createUserProfileDocument} from '../services/userService';
@@ -77,6 +78,10 @@ function RegisterPage () {
 
     return (
         <>
+        <NextSeo 
+            title="leerly - register"
+            description="start reading articles in B1/B2 Spanish"
+        />
         <Container>
         <HeroWrapper>
             <HeroContent>
