@@ -1,6 +1,7 @@
 import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
+import ReactPaginate from 'react-paginate';
 import {
     Container,
     HeroWrapper,
@@ -20,6 +21,8 @@ import {getAllVocab} from '../services/vocabService';
 import {getAllUserReferralRecords} from '../services/referralService';
 import AppContext from '../contexts/appContext';
 
+const PAGE_SIZE = 10;
+
 function ArticlePage () {
     useGuardRoute();
 
@@ -30,6 +33,31 @@ function ArticlePage () {
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
     const [referralRecords, setReferralRecords] = useState(0);
+    const [offset, setOffset] = useState(0);
+
+    const articlesToShow = useMemo(() => {
+        if (!articles) {
+            return [];
+        }
+
+        return articles.slice(offset, offset + PAGE_SIZE);
+    }, [articles, offset]);
+
+    const maxPages = useMemo(() => {
+        if (!articles) {
+            return 0;
+        }
+
+        if (articles.length < PAGE_SIZE) {
+            return 1;
+        }
+
+        return Math.floor(articles.length / PAGE_SIZE);
+    }, [articles])
+
+    const handlePageChange = (data) => {
+        setOffset(data.selected * PAGE_SIZE);
+    }
 
     const timeString = useMemo(() => {
         if (playTime < 60) {
@@ -138,10 +166,20 @@ function ArticlePage () {
                 </NoticeCard>
             </Link>
 
-            {articles.map(article => (
+            {articlesToShow.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
             ))}
         </ArticlesList>
+
+        <PaginationStyles>
+            <ReactPaginate
+                pageCount={maxPages}
+                pageRangeDisplayed={5}
+                marginPagesDisplayed={2}
+                onPageChange={handlePageChange}
+                activeClassName="active"
+            />
+        </PaginationStyles>
 
         </Container>
         </>
@@ -150,6 +188,21 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const PaginationStyles = styled.div`
+    display: flex;
+    justify-content: center;
+
+    li {
+        display: inline-block;
+        margin-right: 15px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .active  {
+        text-decoration: underline;
+    }
+`;
 const StatsRow = styled.div`
     padding: 0 30px;
 `;
