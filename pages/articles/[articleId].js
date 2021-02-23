@@ -1,8 +1,10 @@
-import React, {useContext, useState, useEffect, useRef} from 'react';
+import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
 import {StickyContainer, Sticky} from 'react-sticky';
+import {useDebouncedCallback} from 'use-debounce';
+import renderHTML from 'react-render-html';
 import {
     Container,
     HeroWrapper,
@@ -30,6 +32,79 @@ import {
     updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
 
+
+const transcript = [
+  {
+    "speaker": "Martin",
+    "start_time": 1.32,
+    "end_time": 8.55,
+    "words": [
+      {
+        "text": "Hello,",
+        "start_time": 1,
+        "end_time": 2
+      },
+      {
+        "text": "is",
+        "start_time": 2.50,
+        "end_time": 4.50
+      },
+      {
+        "text": "now",
+        "start_time": 5,
+        "end_time": 7
+      },
+      {
+        "text": "still",
+        "start_time": 7.50,
+        "end_time": 9.50
+      },
+      {
+        "text": "a",
+        "start_time": 10,
+        "end_time": 12
+      },
+      {
+        "text": "good",
+        "start_time": 12.50,
+        "end_time": 14.50
+      },
+      {
+        "text": "time to",
+        "start_time": 15,
+        "end_time": 17
+      },
+      {
+        "text": "chat?",
+        "start_time": 17.50,
+        "end_time": 19.50
+      }
+    ]
+  },
+  {
+    "speaker": "John",
+    "start_time": 10.24,
+    "end_time": 16.33,
+    "words": [
+      {
+        "text": "Yes,",
+        "start_time": 20,
+        "end_time": 22
+      },
+      {
+        "text": "lets",
+        "start_time": 22.50,
+        "end_time": 24.50
+      },
+      {
+        "text": "chat!",
+        "start_time": 25,
+        "end_time": 27
+      }
+    ]
+  }
+];
+
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
 
@@ -46,6 +121,30 @@ function ArticlePage () {
     const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
+    const [transcriptWords, setTranscriptWords] = useState([]);
+    const [previousHighlightWordIndex, setPreviousHighlightWordIndex] = useState(0);
+    const [highlightedSection, setHighlightedSection] = useState(null);
+    const htmlToRender = useMemo(() => {
+        if (!highlightedSection) {
+            return article ? article.body : '';
+        }
+
+        
+        const highlightedText = article.body.substring(...highlightedSection);
+        return article.body.substring(0, highlightedSection[0]) +
+            `<span>${highlightedText}</span>` +
+            article.body.substring(highlightedSection[1]);
+    }, [highlightedSection, article]);
+
+    useEffect(() => {
+        fetch(`/api/transcriptions/${`OxoM37Nv`}`)
+            .then(response => {
+                return response.json();
+            })
+            .then(json => {
+                setTranscriptWords(json.transcript.map(speaker => speaker.words).flat());
+            })
+    }, []);
 
     useEffect(() => {
         if (user) {
@@ -136,6 +235,45 @@ function ArticlePage () {
         }
     }
 
+    const handleListen = (e) => {
+        const word = transcriptWords.find(word => {
+            return word.start_time <= e && word.end_time >= e;
+        });
+
+        if (!word) {
+            setHighlightedSection(null);
+            return;
+        }
+
+        const substringIndex = article.body.indexOf(word.text, previousHighlightWordIndex);
+
+        if (substringIndex !== -1) {
+            if (substringIndex !== previousHighlightWordIndex) {
+                setPreviousHighlightWordIndex(substringIndex);
+            }
+
+            const endIndex = substringIndex + word.text.length + 1;
+            // Subtract 1 from the starting index to make sure we
+            // highlight the space before the word as well.
+            setHighlightedSection([substringIndex, endIndex]);
+        }
+    }
+
+    const handleSeeked = useDebouncedCallback((event) => {
+        setHighlightedSection(null);
+        const newTime = event.target.currentTime;
+        const newPreviousHighlightWordIndex = transcriptWords.reduce((memo, currentWord) => {
+            if (currentWord.end_time < newTime) {
+                // Add an extra 1 to represent the space we need after each transcription group.
+                return memo ? memo + currentWord.text.length + 1 : currentWord.text.length + 1;
+            }
+
+            return memo; 
+        }, null);
+
+        setPreviousHighlightWordIndex(newPreviousHighlightWordIndex ? newPreviousHighlightWordIndex : 0);
+    }, 300);
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -198,6 +336,9 @@ function ArticlePage () {
                                         onPlay={handlePlay}
                                         onPause={handleStop}
                                         onEnded={handleStop}
+                                        onListen={handleListen}
+                                        onSeeked={handleSeeked.callback}
+                                        listenInterval={50}
                                         controls
                                     />
                                 </div>
@@ -211,7 +352,8 @@ function ArticlePage () {
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
             <ArticleBody ref={articleBodyRef}>
-                {article.body}
+                {/* {article.body} */}
+                {renderHTML(htmlToRender)}
             </ArticleBody>
 
             {(!article.free || user) && (
@@ -284,6 +426,13 @@ const ArticleBody = styled.div`
 
     @media ${devices.laptop} {
         padding: 30px;
+    }
+
+    span {
+        font-weight: bold;
+        border-radius: 5px;
+        background-color: ${Colors.Primary};
+        color: white;
     }
 `;
 
