@@ -84,6 +84,7 @@ function MyApp({ Component, pageProps }) {
       links.push([
         <Link key="adminSubmit" id="/admin/submit" className="menu-item" href="/admin/submit">submit article</Link>,
         <Link key="referrals" id="/admin/referrals" className="menu-item" href="/admin/referrals">see open referrals</Link>,
+        <Link key="unpublishedArticles" id="/admin/unpublished-articles" className="menu-item" href="/admin/unpublished-articles">unpublished articles</Link>,
       ])
     }
 

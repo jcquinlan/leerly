@@ -1,10 +1,8 @@
-import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
+import React, {useContext, useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
 import {StickyContainer, Sticky} from 'react-sticky';
-import {useDebouncedCallback} from 'use-debounce';
-import renderHTML from 'react-render-html';
 import {
     Container,
     HeroWrapper,
@@ -31,79 +29,7 @@ import {
     getUserMetrics,
     updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
-
-
-const transcript = [
-  {
-    "speaker": "Martin",
-    "start_time": 1.32,
-    "end_time": 8.55,
-    "words": [
-      {
-        "text": "Hello,",
-        "start_time": 1,
-        "end_time": 2
-      },
-      {
-        "text": "is",
-        "start_time": 2.50,
-        "end_time": 4.50
-      },
-      {
-        "text": "now",
-        "start_time": 5,
-        "end_time": 7
-      },
-      {
-        "text": "still",
-        "start_time": 7.50,
-        "end_time": 9.50
-      },
-      {
-        "text": "a",
-        "start_time": 10,
-        "end_time": 12
-      },
-      {
-        "text": "good",
-        "start_time": 12.50,
-        "end_time": 14.50
-      },
-      {
-        "text": "time to",
-        "start_time": 15,
-        "end_time": 17
-      },
-      {
-        "text": "chat?",
-        "start_time": 17.50,
-        "end_time": 19.50
-      }
-    ]
-  },
-  {
-    "speaker": "John",
-    "start_time": 10.24,
-    "end_time": 16.33,
-    "words": [
-      {
-        "text": "Yes,",
-        "start_time": 20,
-        "end_time": 22
-      },
-      {
-        "text": "lets",
-        "start_time": 22.50,
-        "end_time": 24.50
-      },
-      {
-        "text": "chat!",
-        "start_time": 25,
-        "end_time": 27
-      }
-    ]
-  }
-];
+import {fetchArticleTranscription} from '../../services/transcriptionService';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -120,31 +46,43 @@ function ArticlePage () {
     const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
     const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
+    const audioOffsetRef = useRef();
+     // We can't use a conventional React ref due to the specific API
+     // of react-audio-player. Instead, we can just use state to maintain an element
+     // reference. It's weird, but it works.
+    const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
-    const [transcriptWords, setTranscriptWords] = useState([]);
-    const [previousHighlightWordIndex, setPreviousHighlightWordIndex] = useState(0);
-    const [highlightedSection, setHighlightedSection] = useState(null);
-    const htmlToRender = useMemo(() => {
-        if (!highlightedSection) {
-            return article ? article.body : '';
-        }
+    const audioOffset = audioOffsetRef.current ?
+        audioOffsetRef.current.getBoundingClientRect().top :
+        windowHeight;
+    const [transcript, setTranscript] = useState(null);
 
-        
-        const highlightedText = article.body.substring(...highlightedSection);
-        return article.body.substring(0, highlightedSection[0]) +
-            `<span>${highlightedText}</span>` +
-            article.body.substring(highlightedSection[1]);
-    }, [highlightedSection, article]);
+    const prepareTranscript = transcript => {
+        return transcript.map(speaker => {
+            const newParagraphObject = {
+                type: 'newParagraph'
+            };
+
+            const words = speaker.words.map(word => {
+                return {
+                    ...word,
+                    type: 'word'
+                }
+            });
+
+            return [...words, newParagraphObject];
+        }).flat();
+    }
 
     useEffect(() => {
-        fetch(`/api/transcriptions/${`OxoM37Nv`}`)
-            .then(response => {
-                return response.json();
-            })
-            .then(json => {
-                setTranscriptWords(json.transcript.map(speaker => speaker.words).flat());
-            })
-    }, []);
+        if (article?.transcriptId) {
+            fetchArticleTranscription(article.transcriptId)
+                .then(json => {
+                    const preparedTranscript = prepareTranscript(json.transcript);
+                    setTranscript(preparedTranscript);
+                })
+        }
+    }, [article?.transcriptId]);
 
     useEffect(() => {
         if (user) {
@@ -235,44 +173,70 @@ function ArticlePage () {
         }
     }
 
-    const handleListen = (e) => {
-        const word = transcriptWords.find(word => {
-            return word.start_time <= e && word.end_time >= e;
-        });
-
-        if (!word) {
-            setHighlightedSection(null);
-            return;
-        }
-
-        const substringIndex = article.body.indexOf(word.text, previousHighlightWordIndex);
-
-        if (substringIndex !== -1) {
-            if (substringIndex !== previousHighlightWordIndex) {
-                setPreviousHighlightWordIndex(substringIndex);
-            }
-
-            const endIndex = substringIndex + word.text.length + 1;
-            // Subtract 1 from the starting index to make sure we
-            // highlight the space before the word as well.
-            setHighlightedSection([substringIndex, endIndex]);
+    const handleWordClick = (startTime) => {
+        if (audioPlayerRef) {
+            audioPlayerRef.currentTime = startTime;
         }
     }
 
-    const handleSeeked = useDebouncedCallback((event) => {
-        setHighlightedSection(null);
-        const newTime = event.target.currentTime;
-        const newPreviousHighlightWordIndex = transcriptWords.reduce((memo, currentWord) => {
-            if (currentWord.end_time < newTime) {
-                // Add an extra 1 to represent the space we need after each transcription group.
-                return memo ? memo + currentWord.text.length + 1 : currentWord.text.length + 1;
+    const handleListen = (e) => {
+        const updatedTranscript = transcript.reduce((memo, glyph) => {
+            if (glyph.type !== 'word') {
+                memo.push(glyph);
+                return memo;
             }
 
-            return memo; 
-        }, null);
+            const wordIsActive = glyph.start_time <= e && glyph.end_time >= e;
 
-        setPreviousHighlightWordIndex(newPreviousHighlightWordIndex ? newPreviousHighlightWordIndex : 0);
-    }, 300);
+            if (wordIsActive) {
+                memo.push({
+                    ...glyph,
+                    highlight: true
+                })
+            } else {
+                memo.push({
+                    ...glyph,
+                    highlight: false
+                });
+            }
+
+            return memo;
+        }, []);
+
+        setTranscript(updatedTranscript);
+    }
+
+    const renderArticleBody = () => {
+        if (!transcript) {
+            return article.body;
+        }
+
+        const html = transcript.map((glyph, index) => {
+            if (glyph.type === 'word') {
+                return (
+                    <Word
+                        key={glyph.start_time}
+                        highlight={glyph.highlight}
+                        onClick={() => handleWordClick(glyph.start_time)}
+                    >
+                        {glyph.text}
+                    </Word>
+                );
+            }
+
+            if (glyph.type === 'newParagraph') {
+                return [<br />, <br />];
+            }
+        });
+
+        return html;
+    }
+
+    const handleAudioPlayerInitialization = (ref) => {
+        if (!audioPlayerRef && !!ref) {
+            setAudioPlayerRef(ref.audioEl.current);
+        }
+    }
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -311,49 +275,51 @@ function ArticlePage () {
             )}
 
 
-            {!!audioURL && !playAudio && (
-                <Sticky topOffset={windowHeight}>
-                    {({style}) => (
-                        <div style={style}>
-                            <AudioWrapper>
-                                <FakeAudioWidget onClick={() => setPlayAudio(true)}>
-                                    <span>Play audio</span> &#9658;
-                                </FakeAudioWidget>
-                            </AudioWrapper>
-                        </div>
-                    )}
-                </Sticky>
-            )}
+            <AudioOffsetWrapper ref={audioOffsetRef}>
+                {!!audioURL && !playAudio && (
+                    <Sticky topOffset={audioOffset}>
+                        {({style}) => (
+                            <div style={style}>
+                                <AudioWrapper>
+                                    <FakeAudioWidget onClick={() => setPlayAudio(true)}>
+                                        <span>Play audio</span> &#9658;
+                                    </FakeAudioWidget>
+                                </AudioWrapper>
+                            </div>
+                        )}
+                    </Sticky>
+                )}
 
-            {!!audioURL && playAudio && (
-                <Sticky topOffset={windowHeight}>
-                    {({style}) => (
-                        <div style={style}>
-                            <AudioWrapper>
-                                <div>
-                                    <ReactAudioPlayer
-                                        src={audioURL}
-                                        onPlay={handlePlay}
-                                        onPause={handleStop}
-                                        onEnded={handleStop}
-                                        onListen={handleListen}
-                                        onSeeked={handleSeeked.callback}
-                                        listenInterval={50}
-                                        controls
-                                    />
-                                </div>
-                            </AudioWrapper>
-                        </div>
-                    )}
-                </Sticky>
-            )}
+                {!!audioURL && playAudio && (
+                    <Sticky topOffset={audioOffset}>
+                        {({style}) => (
+                            <div style={style}>
+                                <AudioWrapper>
+                                    <div>
+                                        <ReactAudioPlayer
+                                            ref={handleAudioPlayerInitialization}
+                                            src={audioURL}
+                                            onPlay={handlePlay}
+                                            onPause={handleStop}
+                                            onEnded={handleStop}
+                                            onListen={transcript ? handleListen : undefined}
+                                            listenInterval={100}
+                                            controls
+                                        />
+                                    </div>
+                                </AudioWrapper>
+                            </div>
+                        )}
+                    </Sticky>
+                )}
+            </AudioOffsetWrapper>
 
             <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
             <ArticleBody ref={articleBodyRef}>
                 {/* {article.body} */}
-                {renderHTML(htmlToRender)}
+                {renderArticleBody()}
             </ArticleBody>
 
             {(!article.free || user) && (
@@ -378,6 +344,7 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const AudioOffsetWrapper = styled.div``;
 const Psst = styled.p`
     text-align: center;
     color: #666;
@@ -427,13 +394,15 @@ const ArticleBody = styled.div`
     @media ${devices.laptop} {
         padding: 30px;
     }
+`;
 
-    span {
+const Word = styled.span`
+    ${props => props.highlight ? `
         font-weight: bold;
         border-radius: 5px;
         background-color: ${Colors.Primary};
         color: white;
-    }
+    `: ``}
 `;
 
 const ArticleData = styled.div`

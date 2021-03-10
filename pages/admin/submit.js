@@ -34,7 +34,14 @@ function SubmitPage () {
     const [audioFile, setAudioFile] = useState(null);
     const [saving, setSaving] = useState(false);
     const formIsFilled = useMemo(() => {
-        return !!(formState.article && formState.url && image && formState.title && !!selectedTypes.length);
+        return !!(
+            formState.article &&
+            formState.url &&
+            image &&
+            formState.title &&
+            formState.transcriptId &&
+            !!selectedTypes.length
+        );
     }, [formState]);
 
     const handleClick = async () => {
@@ -49,7 +56,9 @@ function SubmitPage () {
                 free: formState.free || false,
                 types: selectedTypes,
                 audio: `audios/${audioFile.name}`,
-                image: unsplashImageToSimplifiedImage(image)
+                image: unsplashImageToSimplifiedImage(image),
+                transcriptId: formState.transcriptId,
+                published: false
             });
 
             await triggerUnsplashDownload(image);
@@ -126,6 +135,7 @@ function SubmitPage () {
 
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
+        <Input type="text" name="transcriptId" placeholder="the id of the transcript from Sonix" required onChange={handleFormState} />
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
 
         <div>

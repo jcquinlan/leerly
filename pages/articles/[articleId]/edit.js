@@ -47,7 +47,9 @@ function ArticlePage () {
           url: article.url,
           title: article.title,
           article: article.body,
-          free: article.free
+          free: article.free,
+          published: article.published,
+          transcriptId: article.transcriptId
         });
       }
     }, [article]);
@@ -65,6 +67,8 @@ function ArticlePage () {
                 url: formState.url,
                 title: formState.title,
                 free: formState.free || false,
+                published: formState.published || false,
+                transcriptId: formState.transcriptId,
                 audio: newAudioURL || audioURL || null,
                 types: selectedTypes,
                 image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
@@ -153,11 +157,17 @@ function ArticlePage () {
 
         <Input type="text" name="url" value={formState.url || ''} placeholder="url of original article" defaultValue={formState.url} required onChange={handleFormState} />
         <Input type="text" name="title" value={formState.title || ''} placeholder="title of the article" defaultValue={formState.title} required onChange={handleFormState} />
+        <Input type="text" name="transcriptId" placeholder="the id of the transcript from Sonix" defaultValue={formState.transcriptId} required onChange={handleFormState} />
         <TextArea name='article' value={formState.article || ''} placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />
 
         <div>
             <label for='free'>Article is free?</label>
             <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
+        </div>
+
+        <div>
+            <label for='published'>Is the article ready to be published?</label>
+            <Checkbox type='checkbox' name='published' checked={formState.published || false} onChange={handleCheckboxChange} />
         </div>
 
         <Button onClick={handleClick} disabled={!formIsFilled}>Save article</Button>
