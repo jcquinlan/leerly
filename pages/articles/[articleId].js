@@ -78,8 +78,12 @@ function ArticlePage () {
         if (article?.transcriptId) {
             fetchArticleTranscription(article.transcriptId)
                 .then(json => {
-                    const preparedTranscript = prepareTranscript(json.transcript);
-                    setTranscript(preparedTranscript);
+                    // If the transcript isn't ready yet, or doesn't exist,
+                    // we just get a null response, but with a 2XX code (202, specifically)
+                    if (json) {
+                        const preparedTranscript = prepareTranscript(json.transcript);
+                        setTranscript(preparedTranscript);
+                    }
                 })
         }
     }, [article?.transcriptId]);

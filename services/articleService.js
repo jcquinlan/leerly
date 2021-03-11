@@ -64,6 +64,7 @@ export const getFreeArticles = () => {
 
 export const getArticles = () => {
     return db.collection("articles")
+        .where('published', '==', true)
         .orderBy('added_at', 'desc')
         .get()
         .catch(error => {
