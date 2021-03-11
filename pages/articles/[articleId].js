@@ -401,6 +401,13 @@ const ArticleBody = styled.div`
 `;
 
 const Word = styled.span`
+    cursor: pointer;
+
+    &:hover {
+        color: ${Colors.Primary};
+        font-weight: bold;
+    }
+
     ${props => props.highlight ? `
         font-weight: bold;
         border-radius: 5px;
