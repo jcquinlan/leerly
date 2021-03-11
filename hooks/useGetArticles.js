@@ -1,13 +1,19 @@
 import {useState, useEffect} from 'react';
-import {getArticles, getFreeArticles} from '../services/articleService';
+import {getArticles, getFreeArticles, getUnpublishedArticles} from '../services/articleService';
 
-const useGetArticles = ({free} = {free: false}) => {
+const useGetArticles = ({free, unpublished} = {free: false, unpublished: false}) => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const articlesPromise = free ? getFreeArticles() : getArticles();
+        // TODO - clean this up, it's dirty as hell. Switch case?
+        const articlesPromise = free ?
+            getFreeArticles() :
+            (unpublished ?
+                getUnpublishedArticles() :
+                getArticles()
+            );
 
         articlesPromise
             .then(articlesRef => {

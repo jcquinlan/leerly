@@ -29,6 +29,7 @@ import {
     getUserMetrics,
     updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
+import {fetchArticleTranscription} from '../../services/transcriptionService';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -45,7 +46,47 @@ function ArticlePage () {
     const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
     const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
+    const audioOffsetRef = useRef();
+     // We can't use a conventional React ref due to the specific API
+     // of react-audio-player. Instead, we can just use state to maintain an element
+     // reference. It's weird, but it works.
+    const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
+    const audioOffset = audioOffsetRef.current ?
+        audioOffsetRef.current.getBoundingClientRect().top :
+        windowHeight;
+    const [transcript, setTranscript] = useState(null);
+
+    const prepareTranscript = transcript => {
+        return transcript.map(speaker => {
+            const newParagraphObject = {
+                type: 'newParagraph'
+            };
+
+            const words = speaker.words.map(word => {
+                return {
+                    ...word,
+                    type: 'word'
+                }
+            });
+
+            return [...words, newParagraphObject];
+        }).flat();
+    }
+
+    useEffect(() => {
+        if (article?.transcriptId) {
+            fetchArticleTranscription(article.transcriptId)
+                .then(json => {
+                    // If the transcript isn't ready yet, or doesn't exist,
+                    // we just get a null response, but with a 2XX code (202, specifically)
+                    if (json) {
+                        const preparedTranscript = prepareTranscript(json.transcript);
+                        setTranscript(preparedTranscript);
+                    }
+                })
+        }
+    }, [article?.transcriptId]);
 
     useEffect(() => {
         if (user) {
@@ -136,6 +177,71 @@ function ArticlePage () {
         }
     }
 
+    const handleWordClick = (startTime) => {
+        if (audioPlayerRef) {
+            audioPlayerRef.currentTime = startTime;
+        }
+    }
+
+    const handleListen = (e) => {
+        const updatedTranscript = transcript.reduce((memo, glyph) => {
+            if (glyph.type !== 'word') {
+                memo.push(glyph);
+                return memo;
+            }
+
+            const wordIsActive = glyph.start_time <= e && glyph.end_time >= e;
+
+            if (wordIsActive) {
+                memo.push({
+                    ...glyph,
+                    highlight: true
+                })
+            } else {
+                memo.push({
+                    ...glyph,
+                    highlight: false
+                });
+            }
+
+            return memo;
+        }, []);
+
+        setTranscript(updatedTranscript);
+    }
+
+    const renderArticleBody = () => {
+        if (!transcript) {
+            return article.body;
+        }
+
+        const html = transcript.map((glyph, index) => {
+            if (glyph.type === 'word') {
+                return (
+                    <Word
+                        key={glyph.start_time}
+                        highlight={glyph.highlight}
+                        onClick={() => handleWordClick(glyph.start_time)}
+                    >
+                        {glyph.text}
+                    </Word>
+                );
+            }
+
+            if (glyph.type === 'newParagraph') {
+                return [<br />, <br />];
+            }
+        });
+
+        return html;
+    }
+
+    const handleAudioPlayerInitialization = (ref) => {
+        if (!audioPlayerRef && !!ref) {
+            setAudioPlayerRef(ref.audioEl.current);
+        }
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -173,45 +279,51 @@ function ArticlePage () {
             )}
 
 
-            {!!audioURL && !playAudio && (
-                <Sticky topOffset={windowHeight}>
-                    {({style}) => (
-                        <div style={style}>
-                            <AudioWrapper>
-                                <FakeAudioWidget onClick={() => setPlayAudio(true)}>
-                                    <span>Play audio</span> &#9658;
-                                </FakeAudioWidget>
-                            </AudioWrapper>
-                        </div>
-                    )}
-                </Sticky>
-            )}
+            <AudioOffsetWrapper ref={audioOffsetRef}>
+                {!!audioURL && !playAudio && (
+                    <Sticky topOffset={audioOffset}>
+                        {({style}) => (
+                            <div style={style}>
+                                <AudioWrapper>
+                                    <FakeAudioWidget onClick={() => setPlayAudio(true)}>
+                                        <span>Play audio</span> &#9658;
+                                    </FakeAudioWidget>
+                                </AudioWrapper>
+                            </div>
+                        )}
+                    </Sticky>
+                )}
 
-            {!!audioURL && playAudio && (
-                <Sticky topOffset={windowHeight}>
-                    {({style}) => (
-                        <div style={style}>
-                            <AudioWrapper>
-                                <div>
-                                    <ReactAudioPlayer
-                                        src={audioURL}
-                                        onPlay={handlePlay}
-                                        onPause={handleStop}
-                                        onEnded={handleStop}
-                                        controls
-                                    />
-                                </div>
-                            </AudioWrapper>
-                        </div>
-                    )}
-                </Sticky>
-            )}
+                {!!audioURL && playAudio && (
+                    <Sticky topOffset={audioOffset}>
+                        {({style}) => (
+                            <div style={style}>
+                                <AudioWrapper>
+                                    <div>
+                                        <ReactAudioPlayer
+                                            ref={handleAudioPlayerInitialization}
+                                            src={audioURL}
+                                            onPlay={handlePlay}
+                                            onPause={handleStop}
+                                            onEnded={handleStop}
+                                            onListen={transcript ? handleListen : undefined}
+                                            listenInterval={100}
+                                            controls
+                                        />
+                                    </div>
+                                </AudioWrapper>
+                            </div>
+                        )}
+                    </Sticky>
+                )}
+            </AudioOffsetWrapper>
 
             <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
             <ArticleBody ref={articleBodyRef}>
-                {article.body}
+                {/* {article.body} */}
+                {renderArticleBody()}
             </ArticleBody>
 
             {(!article.free || user) && (
@@ -236,6 +348,7 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const AudioOffsetWrapper = styled.div``;
 const Psst = styled.p`
     text-align: center;
     color: #666;
@@ -285,6 +398,22 @@ const ArticleBody = styled.div`
     @media ${devices.laptop} {
         padding: 30px;
     }
+`;
+
+const Word = styled.span`
+    cursor: pointer;
+
+    &:hover {
+        color: ${Colors.Primary};
+        font-weight: bold;
+    }
+
+    ${props => props.highlight ? `
+        font-weight: bold;
+        border-radius: 5px;
+        background-color: ${Colors.Primary};
+        color: white;
+    `: ``}
 `;
 
 const ArticleData = styled.div`

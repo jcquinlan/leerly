@@ -64,8 +64,18 @@ export const getFreeArticles = () => {
 
 export const getArticles = () => {
     return db.collection("articles")
+        .where('published', '==', true)
         .orderBy('added_at', 'desc')
-        .limit(100)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
+export const getUnpublishedArticles = () => {
+    return db.collection("articles")
+        .orderBy('added_at', 'desc')
+        .where('published', '==', false)
         .get()
         .catch(error => {
             throw error;
