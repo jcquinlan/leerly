@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useRef} from 'react';
+import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
@@ -52,11 +52,14 @@ function ArticlePage () {
      // reference. It's weird, but it works.
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
-    const audioOffset = audioOffsetRef.current ?
-        audioOffsetRef.current.getBoundingClientRect().top :
-        windowHeight;
+    const audioOffset = useMemo(() => {
+        return audioOffsetRef.current ?
+            window.pageYOffset + audioOffsetRef.current.getBoundingClientRect().top :
+            windowHeight
+    }, [audioOffsetRef.current]);
     const [transcript, setTranscript] = useState(null);
 
+    // TODO - Move to some fancy transcript service or something
     const prepareTranscript = transcript => {
         return transcript.map(speaker => {
             const newParagraphObject = {
@@ -253,6 +256,7 @@ function ArticlePage () {
     return (
         <StickyContainer>
             <Container>
+            <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>
             <TitleWrapper>
                 <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
             </TitleWrapper>
@@ -348,6 +352,10 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const BackLink = styled.span`
+    color: ${Colors.Primary};
+    cursor: pointer;
+`;
 const AudioOffsetWrapper = styled.div``;
 const Psst = styled.p`
     text-align: center;
@@ -409,10 +417,14 @@ const Word = styled.span`
     }
 
     ${props => props.highlight ? `
-        font-weight: bold;
         border-radius: 5px;
         background-color: ${Colors.Primary};
         color: white;
+
+        &:hover {
+            color: #fff;
+            font-weight: bold;
+        }
     `: ``}
 `;
 

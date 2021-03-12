@@ -68,6 +68,7 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedOutLinks = () => {
     return [
+        <Link key="home" id="/" className="menu-item" href="/">home</Link>,
         <Link key="free" id="/free" className="menu-item" href="/free">free articles</Link>,
         <Link key="register" id="/register" className="menu-item" href="/register">register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
@@ -76,7 +77,7 @@ function MyApp({ Component, pageProps }) {
 
   const renderSignedInLinks = () => {
     const links = [
-        <Link key="dashbaord" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
+        <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
         <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
     ];
 
@@ -106,7 +107,6 @@ function MyApp({ Component, pageProps }) {
         <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
             {appContextApi.user && <span>{appContextApi.user.email}</span>}
-            <Link id="/" className="menu-item" href="/">home</Link>
             {isSignedIn ? renderSignedInLinks() : null}
             {!isSignedIn ? renderSignedOutLinks() : null}
           </Menu>
