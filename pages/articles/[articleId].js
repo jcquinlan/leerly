@@ -256,7 +256,7 @@ function ArticlePage () {
     return (
         <StickyContainer>
             <Container>
-            <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>
+            {!!user && <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>}
             <TitleWrapper>
                 <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
             </TitleWrapper>
