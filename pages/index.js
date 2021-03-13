@@ -201,6 +201,22 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       </Question>
 
       <Question>
+        <QuestionText>What about other languages?</QuestionText>
+        <DescriptionText>
+          Once we feel as though we have really nailed the learning experience with Spanish, we want to expand to other
+          languages, like French and Chinese. For now, though, only Spanish is available.
+        </DescriptionText>
+      </Question>
+
+      <Question>
+        <QuestionText>What are the articles about?</QuestionText>
+        <DescriptionText>
+          We find popular articles around the web each week, and then summarize and translate them to intermediate Spanish.
+          We try to make sure our articles run the gamut of genres, like art, science, culture, business, etc.
+        </DescriptionText>
+      </Question>
+
+      <Question>
         <QuestionText>What about refunds?</QuestionText>
         <DescriptionText>
           We can refund you, no questions asked. Just contact us using 
@@ -219,9 +235,9 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       <Question>
         <QuestionText>That's it?</QuestionText>
         <DescriptionText>
-          As if. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
-          long list of things we want to finish building: a private chat group with native Spanish speakers, audio of native speakers
-          reciting each article, comments and discussion on each article, in-article translation, etc.
+          As <i>if</i>. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
+          long list of things we want to finish building: discussions on each article in beginner Spanish, group lessons with native speakers,
+          visual cues in each article to accompany the audio, etc.
         </DescriptionText>
       </Question>
     </PageContainer>
