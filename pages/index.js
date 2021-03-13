@@ -1,6 +1,5 @@
 import React, {useState, useRef} from 'react';
 import styled from 'styled-components';
-import ReactAudioPlayer from 'react-audio-player';
 import { DefaultSeo } from 'next-seo';
 import {
   PageContainer,
@@ -13,16 +12,13 @@ import {
   Button,
   devices,
   Colors,
-  AudioWrapper,
-  FakeAudioWidget
+  HelpText,
+  Card,
+  Flex,
+  NarrowContainer
 } from '../components/styled';
-import {SimplifiedSelectedTextPopover} from '../components/SelectedTextPopover';
-import Data from '../landingPageData';
 
 function App() {
-  const exampleRef = useRef();
-  const [playAudio, setPlayAudio] = useState(false);
-  const [exampleOpen, setExampleOpen] = useState(false);
 
   return (
     <>
@@ -50,51 +46,57 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <MainHeroContent>
           <Title>leerly.</Title>
           <Subtitle>
-            Improve your Spanish by listening to and reading popular articles from major
-            news sites, all summarized and translated to intermediate Spanish by native speakers. 
-            <br /><Faint> Qué guay.</Faint>
+            Improve your Spanish with Comprehensible Input that doesn't suck.
+            <Faint> Qué guay.</Faint>
           </Subtitle>
 
-          <div style={{display: 'flex', justifyContent: 'center'}}>
-            <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <a href="/register"><SignUpButton>Empezar ahora con un mes de prueba gratis</SignUpButton></a>
+            <div style={{maxWidth: '250px', textAlign: 'center'}}>
+              <HelpText>If you don't know what that says, you'll definitely want to click it.</HelpText>
+            </div>
           </div>
         </MainHeroContent>
       </HeroWrapper>
 
       <SectionDivider />
 
-      <SectionHeader>How the articles work</SectionHeader>
-      <DescriptionText>
-        Play the audio, and <Faint>highlight words to translate</Faint> to English.
-      </DescriptionText>
+      <NarrowContainer>
+        <SectionExplanation>We give you popular articles every week in basic Spanish, because learning a language is as simple as…</SectionExplanation>
+      </NarrowContainer>
 
-      {!playAudio && (
-        <AudioWrapper>
-            <FakeAudioWidget onClick={() => setPlayAudio(true)}>
-                <span>Play audio</span> &#9658;
-            </FakeAudioWidget>
-        </AudioWrapper>
-      )}
+      <ExperiencesList>
+        <Feature>
+          <h3>Listening</h3>
+          <p>Native speakers slowly read everything, and you can follow along, or easily repeat sections.</p>
+          <Card>
+            <img src="/images/listening.gif" alt="Words highlighting in an article as the audio plays"/>
+          </Card>
+        </Feature>
 
-        {playAudio && (
-          <AudioWrapper>
-              <div>
-                  <ReactAudioPlayer
-                      src={Data.audioURL}
-                      controls
-                  />
-              </div>
-          </AudioWrapper>
-      )}
+        <Feature>
+          <h3>Reading</h3>
+          <p>Our writers use simple language, but write how they’d talk to their friends.</p>
+          <Card>
+            <img src="/images/vocab.gif" alt="Words highlighting in an article as the audio plays"/>
+          </Card>
+        </Feature>
 
-      <SimplifiedSelectedTextPopover elementRef={exampleRef} articleBody={Data.article} />
-      <Example ref={exampleRef} open={exampleOpen}>
-          {Data.article}
-      </Example>
+        <Feature>
+          <h3>Repetition</h3>
+          <p>Save and review vocab from articles, so you can finally remember the difference between jugar and juzgar.</p>
+          <Card>
+            <img src="/images/study.gif" alt="Words highlighting in an article as the audio plays"/>
+          </Card>
+        </Feature>
+      </ExperiencesList>
 
-      <ReadMoreWrapper>
-          <button onClick={() => setExampleOpen(!exampleOpen)}>{exampleOpen ? 'Hide article' : 'Read the rest of the article'}</button>
-      </ReadMoreWrapper>
+      <NarrowContainer>
+        <SectionExplanation>
+          It turns out, your brain is good at picking up a new language as long as you have lots of reading and listening material in your
+          target language. It's a learning philosophy called <a target="_blank" href="https://en.wikipedia.org/wiki/J._Marvin_Brown#Automatic_Language_Growth">Automatic Language Growth</a>, and it's working well for us, and our students.
+        </SectionExplanation>
+      </NarrowContainer>
 
       <SectionDivider />
 
@@ -162,31 +164,13 @@ news sites, all summarized and translated to intermediate Spanish by native spea
               </Quote>
           </TestimonialWrapper>
         </Testimonial>
-{/* 
-        <Testimonial>
-          <Portrait>
-            <img src="http://www.fillmurray.com/200/200" />
-          </Portrait>
-          <TestimonialWrapper>
-            <Name>
-              Elisabeth Clumpkens
-            </Name>
-
-            <Location>
-              Richmond, VA
-            </Location>
-
-            <Quote>
-              leerly is perfect because I’m reading articles that are interesting and relevant, but also allow me to develop my Spanish vocabulary.
-            </Quote>
-          </TestimonialWrapper>
-        </Testimonial> */}
       </TestimonialRow>
 
-
-
-      <div style={{display: 'flex', justifyContent: 'center'}}>
-        <a href="/free"><Button>Try out some free articles</Button></a>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <a href="https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n"><Button>Leer un artículo gratis</Button></a>
+        <div style={{maxWidth: '250px', textAlign: 'center'}}>
+          <HelpText>This is the second time we've used "gratis" on this page. Guess what it means.</HelpText>
+        </div>
       </div>
 
     <PageContainer paddingTop="0px">
@@ -199,14 +183,6 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <SectionDivider />
 
-      {/* <Question>
-        <QuestionText>How much does it cost?</QuestionText>
-        <DescriptionText>
-          leerly costs <Free>$5/month</Free>. Sign up now to lock in this price forever, since prices will
-          be increasing as new features are rolled out.
-        </DescriptionText>
-      </Question> */}
-
       <Question>
         <QuestionText>What do I get with my subscription?</QuestionText>
         <FeaturesList>
@@ -215,6 +191,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           <li>Audio for each article, slowly read by a native speaker</li>
           <li>Highlight to translate any text instantly while you read</li>
           <li>Save vocab directly from articles for reviewing later</li>
+          <li>Access to weekly video chat conversations with a native speaker and other leerly users</li>
         </FeaturesList>
       </Question>
 
@@ -253,6 +230,37 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 }
 
 export default App;
+
+const ExperiencesList = styled(Flex)`
+  align-items: center;
+  justify-contenter: center;
+  flex-direction: column;
+  padding-top: 60px;
+  margin-bottom: 80px;
+`;
+const Feature = styled.div`
+  max-width: 400px;
+  margin-bottom: 80px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    font-size: 30px;
+    margin-bottom: 0px;
+    color: ${Colors.Primary};
+  }
+
+  p {
+    margin-top: 0;
+    line-height: 26px;
+  }
+
+  img {
+    width: 100%;
+  }
+`;
 
 const SectionDivider = styled(Divider)`
   margin: 90px 0;
@@ -326,10 +334,22 @@ const SectionHeader = styled(Subtitle)`
   color: black;
   font-size: 30px;
 `;
+const SectionExplanation = styled(Subtitle)`
+  font-size: 20px;
+  line-height: 36px;
+  font-weight: normal;
+
+  a {
+    text-decoration: underline;
+    font-weight: bold;
+    font-family: Poppins, sans-serif;
+  }
+`;
 const QuestionText = styled(Subtitle)`
   color: black;
 `;
 const MainHeroContent = styled(HeroContent)`
+  max-width: 400px;
   @media ${devices.laptop} {
     margin: 90px 0 30px 0;
   }
@@ -337,35 +357,6 @@ const MainHeroContent = styled(HeroContent)`
 const Faint = styled.span`
   color: ${Colors.Primary};
   font-family: 'Poppins', sans-serif;
-`;
-
-const Example = styled.div`
-  margin: 10px 0 30px 0;
-  white-space: pre-wrap;
-  border-radius: 5px;
-  padding: 30px;
-  line-height: 30px;
-  font-size: 16px;
-  height: ${props => props.open ? '100%' : '500px'};
-  overflow-y: hidden;
-
-  @media ${devices.laptop} {
-    height: ${props => props.open ? '100%' : '308px'};
-  }
-`;
-
-const ReadMoreWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 60px;
-
-  button {
-    background-color: transparent;
-    border: none;
-    color: ${Colors.Primary};
-    font-size: 18px;
-    cursor: pointer;
-  }
 `;
 
 const DescriptionText = styled.p`

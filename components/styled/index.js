@@ -185,6 +185,7 @@ export const TextArea = styled.textarea`
 
 export const HelpText = styled.p`
     font-size: 14px;
+    line-height: 24px;
     color: #888;
 `;
 
@@ -257,3 +258,21 @@ export const FakeAudioWidget = styled.div`
         font-size: 18px;
     }
 `;
+
+const NarrowContainerWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+const NarrowContainerContent = styled.div`
+    max-width: ${props => props.width};
+`;
+export const NarrowContainer = ({children, width = '600px'}) => {
+  return (
+    <NarrowContainerWrapper>
+      <NarrowContainerContent width={width}>
+        {children}
+      </NarrowContainerContent>
+    </NarrowContainerWrapper>
+  )
+}
