@@ -145,6 +145,10 @@ function ArticlePage () {
     }, [isPlaying]);
 
     const updateListeningMetric = (timeDelta) => {
+        if (!user) {
+            return;
+        }
+
         updateUserListeningTimeActivityMetric(user.uid, totalPlayTime + timeDelta)
             .then(() => {
                 setTotalPlaytime(totalPlayTime + timeDelta);
