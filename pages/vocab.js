@@ -1,5 +1,6 @@
-import React, {useState, useMemo, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import styled from 'styled-components';
+import {ExportToCsv} from 'export-to-csv';
 import {
     Container,
     HeroWrapper,
@@ -10,7 +11,8 @@ import {
     Card,
     Colors,
     NoticeCard,
-    NoticeCardMain
+    NoticeCardMain,
+    Button
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import useGuardRoute from '../hooks/useGuardRoute';
@@ -58,6 +60,28 @@ function VocabPage () {
         updateUserCardsStudiedActivityMetric(user.uid, completedCards + cardsStudied);
     }
 
+    const handleExportVocab = () => {
+        const options = { 
+            fieldSeparator: ',',
+            quoteStrings: '"',
+            showLabels: true, 
+            title: 'leerly vocab export',
+            useTextFile: false,
+            useKeysAsHeaders: true
+          };
+         
+        const csvExporter = new ExportToCsv(options);
+        const data = vocabList.map(vocab => {
+            return {
+                english: vocab.english,
+                spanish: vocab.spanish,
+                sentence: vocab.sentence
+            }
+        });
+         
+        csvExporter.generateCsv(data);
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -75,6 +99,12 @@ function VocabPage () {
         <Divider />
         {!isStudying && (
             <div>
+                {!!vocabList.length && (
+                    <ButtonRow>
+                        <Button disabled={!vocabList.length} onClick={handleExportVocab}>Export cards as CSV</Button>
+                    </ButtonRow>
+                )}
+
                 {!vocabList.length && (
                     <p>Save vocab by highlighting text in an article and saving it.</p>
                 )}
@@ -122,6 +152,12 @@ function VocabPage () {
 }
 
 export default VocabPage;
+
+const ButtonRow = styled.div`
+    display: flex;
+    margin-bottom: 30px;
+    flex-flow: row-reverse;
+`;
 
 const VocabHeader = styled.div`
     position: absolute;

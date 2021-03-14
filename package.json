@@ -13,6 +13,7 @@
     "@stripe/stripe-js": "^1.10.0",
     "@types/styled-components": "^5.1.4",
     "cors": "^2.8.5",
+    "export-to-csv": "^0.2.1",
     "firebase": "^7.24.0",
     "firebase-admin": "^9.4.1",
     "moment": "^2.29.1",
