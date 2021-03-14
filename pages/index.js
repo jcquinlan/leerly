@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { DefaultSeo } from 'next-seo';
 import {
@@ -61,42 +61,56 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <SectionDivider />
 
-      <NarrowContainer>
-        <SectionExplanation>We give you popular articles every week in basic Spanish, because learning a language is as simple as…</SectionExplanation>
-      </NarrowContainer>
+      <div style={{marginBottom: '90px'}}>
+        <NarrowContainer>
+          <SectionExplanation>We give you popular articles every week in basic Spanish, because learning a language is as simple as…</SectionExplanation>
+        </NarrowContainer>
 
-      <ExperiencesList>
-        <Feature>
-          <h3>Listening</h3>
-          <p>Native speakers slowly read everything, and you can follow along, or easily repeat sections.</p>
-          <Card>
-            <img src="/images/listening.gif" alt="Words highlighting in an article as the audio plays"/>
-          </Card>
-        </Feature>
+        <ExperiencesList>
+          <Feature>
+            <h3>Listening</h3>
+            <p>Native speakers slowly read everything, and you can follow along, or easily repeat sections.</p>
+            <Card>
+              <img src="/images/listening.gif" alt="Words highlighting in an article as the audio plays"/>
+            </Card>
+          </Feature>
 
-        <Feature>
-          <h3>Reading</h3>
-          <p>Our writers use simple language, but write how they’d talk to their friends.</p>
-          <Card>
-            <img src="/images/vocab.gif" alt="Words highlighting in an article as the audio plays"/>
-          </Card>
-        </Feature>
+          <Feature>
+            <h3>Reading</h3>
+            <p>Our writers use simple language, but write how they’d talk to their friends.</p>
+            <Card>
+              <img src="/images/vocab.gif" alt="Words highlighting in an article as the audio plays"/>
+            </Card>
+          </Feature>
 
-        <Feature>
-          <h3>Repetition</h3>
-          <p>Save and review vocab from articles, so you can finally remember the difference between jugar and juzgar.</p>
-          <Card>
-            <img src="/images/study.gif" alt="Words highlighting in an article as the audio plays"/>
-          </Card>
-        </Feature>
-      </ExperiencesList>
+          <Feature>
+            <h3>Repetition</h3>
+            <p>Save and review vocab from articles, so you can finally remember the difference between jugar and juzgar.</p>
+            <Card>
+              <img src="/images/study.gif" alt="Words highlighting in an article as the audio plays"/>
+            </Card>
+          </Feature>
+        </ExperiencesList>
 
-      <NarrowContainer>
-        <SectionExplanation>
-          It turns out, your brain is good at picking up a new language as long as you have lots of reading and listening material in your
-          target language. It's a learning philosophy called <a target="_blank" href="https://en.wikipedia.org/wiki/J._Marvin_Brown#Automatic_Language_Growth">Automatic Language Growth</a>, and it's working well for us, and our students.
-        </SectionExplanation>
-      </NarrowContainer>
+        <NarrowContainer>
+          <SectionExplanation>
+            It turns out, your brain is good at picking up a new language as long as you have lots of reading and listening material in your
+            target language. It's a learning philosophy called <a target="_blank" href="https://en.wikipedia.org/wiki/J._Marvin_Brown#Automatic_Language_Growth">Automatic Language Growth</a>, and it's working well for us, and our students.
+          </SectionExplanation>
+        </NarrowContainer>
+      </div>
+
+      <GroupCallSection>
+        <SectionHeader>Live video calls</SectionHeader>
+        <DescriptionText>
+          Join weekly video calls with a leerly Spanish teacher, either just to get some extra listening practice, or take a stab at
+          joining the conversation in Spanish. Lurkers always welcome.
+        </DescriptionText>
+
+        <NarrowContainer>
+          <img src="/images/leerly_group_call.png" />
+        </NarrowContainer>
+      </GroupCallSection>
 
       <SectionDivider />
 
@@ -247,6 +261,12 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
 export default App;
 
+const GroupCallSection = styled.div`
+  img {
+    width: 100%;
+    margin-top: 60px;
+  }
+`;
 const ExperiencesList = styled(Flex)`
   align-items: center;
   justify-contenter: center;
