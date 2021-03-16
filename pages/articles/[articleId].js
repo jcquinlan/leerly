@@ -2,7 +2,6 @@ import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
-import {StickyContainer, Sticky} from 'react-sticky';
 import {
     Container,
     HeroWrapper,
@@ -52,11 +51,7 @@ function ArticlePage () {
      // reference. It's weird, but it works.
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const windowHeight = !!window ? window.innerHeight - 50 : 800;
-    const audioOffset = useMemo(() => {
-        return audioOffsetRef.current ?
-            window.pageYOffset + audioOffsetRef.current.getBoundingClientRect().top :
-            windowHeight
-    }, [audioOffsetRef.current]);
+    const audioOffset = audioOffsetRef.current?.getBoundingClientRect().top || windowHeight;
     const [transcript, setTranscript] = useState(null);
 
     // TODO - Move to some fancy transcript service or something
@@ -258,8 +253,7 @@ function ArticlePage () {
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
-        <StickyContainer>
-            <Container>
+        <Container>
             {!!user && <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>}
             <TitleWrapper>
                 <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
@@ -287,42 +281,30 @@ function ArticlePage () {
             )}
 
 
-            <AudioOffsetWrapper ref={audioOffsetRef}>
+            <AudioOffsetWrapper ref={audioOffsetRef} style={{position: 'sticky', top: '30px'}}>
                 {!!audioURL && !playAudio && (
-                    <Sticky topOffset={audioOffset}>
-                        {({style}) => (
-                            <div style={style}>
-                                <AudioWrapper>
-                                    <FakeAudioWidget onClick={() => setPlayAudio(true)}>
-                                        <span>Play audio</span> &#9658;
-                                    </FakeAudioWidget>
-                                </AudioWrapper>
-                            </div>
-                        )}
-                    </Sticky>
+                    <AudioWrapper>
+                        <FakeAudioWidget onClick={() => setPlayAudio(true)}>
+                            <span>Play audio</span> &#9658;
+                        </FakeAudioWidget>
+                    </AudioWrapper>
                 )}
 
                 {!!audioURL && playAudio && (
-                    <Sticky topOffset={audioOffset}>
-                        {({style}) => (
-                            <div style={style}>
-                                <AudioWrapper>
-                                    <div>
-                                        <ReactAudioPlayer
-                                            ref={handleAudioPlayerInitialization}
-                                            src={audioURL}
-                                            onPlay={handlePlay}
-                                            onPause={handleStop}
-                                            onEnded={handleStop}
-                                            onListen={transcript ? handleListen : undefined}
-                                            listenInterval={100}
-                                            controls
-                                        />
-                                    </div>
-                                </AudioWrapper>
-                            </div>
-                        )}
-                    </Sticky>
+                    <AudioWrapper>
+                        <div>
+                            <ReactAudioPlayer
+                                ref={handleAudioPlayerInitialization}
+                                src={audioURL}
+                                onPlay={handlePlay}
+                                onPause={handleStop}
+                                onEnded={handleStop}
+                                onListen={transcript ? handleListen : undefined}
+                                listenInterval={100}
+                                controls
+                            />
+                        </div>
+                    </AudioWrapper>
                 )}
             </AudioOffsetWrapper>
 
@@ -348,9 +330,7 @@ function ArticlePage () {
                     <Button onClick={() => router.push('/register')}>Join leerly</Button>
                 </UpgradeWrapper>
             )}
-
-            </Container>
-        </StickyContainer>
+        </Container>
     );
 }
 
