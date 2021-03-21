@@ -276,3 +276,23 @@ export const NarrowContainer = ({children, width = '600px'}) => {
     </NarrowContainerWrapper>
   )
 }
+
+export const TranscriptWord = styled.span`
+    cursor: pointer;
+
+    &:hover {
+        color: ${Colors.Primary};
+        font-weight: bold;
+    }
+
+    ${props => props.highlight ? `
+        border-radius: 5px;
+        background-color: ${Colors.Primary};
+        color: white;
+
+        &:hover {
+            color: #fff;
+            font-weight: bold;
+        }
+    `: ``}
+`;

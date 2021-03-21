@@ -13,7 +13,8 @@ import {
     ImageAttribution,
     ImageWrapper,
     AudioWrapper,
-    FakeAudioWidget
+    FakeAudioWidget,
+    TranscriptWord
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -28,7 +29,11 @@ import {
     getUserMetrics,
     updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
-import {fetchArticleTranscription} from '../../services/transcriptionService';
+import {
+    fetchArticleTranscription,
+    prepareTranscript,
+    renderTranscriptForReading
+} from '../../services/transcriptionService';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -50,27 +55,9 @@ function ArticlePage () {
      // of react-audio-player. Instead, we can just use state to maintain an element
      // reference. It's weird, but it works.
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
-    const windowHeight = !!window ? window.innerHeight - 50 : 800;
-    const audioOffset = audioOffsetRef.current?.getBoundingClientRect().top || windowHeight;
     const [transcript, setTranscript] = useState(null);
-
-    // TODO - Move to some fancy transcript service or something
-    const prepareTranscript = transcript => {
-        return transcript.map(speaker => {
-            const newParagraphObject = {
-                type: 'newParagraph'
-            };
-
-            const words = speaker.words.map(word => {
-                return {
-                    ...word,
-                    type: 'word'
-                }
-            });
-
-            return [...words, newParagraphObject];
-        }).flat();
-    }
+    const [activeFrame, setActiveFrame] = useState(null);
+    const activeFrameTimeRef = useRef();
 
     useEffect(() => {
         if (article?.transcriptId) {
@@ -83,6 +70,14 @@ function ArticlePage () {
                         setTranscript(preparedTranscript);
                     }
                 })
+        }
+
+        if (article?.frames?.length) {
+            // Preload all frame images and cache them so they appear instantly
+            article.frames.forEach(frame => {
+                const img = new Image();
+                img.src = frame.image.urls.small;
+            })
         }
     }, [article?.transcriptId]);
 
@@ -186,6 +181,22 @@ function ArticlePage () {
     }
 
     const handleListen = (e) => {
+        if (!activeFrameTimeRef.current) {
+            const activeFrame = article?.frames?.length ?
+                article.frames.find(frame => frame.start_time <= e && frame.end_time >= e) :
+                null;
+
+            setActiveFrame(activeFrame);
+
+            if (activeFrame) {
+                const activeFrameTime = ((activeFrame.end_time - activeFrame.start_time) * 100) + 1500
+                activeFrameTimeRef.current = setTimeout(() => {
+                    setActiveFrame(null);
+                    activeFrameTimeRef.current = null;
+                }, activeFrameTime);
+            }
+        }
+
         const updatedTranscript = transcript.reduce((memo, glyph) => {
             if (glyph.type !== 'word') {
                 memo.push(glyph);
@@ -217,25 +228,10 @@ function ArticlePage () {
             return article.body;
         }
 
-        const html = transcript.map((glyph, index) => {
-            if (glyph.type === 'word') {
-                return (
-                    <Word
-                        key={glyph.start_time}
-                        highlight={glyph.highlight}
-                        onClick={() => handleWordClick(glyph.start_time)}
-                    >
-                        {glyph.text}
-                    </Word>
-                );
-            }
-
-            if (glyph.type === 'newParagraph') {
-                return [<br />, <br />];
-            }
+        return renderTranscriptForReading(transcript, {
+            component: TranscriptWord,
+            onClickWord: (word) => handleWordClick(word.start_time)
         });
-
-        return html;
     }
 
     const handleAudioPlayerInitialization = (ref) => {
@@ -253,6 +249,7 @@ function ArticlePage () {
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
+        <>
         <Container>
             {!!user && <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>}
             <TitleWrapper>
@@ -279,8 +276,9 @@ function ArticlePage () {
                     </ImageAttribution>
                 </div>
             )}
+        </Container>
 
-
+        <WideContainer>
             <AudioOffsetWrapper ref={audioOffsetRef} style={{position: 'sticky', top: '30px'}}>
                 {!!audioURL && !playAudio && (
                     <AudioWrapper>
@@ -311,10 +309,22 @@ function ArticlePage () {
             <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
-            <ArticleBody ref={articleBodyRef}>
-                {/* {article.body} */}
-                {renderArticleBody()}
-            </ArticleBody>
+
+            <ArticleWrapper>
+                <ArticleBody ref={articleBodyRef}>
+                    {renderArticleBody()}
+                </ArticleBody>
+
+                <FrameContainer>
+                    {activeFrame && (
+                        <>
+                            <FrameText>{activeFrame.text}</FrameText>
+                            <img src={activeFrame.image.urls.small}></img>
+                        </>
+                    )}
+                </FrameContainer>
+            </ArticleWrapper>
+
 
             {(!article.free || user) && (
                 <ButtonRow>
@@ -330,12 +340,35 @@ function ArticlePage () {
                     <Button onClick={() => router.push('/register')}>Join leerly</Button>
                 </UpgradeWrapper>
             )}
-        </Container>
+        </WideContainer>
+        </>
     );
 }
 
 export default ArticlePage;
 
+const WideContainer = styled(Container)`
+    max-width: 1200px;
+`;
+const ArticleWrapper = styled.div`
+    display: flex;
+    margin-top: 30px;
+`;
+const FrameContainer = styled.div`
+    width: 300px;
+    height: 300px;
+    position: sticky;
+    top: 90px;
+
+    img {
+        width: 100%;
+    }
+`;
+const FrameText = styled.span`
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+`;
 const BackLink = styled.span`
     color: ${Colors.Primary};
     cursor: pointer;
@@ -380,36 +413,16 @@ const AdminButtons = styled.div`
 `;
 
 const ArticleBody = styled.div`
-    padding: 10px;
-    margin-top: 30px;
+    flex: 1;
+    padding: 0 10px;
     font-size: 18px;
     line-height: 30px;
     white-space: pre-wrap;
     font-family: 'Source Sans Pro', sans-serif;
 
     @media ${devices.laptop} {
-        padding: 30px;
+        padding: 0 30px;
     }
-`;
-
-const Word = styled.span`
-    cursor: pointer;
-
-    &:hover {
-        color: ${Colors.Primary};
-        font-weight: bold;
-    }
-
-    ${props => props.highlight ? `
-        border-radius: 5px;
-        background-color: ${Colors.Primary};
-        color: white;
-
-        &:hover {
-            color: #fff;
-            font-weight: bold;
-        }
-    `: ``}
 `;
 
 const ArticleData = styled.div`
