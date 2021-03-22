@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import TypeList from './TypeList';
 import {ReadCheck, devices} from './styled';
+import colors from './styled/colors';
 
 const ArticlePreview = ({article, read}) => {
     const router = useRouter();
@@ -12,18 +13,34 @@ const ArticlePreview = ({article, read}) => {
         router.push(`/articles/${article.id}`);
     };
 
+    const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+
     return (
         <ArticlePreviewWrapper onClick={goToArticle}>
-            <Header>
-                <div>
-                    <ReadCheck checked={read}/>
-                    <span>{article.title || 'Placeholder Title'}</span>
-                </div>
-                <ArticleTimestamp>{moment(article.added_at.seconds * 1000).format('MM/DD/YYYY')}</ArticleTimestamp>
-            </Header>
+            <ArticleInfo>
+                <Header>
+                    <div>
+                        <ReadCheck checked={read}/>
+                        <span>{article.title || 'Placeholder Title'}</span>
+                    </div>
+                </Header>
 
-            <TypeList types={article.types} />
-            <MaskedText>{article.body}</MaskedText>
+                <TypeList types={article.types} />
+
+                {!!article?.image && (
+                    <ImageAttribution>
+                        Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
+                    </ImageAttribution>
+                )}
+                <MaskedText>{article.body}</MaskedText>
+            </ArticleInfo>
+
+            <MetaInfo>
+                <ArticleTimestamp>{moment(article.added_at.seconds * 1000).format('MM/DD/YYYY')}</ArticleTimestamp>
+                {!!article.image && (
+                    <ImageBox backgroundImage={article.image.urls.small}></ImageBox>
+                )}
+            </MetaInfo>
         </ArticlePreviewWrapper>
     )
 };
@@ -63,16 +80,15 @@ export const Header = styled.div`
 `;
 
 export const ArticleTimestamp = styled.div`
-    display: none;
     color: #aaa;
     font-size: 14px;
-
-    @media ${devices.laptop} {
-        display: initial;
-    }
+    text-align: right;
+    margin-bottom: 5px;
 `;
 
 export const ArticlePreviewWrapper = styled.div`
+    display: flex;
+    justify-content: space-between;
     padding: 30px;
     border: 1px solid #eee;
     border-radius: 5px;
@@ -80,6 +96,44 @@ export const ArticlePreviewWrapper = styled.div`
     cursor: pointer;
     box-shadow: 0px 10px 30px -30px rgba(0,0,0,0.3);
     ${props => props.selected ? 'border-color: blue;' : ''}
+`;
+
+const ImageAttribution = styled.div`
+    margin: 0;
+    margin-bottom: 10px;
+    color: ${colors.DarkGrey};
+    font-weight: 100;
+    font-family: 'Source Sans Pro', sans-serif;
+    display: none;
+
+    @media ${devices.tablet} {
+        display: block;
+    }
+`;
+const ImageBox = styled.div`
+    width: 100px;
+    height: 100px;
+    background-color: blue;
+    ${props => props.backgroundImage ? `
+        background-image: url(${props.backgroundImage}); 
+        background-repeat: no-repeat;
+        background-size: cover;
+    `: ``}
+`;
+
+const ArticleInfo = styled.div`
+    @media ${devices.tablet} {
+        margin-right: 30px;
+    }
+`;
+const MetaInfo = styled.div`
+    width: 100%;
+    max-width: 100px;
+    display: none;
+
+    @media ${devices.tablet} {
+        display: initial;
+    }
 `;
 
 const BodyPreview = styled.div`
