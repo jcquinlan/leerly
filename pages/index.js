@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { DefaultSeo } from 'next-seo';
+import { useRouter } from 'next/router';
 import {
   PageContainer,
   Container,
@@ -17,8 +18,22 @@ import {
   Flex,
   NarrowContainer
 } from '../components/styled';
+import mixpanelContext from '../contexts/mixpanelContext';
 
 function App() {
+  const mixpanel = useContext(mixpanelContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (mixpanel) {
+      mixpanel.trackEvent('landing-page-loaded');
+    }
+  }, []);
+
+  const goToFreeArticle = async () => {
+    await mixpanel.trackEvent('visited-free-article');
+    router.push('https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n');
+  }
 
   return (
     <>
@@ -181,7 +196,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       </TestimonialRow>
 
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <a href="https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n"><Button>Leer un artículo gratis</Button></a>
+        <Button role="link" onClick={goToFreeArticle}>Leer un artículo gratis</Button>
         <div style={{maxWidth: '250px', textAlign: 'center'}}>
           <HelpText>This is the second time we've used "gratis" on this page. Guess what it means.</HelpText>
         </div>
