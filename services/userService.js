@@ -1,9 +1,8 @@
 import {db} from './index';
 
-export const createUserProfileDocument = async ({email, user_uid, name}) => {
+export const createUserProfileDocument = async ({email, user_uid}) => {
     return db.collection("user_profiles").doc(user_uid).set({
         email,
-        name,
         active: true,
         subscribed: false
     })

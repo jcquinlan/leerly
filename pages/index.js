@@ -13,7 +13,6 @@ import {
   Button,
   devices,
   Colors,
-  HelpText,
   Card,
   Flex,
   NarrowContainer
@@ -61,15 +60,12 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <MainHeroContent>
           <Title>leerly.</Title>
           <Subtitle>
-            Improve your Spanish with Comprehensible Input that doesn't suck.
+            Improve your Spanish with Compelling, Comprehensible Input.
             <Faint> Qué guay.</Faint>
           </Subtitle>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <a href="/register"><SignUpButton>Empezar ahora con un mes de prueba gratis</SignUpButton></a>
-            <div style={{maxWidth: '250px', textAlign: 'center'}}>
-              <HelpText>If you don't know what that says, you'll definitely want to click it.</HelpText>
-            </div>
+            <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
           </div>
         </MainHeroContent>
       </HeroWrapper>
@@ -196,10 +192,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       </TestimonialRow>
 
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <Button role="link" onClick={goToFreeArticle}>Leer un artículo gratis</Button>
-        <div style={{maxWidth: '250px', textAlign: 'center'}}>
-          <HelpText>This is the second time we've used "gratis" on this page. Guess what it means.</HelpText>
-        </div>
+        <Button role="link" onClick={goToFreeArticle}>Test out a free article</Button>
       </div>
 
     <PageContainer paddingTop="0px">
