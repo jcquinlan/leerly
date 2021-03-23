@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {
@@ -20,9 +20,17 @@ import {registerUser} from '../services/authService';
 import {createUserProfileDocument} from '../services/userService';
 import useEnforceSignedOut from '../hooks/useEnforceSignedOut';
 import {useLocalStorage, REFERRAL_CODE_KEY} from '../hooks/useLocalStorage';
+import mixpanelContext from '../contexts/mixpanelContext';
 
 function RegisterPage () {
     useEnforceSignedOut();
+
+    const mixpanel = useContext(mixpanelContext);
+    useEffect(() => {
+      if (mixpanel) {
+        mixpanel.trackEvent('register-page-loaded');
+      }
+    }, []);
 
     const router = useRouter();
     const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
@@ -59,6 +67,7 @@ function RegisterPage () {
                 user_uid: userDocument.user.uid,
                 name: formState.name
             });
+            await mixpanel.trackEvent('account-created');
             redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email, referralCode);
         } catch (error) {
             console.error(error);
