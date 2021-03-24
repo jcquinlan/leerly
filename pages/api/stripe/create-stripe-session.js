@@ -18,8 +18,8 @@ export default async (req, res) => {
             quantity: 1,
           },
         ],
+        discounts: [{coupon: process.env.STRIPE_FREE_MONTH_COUPON_ID}],
         mode: 'subscription',
-        allow_promotion_codes: 'true',
         customer_email: email,
         success_url: `${baseUrl}/success?id=${id}${referralCode ? `&referralCode=${referralCode}` : ''}&email=${encodeURIComponent(email)}&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/cancel?id=${id}&email=${encodeURIComponent(email)}`

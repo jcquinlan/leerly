@@ -312,7 +312,6 @@ function ArticlePage () {
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
             <ArticleBody ref={articleBodyRef}>
-                {/* {article.body} */}
                 {renderArticleBody()}
             </ArticleBody>
 
@@ -327,7 +326,7 @@ function ArticlePage () {
             {article.free && !user && (
                 <UpgradeWrapper>
                     <p>Enjoyed reading this? Want to improve your Spanish?</p>
-                    <Button onClick={() => router.push('/register')}>Join leerly</Button>
+                    <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
             )}
         </Container>

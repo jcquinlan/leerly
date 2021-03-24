@@ -96,20 +96,17 @@ function RegisterPage () {
 
         <Divider />
 
-        <PricingInfo>
+        {/* <PricingInfo>
             <Primary>$5/month</Primary> for <b>hundreds of articles</b> in intermediate Spanish, <b>hours of slow audio</b> of native speakers reading,
              <b>translating</b> in-app, built-in <b>vocab studying</b>, weekly <b>live Spanish classes</b>
-        </PricingInfo>
+        </PricingInfo> */}
 
         <ExplanationText>
-            First month <b>free</b> with the code <Primary>LISTO</Primary> during checkout.
+            First month <b>free</b>, and your money back guaranteed if you aren't happy. No questions asked.
         </ExplanationText>
 
         <Card>
-            <HelpText>
-                After submitting your email and password, you'll be redirected to our payment page to provide
-                billing information.
-            </HelpText>
+            <HelpText>We will ask you for billing info after this, but we wont charge you until the trial is over. You can cancel any time, too.</HelpText>
 
             <form onSubmit={handleSubmit}>
                 <Input type='email' name='email' placeholder='email' required onChange={handleFormState}/>

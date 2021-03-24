@@ -103,12 +103,21 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           </Feature>
         </ExperiencesList>
 
-        <NarrowContainer>
+        {/* <NarrowContainer>
           <SectionExplanation>
             It turns out, your brain is good at picking up a new language as long as you have lots of reading and listening material in your
             target language. It's a learning philosophy called <a target="_blank" href="https://en.wikipedia.org/wiki/J._Marvin_Brown#Automatic_Language_Growth">Automatic Language Growth</a>, and it's working well for us, and our students.
           </SectionExplanation>
-        </NarrowContainer>
+        </NarrowContainer> */}
+
+
+        <FreeArticleWrapper>
+          <h4>See for yourself by reading a free article</h4>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Button role="link" onClick={goToFreeArticle}>Read a free article now</Button>
+          </div>
+        </FreeArticleWrapper>
+
       </div>
 
       <GroupCallSection>
@@ -191,16 +200,13 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </Testimonial>
       </TestimonialRow>
 
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <Button role="link" onClick={goToFreeArticle}>Test out a free article</Button>
-      </div>
 
     <PageContainer paddingTop="0px">
       <SectionDivider />
 
       <SectionHeader>Pricing</SectionHeader>
       <DescriptionText>
-        leerly is <Free>$5/month</Free>, but for a <Free>free month trial</Free>, use the promotion code <Faint>LISTO</Faint> at checkout.
+        leerly is free for the first month, then <Free>$5/month</Free>.
       </DescriptionText>
 
       <SectionDivider />
@@ -219,7 +225,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <Question>
         <QuestionText>Do you have a trial?</QuestionText>
-        <DescriptionText>Sure! For a free month, just use the code LISTO at checkout. We won't bill you for 4 weeks, and you can cancel any time before then.</DescriptionText>
+        <DescriptionText>Sure! By default, the first month is totally free.</DescriptionText>
       </Question>
 
       <Question>
@@ -246,6 +252,14 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </DescriptionText>
       </Question>
 
+      <Question>
+        <QuestionText>How can I learn a language just by reading and listening?</QuestionText>
+        <DescriptionText>
+          Yeah, it sounds kind of whacky, I didn't believe it either. That's why we recommend you try it out with
+          our free trial, or you can <a href='/about'>read about it a little bit first</a>.
+        </DescriptionText>
+      </Question>
+
       <HeroWrapper>
         <HeroContent>
           <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
@@ -269,6 +283,14 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
 export default App;
 
+const FreeArticleWrapper = styled.div`
+  text-align: center;
+  margin: 120px 0 120px 0;
+
+  h4 {
+    font-size: 20px;
+  }
+`;
 const GroupCallSection = styled.div`
   img {
     width: 100%;
@@ -318,7 +340,6 @@ const TestimonialRow = styled.div`
 
   @media ${devices.laptop} {
     flex-direction: row;
-    margin-bottom: 90px;
     align-items: flex-start;
   }
 `;
