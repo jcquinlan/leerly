@@ -70,7 +70,11 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </MainHeroContent>
       </HeroWrapper>
 
-      <SectionDivider />
+      <MainImage>
+        <img src="/images/landing-page-screenshot.png"></img>
+      </MainImage>
+
+      <ImageSectionDivider />
 
       <div style={{marginBottom: '90px'}}>
         <NarrowContainer>
@@ -283,6 +287,11 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
 export default App;
 
+const MainImage = styled.div`
+  img {
+    width: 100%;
+  }
+`;
 const FreeArticleWrapper = styled.div`
   text-align: center;
   margin: 120px 0 120px 0;
@@ -330,6 +339,9 @@ const Feature = styled.div`
 
 const SectionDivider = styled(Divider)`
   margin: 90px 0;
+`;
+const ImageSectionDivider = styled(SectionDivider)`
+  margin-top: -2px;
 `;
 const TestimonialRow = styled.div`
   display: flex;
