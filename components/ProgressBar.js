@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {devices} from './styled/mediaQueries';
 
 const ProgressBar = ({progress}) => {
     return (
@@ -29,11 +30,15 @@ const ProgressContainer = styled.div`
       left: 0;
       top: 0px;
       height: 100%;
-    //   background-color: #1f4ab8;
-    background: linear-gradient(90deg, rgba(40,233,218,1) 0%, rgba(31,82,186,1) 68%, rgba(31,75,184,1) 85%, rgba(31,74,184,1) 100%);
+      background: #1f4ab8;
       border-radius: 10px;
       animation: g 2500ms infinite ease-in-out;
       z-index: 2;
+
+      @media ${devices.tablet} {
+        background: linear-gradient(90deg, rgba(40,233,218,1) 0%, rgba(31,82,186,1) 68%, rgba(31,75,184,1) 85%, rgba(31,74,184,1) 100%);
+      }
+
       .progressbar-liquid {
         z-index: 1;
         width: 70px;
@@ -45,7 +50,6 @@ const ProgressContainer = styled.div`
         background-color: #1f4ab8;
         border-radius: 40%;
       }
-    
 
     .progress {
       z-index: 2;
