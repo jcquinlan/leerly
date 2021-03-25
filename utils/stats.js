@@ -25,7 +25,6 @@ export const calculateStatsLevel = ({minutesListening, cardsReviewed, articlesRe
     for (let i = 0; i < levels.length; i++) {
         if (i === levels.length - 1) {
             // Max level
-
             return {
                 level: 1,
                 percentage: 0

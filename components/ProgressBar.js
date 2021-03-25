@@ -3,7 +3,7 @@ import {devices} from './styled/mediaQueries';
 
 const ProgressBar = ({progress}) => {
     return (
-        <ProgressContainer>
+        <ProgressContainer progress={progress}>
             <div className="progressbar-complete" style={{width: `${progress}%`}}>
                 <div className="progressbar-liquid"></div>
             </div>
@@ -35,9 +35,11 @@ const ProgressContainer = styled.div`
       animation: g 2500ms infinite ease-in-out;
       z-index: 2;
 
-      @media ${devices.tablet} {
-        background: linear-gradient(90deg, rgba(40,233,218,1) 0%, rgba(31,82,186,1) 68%, rgba(31,75,184,1) 85%, rgba(31,74,184,1) 100%);
-      }
+      ${props => props.progress > 40 ? `
+        @media ${devices.tablet} {
+            background: linear-gradient(90deg, rgba(40,233,218,1) 0%, rgba(31,82,186,1) 68%, rgba(31,75,184,1) 85%, rgba(31,74,184,1) 100%);
+        }
+      `: ``}
 
       .progressbar-liquid {
         z-index: 1;
