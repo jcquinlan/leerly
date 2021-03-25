@@ -1,6 +1,5 @@
 import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
-import Link from 'next/link';
 import ReactPaginate from 'react-paginate';
 import {
     Container,
@@ -9,17 +8,16 @@ import {
     Divider,
     Title,
     Subtitle,
-    NoticeCard,
-    NoticeCardMain
+    HelpText
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
 import {getArticleReadStatuses, getUserMetrics} from '../services/articleService';
-import {getAllVocab} from '../services/vocabService';
-import {getAllUserReferralRecords} from '../services/referralService';
 import AppContext from '../contexts/appContext';
+import ProgressBar from '../components/ProgressBar';
+import {calculateStatsLevel} from '../utils/stats';
 
 const PAGE_SIZE = 10;
 
@@ -29,10 +27,8 @@ function ArticlePage () {
     const {user} = useContext(AppContext);
     const {articles, loading, error} = useGetArticles();
     const [readStatuses, setReadStatuses] = useState({});
-    const [vocabList, setVocabList] = useState([]);
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
-    const [referralRecords, setReferralRecords] = useState(0);
     const [offset, setOffset] = useState(0);
 
     const articlesToShow = useMemo(() => {
@@ -42,6 +38,15 @@ function ArticlePage () {
 
         return articles.slice(offset, offset + PAGE_SIZE);
     }, [articles, offset]);
+
+    const levelData = useMemo(() => {
+        const articlesRead = Object.keys(readStatuses).length;
+        return calculateStatsLevel({
+            minutesListening: playTime,
+            cardsReviewed: cardsStudied,
+            articlesRead
+        });
+    }, [readStatuses, playTime, readStatuses]);
 
     const maxPages = useMemo(() => {
         if (!articles) {
@@ -87,9 +92,6 @@ function ArticlePage () {
                         setCardsStudied(userMetricsData.cards_studied || 0);
                     }
                 });
-
-            getAllUserReferralRecords(user.uid)
-                .then(referralRecords => setReferralRecords(referralRecords.size));
         }
     }, [user]);
 
@@ -104,14 +106,6 @@ function ArticlePage () {
                     }, {});
                     setReadStatuses(readStatusesById);
                 })
-
-            getAllVocab(user.uid)
-                .then(vocabListRef => {
-                    const vocabListData = vocabListRef.docs.map(vocabRef => {
-                        return vocabRef.data();
-                    });
-                    setVocabList(vocabListData);
-                });
         }
     }, [articles]);
 
@@ -131,15 +125,20 @@ function ArticlePage () {
 
         <Divider />
 
+        <LevelInfo>
+            <LevelInfoHeader>
+                <CurrentLevel>lvl. {levelData.level}</CurrentLevel>
+                <span>{levelData.percentage * 100}%</span>
+                <span>lvl. {levelData.level + 1}</span>
+            </LevelInfoHeader>
+            <ProgressBar progress={levelData.percentage * 100} />
+            <HelpText>You progress in level by reading more articles, listening to more audio, and studying more vocab</HelpText>
+        </LevelInfo>
+
         <StatsRow>
             <Stat>
                 <p>{Object.keys(readStatuses).length}</p>
                 Articles read
-            </Stat> 
-
-            <Stat>
-                <p>{vocabList.length}</p>
-                Vocab cards
             </Stat> 
 
             <Stat>
@@ -151,21 +150,9 @@ function ArticlePage () {
                 <p>{cardsStudied}</p>
                 Vocab cards reviewed
             </Stat>
-
-            <Stat>
-                <p>{referralRecords}</p>
-                Free months earned
-            </Stat>
         </StatsRow>
 
         <ArticlesList>
-            <Link href="/referral">
-                <NoticeCard>
-                    <span>Whenever a friend signs up with your referral code, you get a free month of leerly.</span> <br />
-                    <NoticeCardMain>Earn unlimited free months of leerly  ⟶</NoticeCardMain>
-                </NoticeCard>
-            </Link>
-
             {articlesToShow.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
             ))}
@@ -188,6 +175,28 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const LevelInfo = styled.div`
+    padding: 0 30px;
+
+    ${HelpText} {
+        margin: 20px 0;
+        margin-top: 5px;
+    }
+`;
+
+const LevelInfoHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 10px 0;
+    font-family: 'Poppins', sans-serif;
+`;
+
+const CurrentLevel = styled.span`
+    font-size: 24px;
+    font-weight: bold;
+`;
+
 const PaginationStyles = styled.div`
     display: flex;
     justify-content: center;
@@ -204,7 +213,7 @@ const PaginationStyles = styled.div`
     }
 `;
 const StatsRow = styled.div`
-    padding: 0 30px;
+    padding: 20px 30px;
 `;
 
 const TimeUnit = styled.span`
