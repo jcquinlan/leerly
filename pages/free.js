@@ -3,7 +3,6 @@ import {
     Container,
     HeroWrapper,
     HeroContent,
-    Divider,
     Title,
     Subtitle
 } from '../components/styled';
@@ -24,7 +23,7 @@ function ArticlePage () {
         <HeroWrapper>
             <HeroContent>
                 <Title>free articles</Title>
-                <Subtitle>We release a free article every week. You can find all of them here.</Subtitle>
+                <Subtitle>Try out comprehensible input, with slow audio and instant translation</Subtitle>
             </HeroContent>
         </HeroWrapper>
 
