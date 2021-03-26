@@ -266,11 +266,12 @@ const NarrowContainerWrapper = styled.div`
 `;
 const NarrowContainerContent = styled.div`
     max-width: ${props => props.width};
+    text-align: ${props => props.textAlign};
 `;
-export const NarrowContainer = ({children, width = '600px'}) => {
+export const NarrowContainer = ({children, width = '600px', textAlign = 'left'}) => {
   return (
     <NarrowContainerWrapper>
-      <NarrowContainerContent width={width}>
+      <NarrowContainerContent width={width} textAlign={textAlign}>
         {children}
       </NarrowContainerContent>
     </NarrowContainerWrapper>

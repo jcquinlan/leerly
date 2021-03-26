@@ -1,5 +1,16 @@
 import React, {useContext} from 'react';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Subtitle} from '../components/styled';
+import styled from 'styled-components';
+import {
+    Container,
+    HeroWrapper,
+    HeroContent,
+    Divider,
+    Title,
+    Button,
+    Subtitle,
+    NarrowContainer,
+    Colors
+} from '../components/styled';
 import AppContext from '../contexts/appContext';
 import {redirectToStripeCheckout} from '../services/stripeService';
 
@@ -15,14 +26,17 @@ function CancelPage () {
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>registration not completed</Title>
-                <Subtitle>Looks like you didn't finish filling out your billing info.</Subtitle>
+                <Title>your trial is over</Title>
+                <Subtitle>But you can access everything again by becoming a paid subscriber.</Subtitle>
             </HeroContent>
         </HeroWrapper>
 
         <Divider />
 
-        <Button onClick={addBillingInfo}>Add billing info</Button>
+        <NarrowContainer width="400px" textAlign="center">
+            <p>It's <Primary>$5/month</Primary> for access to hundreds of articles, hours of slow audio, translations, vocab words, and more.</p>
+            <Button onClick={addBillingInfo}>Upgrade account</Button>
+        </NarrowContainer>
 
         </Container>
         </>
@@ -30,3 +44,7 @@ function CancelPage () {
 }
 
 export default CancelPage;
+
+const Primary = styled.span`
+    color: ${Colors.Primary};
+`;
