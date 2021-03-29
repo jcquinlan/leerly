@@ -69,11 +69,11 @@ function ArticlePage () {
     const createFrame = (image) => {
         const glyphText = activeGlyphs.map(glyph => glyph.text).join();
         const newFrame = {
-            image,
+            image: unsplashImageToSimplifiedImage(image),
             text: glyphText,
             start_time: activeSlot.start_time,
             end_time: activeSlot.end_time
-        }
+        };
 
         setFrames(frames => {
             return [
@@ -82,6 +82,13 @@ function ArticlePage () {
             ]
         });
         setActiveSlot(null);
+        triggerUnsplashDownload(image);
+    }
+
+    const deleteFrame = (startTime) => {
+        setFrames(frames => {
+            return frames.filter(frame => frame.start_time !== startTime);
+        });
     }
 
     if (loading) {
@@ -112,8 +119,7 @@ function ArticlePage () {
         await updateArticle(article.id, {
             frames
         });
-
-        console.log('DONE');
+        router.push(`/articles/${article.id}`);
     }
 
     return (
@@ -139,6 +145,7 @@ function ArticlePage () {
                                 {frame.start_time} to {frame.end_time}
                                 <br></br>
                                 {frame.text}
+                                <button onClick={() => deleteFrame(frame.start_time)}>Delete frame</button>
                             </FramePreview>
                         ))}
                     </FrameList>

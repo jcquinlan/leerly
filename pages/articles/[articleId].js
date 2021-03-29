@@ -34,6 +34,7 @@ import {
     prepareTranscript,
     renderTranscriptForReading
 } from '../../services/transcriptionService';
+import { useLocalStorage, STORYBOOK_ACTIVE_KEY } from '../../hooks/useLocalStorage';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -58,6 +59,10 @@ function ArticlePage () {
     const [transcript, setTranscript] = useState(null);
     const [activeFrame, setActiveFrame] = useState(null);
     const activeFrameTimeRef = useRef();
+    const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
+
+    const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
+    const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
 
     useEffect(() => {
         if (article?.transcriptId) {
@@ -244,6 +249,10 @@ function ArticlePage () {
         return <LoadingPage></LoadingPage>
     }
 
+    const toggleStorybook = () => {
+        setStorybookActiveKey(!storybookActiveKey);
+    }
+
     if (!article) return null;
 
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
@@ -260,11 +269,28 @@ function ArticlePage () {
 
             {renderAdminUI()}
 
-            <TypeList types={article.types} />
+            <ArticleSubheader>
+                <div>
+                    <TypeList types={article.types} />
 
-            <ArticleData>
-                <a href={article.url} target='_blank'>Read original article ⟶</a>
-            </ArticleData>
+                    <ArticleData>
+                        <a href={article.url} target='_blank'>Read original article ⟶</a>
+                    </ArticleData>
+                </div>
+
+                <StorybookToggleMobile>
+                    Storybook is not <br></br> available on mobile (yet)
+                </StorybookToggleMobile>
+
+                <StorybookToggleDesktop>
+                    <div>{storybookActive ? 'Storybook is active' : 'Storybook is inactive'}</div>
+                    {articleHasStorybook ? (
+                        <Button onClick={toggleStorybook}>{storybookActive ? 'Disable' : 'Enable'} Storybook</Button>
+                    ) : (
+                        <span>This article does not have Storybook</span>
+                    )}
+                </StorybookToggleDesktop>
+            </ArticleSubheader>
 
             {article.image && (
                 <div>
@@ -315,14 +341,23 @@ function ArticlePage () {
                     {renderArticleBody()}
                 </ArticleBody>
 
-                <FrameContainer>
-                    {activeFrame && (
-                        <>
-                            <FrameText>{activeFrame.text}</FrameText>
-                            <img src={activeFrame.image.urls.small}></img>
-                        </>
-                    )}
-                </FrameContainer>
+                {storybookActive && (
+                    <FrameContainer>
+                        {activeFrame && (
+                            <>
+                                <FrameText>{activeFrame.text}</FrameText>
+                                <img src={activeFrame.image.urls.small}></img>
+                            </>
+                        )}
+
+                        {!activeFrame && !isPlaying && (
+                            <FrameFiller>
+                                The Storybook pictures will display here.
+                                <span>You can disable them above.</span>
+                            </FrameFiller>
+                        )}
+                    </FrameContainer>
+                )}
             </ArticleWrapper>
 
 
@@ -347,8 +382,40 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const ArticleSubheader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+const StorybookToggleDesktop = styled.div`
+    flex-direction: column;
+    display: none;
+    text-align: right;
+
+    div {
+        margin-bottom: 5px;
+    }
+
+    @media ${devices.tablet} {
+        display: flex;
+    }
+`;
+
+const StorybookToggleMobile = styled.div`
+    text-align: center;
+
+    @media ${devices.tablet} {
+        display: none;
+    }
+`;
+
 const WideContainer = styled(Container)`
     max-width: 1200px;
+    padding-top: 0px;
+
+    @media ${devices.laptop} {
+        padding-top: 30px;
+    }
 `;
 const ArticleWrapper = styled.div`
     display: flex;
@@ -359,9 +426,29 @@ const FrameContainer = styled.div`
     height: 300px;
     position: sticky;
     top: 90px;
+    display: none;
 
     img {
         width: 100%;
+    }
+
+    @media ${devices.tablet} {
+        display: initial;
+    }
+`;
+const FrameFiller = styled.div`
+    display: flex;
+    padding: 30px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+
+    span {
+        margin-top: 5px;
     }
 `;
 const FrameText = styled.span`

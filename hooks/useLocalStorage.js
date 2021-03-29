@@ -1,6 +1,8 @@
 import {useState} from 'react';
 
 export const REFERRAL_CODE_KEY = 'leerly_referral_code';
+export const STORYBOOK_ACTIVE_KEY = 'leerly_storybook_active';
+
 export function useLocalStorage(key, initialValue) {
     // State to store our value
     // Pass initial state function to useState so logic is only executed once
