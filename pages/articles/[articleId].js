@@ -34,6 +34,7 @@ import {
     prepareTranscript,
     renderTranscriptForReading
 } from '../../services/transcriptionService';
+import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
 import { useLocalStorage, STORYBOOK_ACTIVE_KEY } from '../../hooks/useLocalStorage';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
@@ -201,7 +202,6 @@ function ArticlePage () {
         const activeFrame = frames.find(frame => frame.start_time <= e && frame.end_time >= e);
         setActiveFrame(activeFrame);
 
-
         const updatedTranscript = transcript.reduce((memo, glyph) => {
             if (glyph.type !== 'word') {
                 memo.push(glyph);
@@ -347,6 +347,7 @@ function ArticlePage () {
                             <>
                                 <FrameText>{activeFrame.text}</FrameText>
                                 <img src={activeFrame.image.urls.small}></img>
+                                {generateUnsplashUserLink(activeFrame.image)}
                             </>
                         )}
 

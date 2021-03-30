@@ -1,7 +1,13 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Input, Button, ImageWrapper, ImageAttribution} from './styled';
-import {queryUnsplash, unsplashImageToSimplifiedImage} from '../services/unsplashService';
+import {queryUnsplash} from '../services/unsplashService';
+
+export const generateUnsplashUserLink = (image) => {
+    console.log(image);
+    const url = image ? `${image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+    return <a href={url} target='_blank'>{image.user.name}</a>
+};
 
 const ArticleImageSelector = ({image, onSelectImage}) => {
     const [images, setImages] = useState([]);
@@ -19,7 +25,7 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
         onSelectImage(images[randomImageIndex]);
     }
 
-    const imageUserURL = image ? `${image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+    const imageUserURL = generateUnsplashUserLink(image);
 
     return (
         <ArticleImageSelectorWrapper>
@@ -34,7 +40,7 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
                 <ImageWrapper>
                     <img src={image.urls.regular} />
                 </ImageWrapper>
-                <ImageAttribution>Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{image.user.name}</a></ImageAttribution>
+                <ImageAttribution>Image from Unsplash, credit to {generateUnsplashUserLink(image)}</ImageAttribution>
                 {!!images.length && <Button onClick={setDifferentImage}>Try a different {query} image</Button>}
                 </>
             )}
