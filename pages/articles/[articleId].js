@@ -38,6 +38,7 @@ import { useLocalStorage, STORYBOOK_ACTIVE_KEY } from '../../hooks/useLocalStora
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
+const DEFAULT_STORYBOOK_SECONDS_DELAY = 1;
 
 function ArticlePage () {
     const router = useRouter();
@@ -58,7 +59,7 @@ function ArticlePage () {
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const [transcript, setTranscript] = useState(null);
     const [activeFrame, setActiveFrame] = useState(null);
-    const activeFrameTimeRef = useRef();
+    const [frames, setFrames] = useState([]);
     const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
 
     const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
@@ -115,6 +116,17 @@ function ArticlePage () {
                 getArticleAudioURL(article.audio)
                     .then(url => setAudioURL(url))
                     .catch(error => console.log(error))
+            }
+
+            if (article.frames?.length) {
+                setFrames(article.frames.map(frame => {
+                    return {
+                        ...frame,
+                        end_time: frame.end_time + 1
+                    }
+                // We reverse the array because we want later words to be selected from the
+                // .find() call, if there is any overlap between frames.
+                }).reverse());
             }
         }
     }, [article]);
@@ -186,21 +198,9 @@ function ArticlePage () {
     }
 
     const handleListen = (e) => {
-        if (!activeFrameTimeRef.current) {
-            const activeFrame = article?.frames?.length ?
-                article.frames.find(frame => frame.start_time <= e && frame.end_time >= e) :
-                null;
+        const activeFrame = frames.find(frame => frame.start_time <= e && frame.end_time >= e);
+        setActiveFrame(activeFrame);
 
-            setActiveFrame(activeFrame);
-
-            if (activeFrame) {
-                const activeFrameTime = ((activeFrame.end_time - activeFrame.start_time) * 100) + 1500
-                activeFrameTimeRef.current = setTimeout(() => {
-                    setActiveFrame(null);
-                    activeFrameTimeRef.current = null;
-                }, activeFrameTime);
-            }
-        }
 
         const updatedTranscript = transcript.reduce((memo, glyph) => {
             if (glyph.type !== 'word') {
