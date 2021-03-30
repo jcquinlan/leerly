@@ -24,8 +24,6 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
         onSelectImage(images[randomImageIndex]);
     }
 
-    const imageUserURL = generateUnsplashUserLink(image);
-
     return (
         <ArticleImageSelectorWrapper>
             <div>

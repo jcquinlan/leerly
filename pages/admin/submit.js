@@ -17,7 +17,6 @@ import TypeSelector from '../../components/TypeSelector';
 import ArticleImageSelector from '../../components/ArticleImageSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle, uploadAudio} from '../../services/articleService';
-
 import TextareaAutosize from 'react-textarea-autosize';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
 
