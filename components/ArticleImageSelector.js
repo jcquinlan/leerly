@@ -24,12 +24,12 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
         onSelectImage(images[randomImageIndex]);
     }
 
-    const imageUserURL = image ? `${image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+    const imageUserURL = generateUnsplashUserLink(image);
 
     return (
         <ArticleImageSelectorWrapper>
             <div>
-                <label for='query'>Search for an image</label>
+                <label htmlfor='query'>Search for an image</label>
                 <Input name='query' type='text' onChange={(event) => setQuery(event.target.value)} />
                 <Button disabled={!query} onClick={() => searchImages()}>Search</Button>
             </div>
@@ -39,8 +39,56 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
                 <ImageWrapper>
                     <img src={image.urls.regular} />
                 </ImageWrapper>
-                <ImageAttribution>Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{image.user.name}</a></ImageAttribution>
+                <ImageAttribution>Image from Unsplash, credit to {generateUnsplashUserLink(image)}</ImageAttribution>
                 {!!images.length && <Button onClick={setDifferentImage}>Try a different {query} image</Button>}
+                </>
+            )}
+        </ArticleImageSelectorWrapper>
+    )
+}
+
+export const StorybookImageSelector = ({onConfirmImage}) => {
+    const [activeImage, setActiveImage] = useState(null);
+    const [images, setImages] = useState([]);
+    const [query, setQuery] = useState('');
+
+    const searchImages = async () => {
+        const images = await queryUnsplash(query);
+        setImages(images.results);
+        setActiveImage(images.results[0]);
+    }
+
+    const setDifferentImage = () => {
+        if (!images.length) return;
+        const randomImageIndex = Math.floor(Math.random() * images.length);
+        setActiveImage(images[randomImageIndex]);
+    }
+
+    const selectImage = () => {
+        setQuery('');
+        setImages([]);
+        setActiveImage(null);
+        onConfirmImage(activeImage);
+    }
+
+    const imageUserURL = activeImage ? `${activeImage.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+
+    return (
+        <ArticleImageSelectorWrapper>
+            <div>
+                <label htmlfor='query'>Search for an image</label>
+                <Input name='query' type='text' onChange={(event) => setQuery(event.target.value)} />
+                <Button disabled={!query} onClick={() => searchImages()}>Search</Button>
+            </div>
+
+            {activeImage && (
+                <>
+                <ImageWrapper>
+                    <img src={activeImage.urls.regular} />
+                </ImageWrapper>
+                <ImageAttribution>Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{activeImage.user.name}</a></ImageAttribution>
+                {!!images.length && <Button onClick={setDifferentImage}>Try a different {query} image</Button>}
+                {!!images.length && <Button onClick={selectImage}>Use this image</Button>}
                 </>
             )}
         </ArticleImageSelectorWrapper>

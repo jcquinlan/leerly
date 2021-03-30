@@ -13,7 +13,8 @@ import {
     ImageAttribution,
     ImageWrapper,
     AudioWrapper,
-    FakeAudioWidget
+    FakeAudioWidget,
+    TranscriptWord
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -28,10 +29,17 @@ import {
     getUserMetrics,
     updateUserListeningTimeActivityMetric
 } from '../../services/articleService';
-import {fetchArticleTranscription} from '../../services/transcriptionService';
+import {
+    fetchArticleTranscription,
+    prepareTranscript,
+    renderTranscriptForReading
+} from '../../services/transcriptionService';
+import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
+import { useLocalStorage, STORYBOOK_ACTIVE_KEY } from '../../hooks/useLocalStorage';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
+const DEFAULT_STORYBOOK_SECONDS_DELAY = 1;
 
 function ArticlePage () {
     const router = useRouter();
@@ -50,27 +58,13 @@ function ArticlePage () {
      // of react-audio-player. Instead, we can just use state to maintain an element
      // reference. It's weird, but it works.
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
-    const windowHeight = !!window ? window.innerHeight - 50 : 800;
-    const audioOffset = audioOffsetRef.current?.getBoundingClientRect().top || windowHeight;
     const [transcript, setTranscript] = useState(null);
+    const [activeFrame, setActiveFrame] = useState(null);
+    const [frames, setFrames] = useState([]);
+    const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
 
-    // TODO - Move to some fancy transcript service or something
-    const prepareTranscript = transcript => {
-        return transcript.map(speaker => {
-            const newParagraphObject = {
-                type: 'newParagraph'
-            };
-
-            const words = speaker.words.map(word => {
-                return {
-                    ...word,
-                    type: 'word'
-                }
-            });
-
-            return [...words, newParagraphObject];
-        }).flat();
-    }
+    const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
+    const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
 
     useEffect(() => {
         if (article?.transcriptId) {
@@ -83,6 +77,14 @@ function ArticlePage () {
                         setTranscript(preparedTranscript);
                     }
                 })
+        }
+
+        if (article?.frames?.length) {
+            // Preload all frame images and cache them so they appear instantly
+            article.frames.forEach(frame => {
+                const img = new Image();
+                img.src = frame.image.urls.small;
+            })
         }
     }, [article?.transcriptId]);
 
@@ -115,6 +117,17 @@ function ArticlePage () {
                 getArticleAudioURL(article.audio)
                     .then(url => setAudioURL(url))
                     .catch(error => console.log(error))
+            }
+
+            if (article.frames?.length) {
+                setFrames(article.frames.map(frame => {
+                    return {
+                        ...frame,
+                        end_time: frame.end_time + 1
+                    }
+                // We reverse the array because we want later words to be selected from the
+                // .find() call, if there is any overlap between frames.
+                }).reverse());
             }
         }
     }, [article]);
@@ -186,6 +199,9 @@ function ArticlePage () {
     }
 
     const handleListen = (e) => {
+        const activeFrame = frames.find(frame => frame.start_time <= e && frame.end_time >= e);
+        setActiveFrame(activeFrame);
+
         const updatedTranscript = transcript.reduce((memo, glyph) => {
             if (glyph.type !== 'word') {
                 memo.push(glyph);
@@ -217,25 +233,10 @@ function ArticlePage () {
             return article.body;
         }
 
-        const html = transcript.map((glyph, index) => {
-            if (glyph.type === 'word') {
-                return (
-                    <Word
-                        key={glyph.start_time}
-                        highlight={glyph.highlight}
-                        onClick={() => handleWordClick(glyph.start_time)}
-                    >
-                        {glyph.text}
-                    </Word>
-                );
-            }
-
-            if (glyph.type === 'newParagraph') {
-                return [<br />, <br />];
-            }
+        return renderTranscriptForReading(transcript, {
+            component: TranscriptWord,
+            onClickWord: (word) => handleWordClick(word.start_time)
         });
-
-        return html;
     }
 
     const handleAudioPlayerInitialization = (ref) => {
@@ -248,11 +249,16 @@ function ArticlePage () {
         return <LoadingPage></LoadingPage>
     }
 
+    const toggleStorybook = () => {
+        setStorybookActiveKey(!storybookActiveKey);
+    }
+
     if (!article) return null;
 
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
+        <>
         <Container>
             {!!user && <BackLink role="link" onClick={() => router.push('/dashboard')}>← Back to dashboard</BackLink>}
             <TitleWrapper>
@@ -263,11 +269,28 @@ function ArticlePage () {
 
             {renderAdminUI()}
 
-            <TypeList types={article.types} />
+            <ArticleSubheader>
+                <div>
+                    <TypeList types={article.types} />
 
-            <ArticleData>
-                <a href={article.url} target='_blank'>Read original article ⟶</a>
-            </ArticleData>
+                    <ArticleData>
+                        <a href={article.url} target='_blank'>Read original article ⟶</a>
+                    </ArticleData>
+                </div>
+
+                <StorybookToggleMobile>
+                    Storybook is not <br></br> available on mobile (yet)
+                </StorybookToggleMobile>
+
+                <StorybookToggleDesktop>
+                    <div>{storybookActive ? 'Storybook is active' : 'Storybook is inactive'}</div>
+                    {articleHasStorybook ? (
+                        <Button onClick={toggleStorybook}>{storybookActive ? 'Disable' : 'Enable'} Storybook</Button>
+                    ) : (
+                        <span>This article does not have Storybook</span>
+                    )}
+                </StorybookToggleDesktop>
+            </ArticleSubheader>
 
             {article.image && (
                 <div>
@@ -279,8 +302,9 @@ function ArticlePage () {
                     </ImageAttribution>
                 </div>
             )}
+        </Container>
 
-
+        <WideContainer>
             <AudioOffsetWrapper ref={audioOffsetRef} style={{position: 'sticky', top: '30px'}}>
                 {!!audioURL && !playAudio && (
                     <AudioWrapper>
@@ -311,9 +335,31 @@ function ArticlePage () {
             <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
-            <ArticleBody ref={articleBodyRef}>
-                {renderArticleBody()}
-            </ArticleBody>
+
+            <ArticleWrapper>
+                <ArticleBody ref={articleBodyRef}>
+                    {renderArticleBody()}
+                </ArticleBody>
+
+                {storybookActive && (
+                    <FrameContainer>
+                        {activeFrame && (
+                            <>
+                                <FrameText>{activeFrame.text}</FrameText>
+                                <img src={activeFrame.image.urls.small}></img>
+                                {generateUnsplashUserLink(activeFrame.image)}
+                            </>
+                        )}
+
+                        {!activeFrame && !isPlaying && (
+                            <FrameFiller>
+                                The Storybook pictures will display here.
+                                <span>You can disable them above.</span>
+                            </FrameFiller>
+                        )}
+                    </FrameContainer>
+                )}
+            </ArticleWrapper>
 
             {(!article.free || user) && (
                 <ButtonRow>
@@ -329,12 +375,87 @@ function ArticlePage () {
                     <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
             )}
-        </Container>
+        </WideContainer>
+        </>
     );
 }
 
 export default ArticlePage;
 
+const ArticleSubheader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+const StorybookToggleDesktop = styled.div`
+    flex-direction: column;
+    display: none;
+    text-align: right;
+
+    div {
+        margin-bottom: 5px;
+    }
+
+    @media ${devices.tablet} {
+        display: flex;
+    }
+`;
+
+const StorybookToggleMobile = styled.div`
+    text-align: center;
+
+    @media ${devices.tablet} {
+        display: none;
+    }
+`;
+
+const WideContainer = styled(Container)`
+    max-width: 1200px;
+    padding-top: 0px;
+
+    @media ${devices.laptop} {
+        padding-top: 30px;
+    }
+`;
+const ArticleWrapper = styled.div`
+    display: flex;
+    margin-top: 30px;
+`;
+const FrameContainer = styled.div`
+    width: 300px;
+    height: 300px;
+    position: sticky;
+    top: 90px;
+    display: none;
+
+    img {
+        width: 100%;
+    }
+
+    @media ${devices.tablet} {
+        display: initial;
+    }
+`;
+const FrameFiller = styled.div`
+    display: flex;
+    padding: 30px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+
+    span {
+        margin-top: 5px;
+    }
+`;
+const FrameText = styled.span`
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+`;
 const BackLink = styled.span`
     color: ${Colors.Primary};
     cursor: pointer;
@@ -379,36 +500,16 @@ const AdminButtons = styled.div`
 `;
 
 const ArticleBody = styled.div`
-    padding: 10px;
-    margin-top: 30px;
+    flex: 1;
+    padding: 0 10px;
     font-size: 18px;
     line-height: 30px;
     white-space: pre-wrap;
     font-family: 'Source Sans Pro', sans-serif;
 
     @media ${devices.laptop} {
-        padding: 30px;
+        padding: 0 30px;
     }
-`;
-
-const Word = styled.span`
-    cursor: pointer;
-
-    &:hover {
-        color: ${Colors.Primary};
-        font-weight: bold;
-    }
-
-    ${props => props.highlight ? `
-        border-radius: 5px;
-        background-color: ${Colors.Primary};
-        color: white;
-
-        &:hover {
-            color: #fff;
-            font-weight: bold;
-        }
-    `: ``}
 `;
 
 const ArticleData = styled.div`
