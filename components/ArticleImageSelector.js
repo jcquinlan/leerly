@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Input, Button, ImageWrapper, ImageAttribution} from './styled';
-import {queryUnsplash, unsplashImageToSimplifiedImage} from '../services/unsplashService';
+import {queryUnsplash} from '../services/unsplashService';
+
+export const generateUnsplashUserLink = (image) => {
+    const url = image ? `${image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+    return <a href={url} target='_blank'>{image.user.name}</a>
+};
 
 const ArticleImageSelector = ({image, onSelectImage}) => {
     const [images, setImages] = useState([]);
