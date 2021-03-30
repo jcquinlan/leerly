@@ -68,7 +68,7 @@ function ArticlePage () {
                 title: formState.title,
                 free: formState.free || false,
                 published: formState.published || false,
-                transcriptId: formState.transcriptId,
+                transcriptId: formState.transcriptId || null,
                 audio: newAudioURL || audioURL || null,
                 types: selectedTypes,
                 image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null

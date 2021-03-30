@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { DefaultSeo } from 'next-seo';
+import { useRouter } from 'next/router';
 import {
   PageContainer,
   Container,
@@ -12,13 +13,26 @@ import {
   Button,
   devices,
   Colors,
-  HelpText,
   Card,
   Flex,
   NarrowContainer
 } from '../components/styled';
+import mixpanelContext from '../contexts/mixpanelContext';
 
 function App() {
+  const mixpanel = useContext(mixpanelContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (mixpanel) {
+      mixpanel.trackEvent('landing-page-loaded');
+    }
+  }, []);
+
+  const goToFreeArticle = async () => {
+    await mixpanel.trackEvent('visited-free-article');
+    router.push('https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n');
+  }
 
   return (
     <>
@@ -46,20 +60,21 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <MainHeroContent>
           <Title>leerly.</Title>
           <Subtitle>
-            Improve your Spanish with Comprehensible Input that doesn't suck.
+            Improve your Spanish with Compelling, Comprehensible Input.
             <Faint> Qué guay.</Faint>
           </Subtitle>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <a href="/register"><SignUpButton>Empezar ahora con un mes de prueba gratis</SignUpButton></a>
-            <div style={{maxWidth: '250px', textAlign: 'center'}}>
-              <HelpText>If you don't know what that says, you'll definitely want to click it.</HelpText>
-            </div>
+            <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
           </div>
         </MainHeroContent>
       </HeroWrapper>
 
-      <SectionDivider />
+      <MainImage>
+        <img src="/images/landing-page-screenshot.png"></img>
+      </MainImage>
+
+      <ImageSectionDivider />
 
       <div style={{marginBottom: '90px'}}>
         <NarrowContainer>
@@ -92,12 +107,21 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           </Feature>
         </ExperiencesList>
 
-        <NarrowContainer>
+        {/* <NarrowContainer>
           <SectionExplanation>
             It turns out, your brain is good at picking up a new language as long as you have lots of reading and listening material in your
             target language. It's a learning philosophy called <a target="_blank" href="https://en.wikipedia.org/wiki/J._Marvin_Brown#Automatic_Language_Growth">Automatic Language Growth</a>, and it's working well for us, and our students.
           </SectionExplanation>
-        </NarrowContainer>
+        </NarrowContainer> */}
+
+
+        <FreeArticleWrapper>
+          <h4>See for yourself by reading a free article</h4>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Button role="link" onClick={goToFreeArticle}>Read a free article now</Button>
+          </div>
+        </FreeArticleWrapper>
+
       </div>
 
       <GroupCallSection>
@@ -180,19 +204,13 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </Testimonial>
       </TestimonialRow>
 
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <a href="https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n"><Button>Leer un artículo gratis</Button></a>
-        <div style={{maxWidth: '250px', textAlign: 'center'}}>
-          <HelpText>This is the second time we've used "gratis" on this page. Guess what it means.</HelpText>
-        </div>
-      </div>
 
     <PageContainer paddingTop="0px">
       <SectionDivider />
 
       <SectionHeader>Pricing</SectionHeader>
       <DescriptionText>
-        leerly is <Free>$5/month</Free>, but for a <Free>free month trial</Free>, use the promotion code <Faint>LISTO</Faint> at checkout.
+        leerly is free for the first month, then <Free>$5/month</Free>.
       </DescriptionText>
 
       <SectionDivider />
@@ -211,7 +229,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <Question>
         <QuestionText>Do you have a trial?</QuestionText>
-        <DescriptionText>Sure! For a free month, just use the code LISTO at checkout. We won't bill you for 4 weeks, and you can cancel any time before then.</DescriptionText>
+        <DescriptionText>Sure! By default, the first month is totally free.</DescriptionText>
       </Question>
 
       <Question>
@@ -238,6 +256,14 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </DescriptionText>
       </Question>
 
+      <Question>
+        <QuestionText>How can I learn a language just by reading and listening?</QuestionText>
+        <DescriptionText>
+          Yeah, it sounds kind of whacky, I didn't believe it either. That's why we recommend you try it out with
+          our free trial, or you can <a href='/about'>read about it a little bit first</a>.
+        </DescriptionText>
+      </Question>
+
       <HeroWrapper>
         <HeroContent>
           <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
@@ -261,6 +287,19 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
 export default App;
 
+const MainImage = styled.div`
+  img {
+    width: 100%;
+  }
+`;
+const FreeArticleWrapper = styled.div`
+  text-align: center;
+  margin: 120px 0 120px 0;
+
+  h4 {
+    font-size: 20px;
+  }
+`;
 const GroupCallSection = styled.div`
   img {
     width: 100%;
@@ -301,6 +340,9 @@ const Feature = styled.div`
 const SectionDivider = styled(Divider)`
   margin: 90px 0;
 `;
+const ImageSectionDivider = styled(SectionDivider)`
+  margin-top: -2px;
+`;
 const TestimonialRow = styled.div`
   display: flex;
   flex-direction: column;
@@ -310,7 +352,6 @@ const TestimonialRow = styled.div`
 
   @media ${devices.laptop} {
     flex-direction: row;
-    margin-bottom: 90px;
     align-items: flex-start;
   }
 `;

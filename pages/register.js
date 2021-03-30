@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {
@@ -18,11 +18,16 @@ import { NextSeo } from 'next-seo';
 import {redirectToStripeCheckout} from '../services/stripeService';
 import {registerUser} from '../services/authService';
 import {createUserProfileDocument} from '../services/userService';
-import useEnforceSignedOut from '../hooks/useEnforceSignedOut';
 import {useLocalStorage, REFERRAL_CODE_KEY} from '../hooks/useLocalStorage';
+import mixpanelContext from '../contexts/mixpanelContext';
 
 function RegisterPage () {
-    useEnforceSignedOut();
+    const mixpanel = useContext(mixpanelContext);
+    useEffect(() => {
+      if (mixpanel) {
+        mixpanel.trackEvent('register-page-loaded');
+      }
+    }, []);
 
     const router = useRouter();
     const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
@@ -32,7 +37,7 @@ function RegisterPage () {
     const [formState, setFormState] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const formIsFilled = useMemo(() => {
-        return !!(formState.name && formState.email && formState.password && formState.confirmPassword);
+        return !!(formState.email && formState.password && formState.confirmPassword);
     }, [formState]);
 
     useEffect(() => {
@@ -57,8 +62,8 @@ function RegisterPage () {
             await createUserProfileDocument({
                 email: userDocument.user.email,
                 user_uid: userDocument.user.uid,
-                name: formState.name
             });
+            await mixpanel.trackEvent('account-created');
             redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email, referralCode);
         } catch (error) {
             console.error(error);
@@ -91,18 +96,19 @@ function RegisterPage () {
 
         <Divider />
 
+        {/* <PricingInfo>
+            <Primary>$5/month</Primary> for <b>hundreds of articles</b> in intermediate Spanish, <b>hours of slow audio</b> of native speakers reading,
+             <b>translating</b> in-app, built-in <b>vocab studying</b>, weekly <b>live Spanish classes</b>
+        </PricingInfo> */}
+
         <ExplanationText>
-            <Primary>$5/month.</Primary> First month <b>free</b> with the code LISTO during checkout.
+            First month <b>free</b>, and your money back guaranteed if you aren't happy. No questions asked.
         </ExplanationText>
 
         <Card>
-            <HelpText>
-                After submitting your email and password, you'll be redirected to our payment page to provide
-                billing information.
-            </HelpText>
+            <HelpText>We will ask you for billing info after this, but we wont charge you until the trial is over. You can cancel any time, too.</HelpText>
 
             <form onSubmit={handleSubmit}>
-                <Input type='text' name='name' placeholder='your name' required onChange={handleFormState}/>
                 <Input type='email' name='email' placeholder='email' required onChange={handleFormState}/>
                 <Input type='password' name='password' placeholder='password' required onChange={handleFormState}/>
                 <Input type='password' name='confirmPassword' placeholder='confirm password' required onChange={handleFormState}/>
@@ -124,9 +130,16 @@ const ExplanationText = styled.div`
     font-weight: 200;
 `;
 
+const PricingInfo = styled.div`
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 30px;
+    font-weight: 200;
+    line-height: 36px;
+`;
+
 const Primary = styled.span`
     color: ${Colors.Primary};
     font-weight: bold;
     font-size: 24px;
-    margin-right: 5px;
 `;

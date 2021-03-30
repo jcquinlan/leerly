@@ -6,15 +6,18 @@ import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
 import {auth, analytics} from '../services/index';
 import AppContext from '../contexts/appContext';
+import MixpanelContext from '../contexts/mixpanelContext';
 import Link from '../components/Link';
 import LoadingPage from '../components/LoadingPage';
 import useAppContext from '../hooks/useAppContext';
+import useMixpanelContext from '../hooks/useMixpanel';
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims } from '../services/userService';
 import {Container, devices} from '../components/styled';
 
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
+  const mixpanelContextApi = useMixpanelContext();
   const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
   const router = useRouter();
   // If we are just loading the landing page, lets not wait to fetch all the user's data, since
@@ -69,6 +72,7 @@ function MyApp({ Component, pageProps }) {
   const renderSignedOutLinks = () => {
     return [
         <Link key="home" id="/" className="menu-item" href="/">home</Link>,
+        <Link key="about" id="/about" className="menu-item" href="/about">about us</Link>,
         <Link key="free" id="/free" className="menu-item" href="/free">free articles</Link>,
         <Link key="register" id="/register" className="menu-item" href="/register">register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
@@ -102,6 +106,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
+    <MixpanelContext.Provider value={mixpanelContextApi}>
     <AppContext.Provider value={appContextApi}>
       <ToastProvider>
         <MobileNav>
@@ -127,6 +132,7 @@ function MyApp({ Component, pageProps }) {
         </FooterContainer>
       </ToastProvider>
     </AppContext.Provider>
+    </MixpanelContext.Provider>
     </>
   )
 }

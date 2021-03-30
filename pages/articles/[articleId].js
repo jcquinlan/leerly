@@ -361,7 +361,6 @@ function ArticlePage () {
                 )}
             </ArticleWrapper>
 
-
             {(!article.free || user) && (
                 <ButtonRow>
                     <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
@@ -373,7 +372,7 @@ function ArticlePage () {
             {article.free && !user && (
                 <UpgradeWrapper>
                     <p>Enjoyed reading this? Want to improve your Spanish?</p>
-                    <Button onClick={() => router.push('/register')}>Join leerly</Button>
+                    <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
             )}
         </WideContainer>
