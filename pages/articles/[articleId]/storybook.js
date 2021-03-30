@@ -24,7 +24,7 @@ import {
 import {updateArticle} from '../../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
 
-function ArticlePage () {
+function StorybookPage () {
     useGuardAdminRoute();
 
     const router = useRouter();
@@ -181,7 +181,7 @@ function ArticlePage () {
     );
 }
 
-export default ArticlePage;
+export default StorybookPage;
 
 const AddImageCard = styled(Card)`
     margin-bottom: 60px;
