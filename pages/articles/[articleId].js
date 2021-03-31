@@ -14,11 +14,13 @@ import {
     ImageWrapper,
     AudioWrapper,
     FakeAudioWidget,
-    TranscriptWord
+    TranscriptWord,
+    HelpText
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
+import PlaybackRateSelector from '../../components/PlaybackRateSelector';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -53,7 +55,6 @@ function ArticlePage () {
     const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
     const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
-    const audioOffsetRef = useRef();
      // We can't use a conventional React ref due to the specific API
      // of react-audio-player. Instead, we can just use state to maintain an element
      // reference. It's weird, but it works.
@@ -62,6 +63,7 @@ function ArticlePage () {
     const [activeFrame, setActiveFrame] = useState(null);
     const [frames, setFrames] = useState([]);
     const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
+    const [playbackRate, setPlaybackRate] = useState(null);
 
     const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
     const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
@@ -242,6 +244,10 @@ function ArticlePage () {
     const handleAudioPlayerInitialization = (ref) => {
         if (!audioPlayerRef && !!ref) {
             setAudioPlayerRef(ref.audioEl.current);
+
+            if (playbackRate) {
+                ref.audioEl.current.playbackRate = playbackRate;
+            }
         }
     }
 
@@ -251,6 +257,14 @@ function ArticlePage () {
 
     const toggleStorybook = () => {
         setStorybookActiveKey(!storybookActiveKey);
+    }
+
+    const handlePlaybackRateChange = (option) => {
+        if (audioPlayerRef) {
+            audioPlayerRef.playbackRate = option.value;
+        }
+
+        setPlaybackRate(option.value);
     }
 
     if (!article) return null;
@@ -305,17 +319,27 @@ function ArticlePage () {
         </Container>
 
         <WideContainer>
-            <AudioOffsetWrapper ref={audioOffsetRef} style={{position: 'sticky', top: '30px'}}>
+
+            {!!audioURL && (
+                <PlaybackRateRow>
+                    <PlaybackRateSelectorWrapper>
+                        <HelpText>Speed</HelpText>
+                        <PlaybackRateSelector onChange={handlePlaybackRateChange} />
+                    </PlaybackRateSelectorWrapper>
+                </PlaybackRateRow>
+            )}
+
+            <AudioOffsetWrapper>
                 {!!audioURL && !playAudio && (
-                    <AudioWrapper>
+                    <CustomAudioWrapper>
                         <FakeAudioWidget onClick={() => setPlayAudio(true)}>
                             <span>Play audio</span> &#9658;
                         </FakeAudioWidget>
-                    </AudioWrapper>
+                    </CustomAudioWrapper>
                 )}
 
                 {!!audioURL && playAudio && (
-                    <AudioWrapper>
+                    <CustomAudioWrapper>
                         <div>
                             <ReactAudioPlayer
                                 ref={handleAudioPlayerInitialization}
@@ -328,7 +352,7 @@ function ArticlePage () {
                                 controls
                             />
                         </div>
-                    </AudioWrapper>
+                    </CustomAudioWrapper>
                 )}
             </AudioOffsetWrapper>
 
@@ -382,6 +406,30 @@ function ArticlePage () {
 
 export default ArticlePage;
 
+const CustomAudioWrapper = styled(AudioWrapper)`
+    @media ${devices.mobileL} {
+        margin-left: -100px;
+    }
+`;
+const PlaybackRateRow = styled.div`
+    display: flex;
+    justify-content: center;
+`;
+const PlaybackRateSelectorWrapper = styled.div`
+    width: 90px;
+    z-index: 9;
+
+    ${HelpText} {
+        margin: 0;
+        text-align: center;
+    }
+
+    @media ${devices.mobileL} {
+        position: absolute;
+        margin-right: -320px;
+        margin-top: 45px;
+    }
+`;
 const ArticleSubheader = styled.div`
     display: flex;
     justify-content: space-between;
@@ -420,6 +468,10 @@ const WideContainer = styled(Container)`
 const ArticleWrapper = styled.div`
     display: flex;
     margin-top: 30px;
+
+    @media ${devices.mobileL} {
+        margin-top: 90px;
+    }
 `;
 const FrameContainer = styled.div`
     width: 300px;
@@ -460,7 +512,25 @@ const BackLink = styled.span`
     color: ${Colors.Primary};
     cursor: pointer;
 `;
-const AudioOffsetWrapper = styled.div``;
+const AudioOffsetWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: sticky;
+    top: 0px; 
+
+    @media ${devices.mobileL} {
+        flex-direction: row;
+        top: 30px;
+
+        ${PlaybackRateSelectorWrapper} {
+            margin-top: 30px;
+            margin-left: 20px;
+        }
+    }
+
+`;
 const Psst = styled.p`
     text-align: center;
     color: #666;
