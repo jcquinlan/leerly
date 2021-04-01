@@ -71,7 +71,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       </HeroWrapper>
 
       <MainImage>
-        <img src="/images/landing-page-with-text.png"></img>
+        <img src="/images/landing-page-with-playback.png"></img>
       </MainImage>
 
       <ImageSectionDivider />
@@ -288,7 +288,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 export default App;
 
 const MainImage = styled.div`
-  margin-top: 60px;
+  margin-top: 90px;
   img {
     width: 100%;
   }
