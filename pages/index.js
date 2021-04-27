@@ -209,9 +209,35 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       <SectionDivider />
 
       <SectionHeader>Pricing</SectionHeader>
-      <DescriptionText>
-        leerly is free for the first month, then <Free>$5/month</Free>.
-      </DescriptionText>
+        {/* leerly is free for the first month, then <Free>$5/month</Free>. */}
+        <Plans>
+          <PlanContainer>
+            <PlanHeader>
+              Free
+            </PlanHeader>
+            <PlanBody>
+              <ul>
+                <li>Save/study vocab</li>
+                <li>High-quality audio of each article</li>
+              </ul>
+            </PlanBody>
+          </PlanContainer>
+
+          <PlanContainer>
+            <PlanHeader>
+              $5/month
+            </PlanHeader>
+            <PlanBody>
+              <ul>
+                <li>Unlimited translations</li>
+                <li>Save/study vocab</li>
+                <li>High-quality audio of each article</li>
+                <li>Access to all articles</li>
+                <li>Priority access to weekly speaking sessions</li>
+              </ul>
+            </PlanBody>
+          </PlanContainer>
+        </Plans>
 
       <SectionDivider />
 
@@ -286,6 +312,30 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 }
 
 export default App;
+
+const Plans = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const PlanContainer = styled.div`
+  margin-right: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+`;
+
+const PlanHeader = styled.div`
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  font-weight: bold;
+  font-size: 24px;
+  text-align: center;
+`;
+const PlanBody = styled.div`
+  // ul {
+  //   padding: 0;
+  // }
+`;
 
 const MainImage = styled.div`
   margin-top: 90px;
