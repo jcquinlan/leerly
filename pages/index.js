@@ -24,14 +24,31 @@ function App() {
   const router = useRouter();
 
   useEffect(() => {
-    if (mixpanel) {
-      mixpanel.trackEvent('landing-page-loaded');
+    const hasRef = router.asPath.includes('?');
+    const ref = router.query.ref;
+
+    // While our router object is returns syncronously,
+    // the query params are not hydrated that quickly,
+    // so we need to wait until they are loaded before issuing the event.
+    const refsAreStillLoading = hasRef && !ref;
+
+    if (mixpanel && !refsAreStillLoading) {
+      const ref = router.query.ref;
+      mixpanel.trackEvent('landing-page-loaded', {ref});
     }
-  }, []);
+  }, [router]);
 
   const goToFreeArticle = async () => {
-    await mixpanel.trackEvent('visited-free-article');
+    const ref = router.query.ref;
+    await mixpanel.trackEvent('visited-free-article', {ref});
     router.push('https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n');
+  }
+
+  const registerUrl = () => {
+    const ref = router.query.ref;
+    return ref ?
+      `/register?ref=${ref}` :
+      `/register`;
   }
 
   return (
@@ -65,7 +82,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           </Subtitle>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
+            <a href={registerUrl()}><SignUpButton>Start now with a free month</SignUpButton></a>
           </div>
         </MainHeroContent>
       </HeroWrapper>
@@ -266,7 +283,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <HeroWrapper>
         <HeroContent>
-          <a href="/register"><SignUpButton>Start now with a free month</SignUpButton></a>
+          <a href={registerUrl()}><SignUpButton>Start now with a free month</SignUpButton></a>
         </HeroContent>
       </HeroWrapper>
 
