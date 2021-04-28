@@ -8,6 +8,11 @@ const useMixPanel = () => {
         if (mixpanel && !isDevEnv) {
             const response = await mixpanel.track(event, metadata);
             return response;
+        } else {
+            console.log('Dev Mixpanel Event Info:');
+            console.log(`Event: ${event}`);
+            console.log(`Metadata: ${JSON.stringify(metadata)}`);
+            console.log(`------------------------------`);
         }
     };
 

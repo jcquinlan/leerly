@@ -23,12 +23,6 @@ import mixpanelContext from '../contexts/mixpanelContext';
 
 function RegisterPage () {
     const mixpanel = useContext(mixpanelContext);
-    useEffect(() => {
-      if (mixpanel) {
-        mixpanel.trackEvent('register-page-loaded');
-      }
-    }, []);
-
     const router = useRouter();
     const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
     const referralCode = useMemo(() => router.query.referralCode || savedReferralCode, [router, savedReferralCode]);
@@ -41,6 +35,13 @@ function RegisterPage () {
     }, [formState]);
 
     useEffect(() => {
+        if (mixpanel) {
+            const ref = router.query.ref;
+            mixpanel.trackEvent('register-page-loaded', {ref});
+        }
+    }, []);
+
+    useEffect(() => {
         if (router.query.referralCode) {
             storeReferralCode(router.query.referralCode);
         }
@@ -50,6 +51,8 @@ function RegisterPage () {
         e.preventDefault();
         setSubmitting(true);
         try {
+            const ref = router.query.ref;
+
             if (!formIsFilled) {
                 throw Error('Please fill out all information');
             }
@@ -63,7 +66,7 @@ function RegisterPage () {
                 email: userDocument.user.email,
                 user_uid: userDocument.user.uid,
             });
-            await mixpanel.trackEvent('account-created');
+            await mixpanel.trackEvent('account-created', {ref});
             redirectToStripeCheckout(userDocument.user.uid, userDocument.user.email, referralCode);
         } catch (error) {
             console.error(error);
