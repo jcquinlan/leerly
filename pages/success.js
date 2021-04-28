@@ -17,6 +17,7 @@ function SuccessPage () {
 
     useEffect(() => {
         if (mixpanel) {
+            const ref = router.query.ref;
             mixpanel.trackEvent('stripe-checkout-complete', {ref});
         }
     }, []);
