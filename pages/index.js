@@ -209,8 +209,8 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       <SectionDivider />
 
       <SectionHeader>Pricing</SectionHeader>
-        {/* leerly is free for the first month, then <Free>$5/month</Free>. */}
-        <Plans>
+        <p>leerly is free for the first month, then <Free>$5/month</Free>.</p>
+        {/* <Plans>
           <PlanContainer>
             <PlanHeader>
               Free
@@ -237,7 +237,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
               </ul>
             </PlanBody>
           </PlanContainer>
-        </Plans>
+        </Plans> */}
 
       <SectionDivider />
 

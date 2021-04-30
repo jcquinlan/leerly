@@ -1,11 +1,17 @@
 import {useState} from 'react';
 
+const PLANS = {
+    FREE_PLAN: 'leerly Starter Plan',
+    BASIC_PLAN: 'leerly Basic'
+};
+
 const initialAppState = {
     loading: true,
     user: null,
     userProfile: null,
     claims: null,
-    navOpen: false
+    navOpen: false,
+    plans: []
 };
 const useAppContext = () => {
     const [appState, setAppState] = useState(initialAppState);
@@ -30,16 +36,26 @@ const useAppContext = () => {
         setAppState(state => ({...state, loading: boolean}));
     }
 
-    const isAdmin = appState.claims && appState.claims.is_admin;
+    const setPlans = (plans) => {
+        setAppState(state => ({...state, plans}));
+    }
+
+    const userHasBasicPlan = () => {
+        return appState.plans.some(plan => plan.name === PLANS.BASIC_PLAN);
+    }
+
+    const isAdmin = !!appState?.claims?.is_admin;
 
     return {
         ...appState,
+        isAdmin,
         setUser,
         setNavOpen,
         setClaims,
         setUserProfile,
         setLoading,
-        isAdmin
+        setPlans,
+        userHasBasicPlan
     }
 }
 

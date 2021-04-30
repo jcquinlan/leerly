@@ -12,7 +12,7 @@ import LoadingPage from '../components/LoadingPage';
 import useAppContext from '../hooks/useAppContext';
 import useMixpanelContext from '../hooks/useMixpanel';
 import { signOutUser } from '../services/authService';
-import { getUserProfile, getUserClaims } from '../services/userService';
+import { getUserProfile, getUserClaims, getUserPlans } from '../services/userService';
 import {Container, devices} from '../components/styled';
 
 function MyApp({ Component, pageProps }) {
@@ -35,9 +35,18 @@ function MyApp({ Component, pageProps }) {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         const profile = await getUserProfile(user.uid);
+        const profileData = profile.data();
+
+        const subscriptions = await getUserPlans(profileData.customerId)
+        const activePlans = subscriptions
+          .map(({plan}) => plan)
+          .filter(plan => plan.active);
+
+        appContextApi.setPlans(activePlans);
+
         appContextApi.setUser(user);
-        appContextApi.setUserProfile(profile.data());
-        const claimRef = await getUserClaims(user.uid)
+        appContextApi.setUserProfile(profileData);
+        const claimRef = await getUserClaims(user.uid);
         const claimData = claimRef.data();
 
         if (claimData) {
