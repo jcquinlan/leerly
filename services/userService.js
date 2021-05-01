@@ -32,3 +32,13 @@ export const getUserProfile = async (uid) => {
 export const getUserClaims = async (uid) => {
     return db.collection('user_claims').doc(uid).get();
 }
+
+export const getUserPlans = async (customerId) => {
+    if (!customerId) {
+        console.error('Missing customerId');
+        return;
+    }
+
+    return fetch(`/api/stripe/get-user-subscriptions?customerId=${customerId}`)
+        .then(res => res.json());
+}
