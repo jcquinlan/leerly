@@ -32,7 +32,6 @@ const useDashboardArticles = () => {
                         return b.added_at.seconds - a.added_at.seconds;
                     })
 
-                    console.log(allArticles)
                     setArticles(allArticles);
                 })
                 .catch(err => {
