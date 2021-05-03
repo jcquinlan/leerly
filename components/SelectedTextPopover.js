@@ -5,12 +5,15 @@ import {useDebouncedCallback} from 'use-debounce';
 import dynamic from 'next/dynamic';
 import {useRouter} from 'next/router';
 import placeRightBelow from 'react-text-selection-popover/lib/placeRightBelow'
-
 import {createNewVocab} from '../services/vocabService';
 import {translateText} from '../services/translationService';
 import AppContext from '../contexts/appContext';
 import { Colors } from './styled';
-import { useLocalStorage, TRANSLATIONS_TODAY_KEY, initialTranslationsToday } from '../hooks/useLocalStorage';
+import {
+    useLocalStorage,
+    TRANSLATIONS_TODAY_KEY,
+    initialTranslationsToday
+} from '../hooks/useLocalStorage';
 
 const MAX_FREE_TRANSLATIONS = 10;
 
@@ -28,44 +31,6 @@ const getTextSelection = () => {
     }
 }
 
-export const SimplifiedSelectedTextPopover = ({elementRef}) => {
-    const [isSelecting, setIsSelecting] = useState(true);
-    const [translatedText, setTranslatedText] = useState('');
-    const debouncedHandleTextSelect = useDebouncedCallback(async () => {
-        setIsSelecting(false);
-        const textToTranslate = getTextSelection();
-
-        if (textToTranslate) {
-            const translatedText = await translateText(textToTranslate);
-            setTranslatedText(translatedText.translation);
-        }
-    }, 1000);
-
-    const resetPopoverState = () => {
-        setIsSelecting(true);
-        setTranslatedText('');
-    }
-
-    const popoverText = isSelecting || !translatedText ? 'highlight text to translate' : translatedText;
-
-    return (
-        <Popover
-            placementStrategy={placeRightBelow}
-            selectionRef={elementRef}
-            onTextSelect={debouncedHandleTextSelect.callback}
-            onTextUnselect={resetPopoverState}>
-            <PopoverBody>
-                <span>{popoverText}</span>
-                {translatedText && <br />}
-
-                {translatedText && <button onClick={() => router.push('/register')}>
-                    Sign up to save vocab words
-                </button>}
-            </PopoverBody>
-        </Popover>
-    );
-}
-
 const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const router = useRouter();
     const {addToast} = useToasts();
@@ -76,8 +41,9 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const [translatedText, setTranslatedText] = useState('');
     const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const noMoreFreeTranslations = !userHasBasicPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
+
     const debouncedHandleTextSelect = useDebouncedCallback(async () => {
-        if (noMoreFreeTranslations) {
+        if (user && noMoreFreeTranslations) {
             return;
         }
 
@@ -88,7 +54,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
             const translatedText = await translateText(textToTranslate);
             setTranslatedText(translatedText.translation);
 
-            if (!isDemo && !userHasBasicPlan) {
+            if (!!user && !userHasBasicPlan) {
                 setTranslationsToday(currentTranslationsToday => ({
                     ...currentTranslationsToday,
                     count: currentTranslationsToday.count + 1
@@ -149,12 +115,59 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
         }
     };
 
-    const popoverText = isSelecting || !translatedText ?
-        'highlight text to translate' :
-        translatedText;
+    const renderPopoverText = () => {
+        if (user && noMoreFreeTranslations) {
+            return;
+        }
 
-    // TODO - cleanup this horrible logic. Oh my god it's awful.
-    // Just make it easy to understand what text/buttons are being display, and when.
+        if (translatedText) {
+            return <span>{translatedText}</span>;
+        }
+
+        return <span>highlight text to translate</span>;
+    }
+
+    const renderPopoverBody = () => {
+        if (user && noMoreFreeTranslations) {
+            return <span>
+                Free acounts get only 10
+                <br />
+                translations per day.
+            </span>;
+        }
+
+        // Paying user has translated text -> Show Vocab button
+        if (user && translatedText && userHasBasicPlan) {
+            return [
+                <br />,
+                <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
+                    {hasSavedVocab ? 'Vocab saved!' : 'Add to vocab'}
+                </button>
+            ]
+        }
+
+        // Free user has translated text -> Show upgrade message
+        if (user && translatedText && !userHasBasicPlan) {
+            return [
+                <br />,
+                <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/settings')}>
+                    Upgrade your plan to save vocab words
+                </button>
+            ]
+        }
+
+        // No user, must be a demo -> Show sign up message
+        if (!user && translatedText) {
+            return [
+                <br />,
+                <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/register')}>
+                    Sign up to save vocab words
+                </button>
+            ]
+        }
+
+    }
+
     return (
         <Popover
             placementStrategy={placeRightBelow}
@@ -162,20 +175,8 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
             onTextSelect={debouncedHandleTextSelect.callback}
             onTextUnselect={resetPopoverState}>
             <PopoverBody>
-                {!noMoreFreeTranslations && <span>{popoverText}</span>}
-                {noMoreFreeTranslations && <span>Upgrade your plan to save vocab words</span>}
-                {translatedText && <br />}
-                {(!!user && userHasBasicPlan) && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
-                    {hasSavedVocab ? 'Vocab saved!' : 'Add to vocab'}
-                </button>}
-
-                {(!!user || !userHasBasicPlan) && !isDemo && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/settings')}>
-                    Upgrade your plan to save vocab words
-                </button>}
-
-                {(!user || isDemo) && !userHasBasicPlan && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/register')}>
-                    Sign up to save vocab words
-                </button>}
+                {renderPopoverText()}
+                {renderPopoverBody()}
             </PopoverBody>
         </Popover>
     );
