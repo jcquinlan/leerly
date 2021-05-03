@@ -5,28 +5,32 @@ import useGetArticle from './useGetArticle';
 
 const useGuardArticle = (articleId) => {
     const {article, loading: articleLoading, error} = useGetArticle(articleId);
-    const {user, userProfile, loading: userLoading} = useContext(AppContext);
+    const {user, userProfile, userHasBasicPlan, loading: userLoading} = useContext(AppContext);
     const router = useRouter();
 
-    // Guard the route with a check to see if the user is an admin.
+    // Guard the route with a check to see if the user can access the article.
     useEffect(() => {
         if (userLoading || articleLoading) {
             return;
         }
 
-        // If we aren't loading anything, and there isn't an article
-        // it's because its not accessible to users who aren't logged in
-        // thus it isn't free.
-        if (!article || (article && !article.free)) {
-            if (!user) {
-                router.replace(`/sign-in?redirect=${router.asPath}`);
-                return;
-            }
+        if (article && article.demo) {
+            return;
+        }
 
-            if (!userProfile.subscribed) {
-                router.replace('/cancel');
-                return;
-            }
+        if (!user) {
+            router.replace(`/sign-in?redirect=${router.asPath}`);
+            return;
+        }
+
+        if (!userProfile?.subscribed) {
+            router.replace('/cancel');
+            return;
+        }
+
+        if (!userHasBasicPlan && !article.free) {
+            router.replace('/dashboard');
+            return;
         }
     }, [user, userProfile, articleLoading, userLoading, article]);
 

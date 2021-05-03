@@ -1,4 +1,5 @@
 import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
+import moment from 'moment';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
@@ -37,7 +38,12 @@ import {
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
-import { useLocalStorage, STORYBOOK_ACTIVE_KEY } from '../../hooks/useLocalStorage';
+import {
+    useLocalStorage,
+    STORYBOOK_ACTIVE_KEY,
+    TRANSLATIONS_TODAY_KEY,
+    initialTranslationsToday
+} from '../../hooks/useLocalStorage';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -47,7 +53,7 @@ function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
-    const {isAdmin, user} = useContext(AppContext);
+    const {isAdmin, user, userHasBasicPlan} = useContext(AppContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
@@ -63,10 +69,30 @@ function ArticlePage () {
     const [activeFrame, setActiveFrame] = useState(null);
     const [frames, setFrames] = useState([]);
     const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
+    const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const [playbackRate, setPlaybackRate] = useState(null);
 
     const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
     const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
+
+    // TODO - find a better place for this.
+    // We want to make sure that by the time out SelectPopover
+    // needs to check for how many translations have been done for
+    // the day, we have already ensured the LS item is set to the current
+    // day. Otherwise there is a race condition where we don't set
+    // the translation count back to 0 when it's a new day.
+    useEffect(() => {
+        if (translationsToday) {
+            const dateMoment = moment(translationsToday.date);
+
+            if (!dateMoment.isSame(moment(), 'day')) {
+                // If there is a translation tracking key,
+                // and the date is not today, then reset the key so it is for today,
+                // and has no counted translations.
+                setTranslationsToday(initialTranslationsToday());
+            }
+        }
+    }, [translationsToday]);
 
     useEffect(() => {
         if (article?.transcriptId) {
@@ -88,7 +114,7 @@ function ArticlePage () {
                 img.src = frame.image.urls.small;
             })
         }
-    }, [article?.transcriptId]);
+    }, [article?.transcriptId, article?.frames]);
 
     useEffect(() => {
         if (user) {
@@ -324,7 +350,7 @@ function ArticlePage () {
                 <PlaybackRateRow>
                     <PlaybackRateSelectorWrapper>
                         <HelpText>Speed</HelpText>
-                        <PlaybackRateSelector onChange={handlePlaybackRateChange} />
+                        <PlaybackRateSelector disabled={!userHasBasicPlan} onChange={handlePlaybackRateChange} />
                     </PlaybackRateSelectorWrapper>
                 </PlaybackRateRow>
             )}
@@ -358,7 +384,7 @@ function ArticlePage () {
 
             <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
 
-            <SelectedTextPopover elementRef={articleBodyRef} articleBody={article.body} />
+            <SelectedTextPopover isDemo={article.demo} elementRef={articleBodyRef} articleBody={article.body} />
 
             <ArticleWrapper>
                 <ArticleBody ref={articleBodyRef}>

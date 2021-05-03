@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useMemo} from 'react';
 
 const PLANS = {
     FREE_PLAN: 'leerly Starter Plan',
@@ -40,22 +40,22 @@ const useAppContext = () => {
         setAppState(state => ({...state, plans}));
     }
 
-    const userHasBasicPlan = () => {
+    const userHasBasicPlan = useMemo(() => {
         return appState.plans.some(plan => plan.name === PLANS.BASIC_PLAN);
-    }
+    }, [appState.plans])
 
     const isAdmin = !!appState?.claims?.is_admin;
 
     return {
         ...appState,
         isAdmin,
+        userHasBasicPlan,
         setUser,
         setNavOpen,
         setClaims,
         setUserProfile,
         setLoading,
-        setPlans,
-        userHasBasicPlan
+        setPlans
     }
 }
 

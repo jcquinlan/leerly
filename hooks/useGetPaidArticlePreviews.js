@@ -1,24 +1,19 @@
 import {useState, useEffect} from 'react';
-import {getArticles, getDemoArticles, getUnpublishedArticles} from '../services/articleService';
+import {getPaidArticlePreviews} from '../services/articleService';
 
-const useGetArticles = ({demo, unpublished} = {demo: false, unpublished: false}) => {
+const useGetPaidArticlePreviews = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         // TODO - clean this up, it's dirty as hell. Switch case?
-        const articlesPromise = demo ?
-            getDemoArticles() :
-            (unpublished ?
-                getUnpublishedArticles() :
-                getArticles()
-            );
+        const articlesPromise = getPaidArticlePreviews();
 
         articlesPromise
-            .then(articlesRef => {
-                const articleData = articlesRef.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                setArticles(articleData);
+            .then(res => res.json())
+            .then(articleData => {
+                setArticles(articleData.articles);
             })
             .catch(err => {
                 console.log(err)
@@ -36,4 +31,4 @@ const useGetArticles = ({demo, unpublished} = {demo: false, unpublished: false})
     }
 }
 
-export default useGetArticles;
+export default useGetPaidArticlePreviews;

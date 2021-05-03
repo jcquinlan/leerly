@@ -62,6 +62,17 @@ export const getFreeArticles = () => {
         });
 }
 
+export const getDemoArticles = () => {
+    return db.collection("articles")
+        .orderBy('added_at', 'desc')
+        .where('demo', '==', true)
+        .limit(100)
+        .get()
+        .catch(error => {
+            throw error;
+        });
+}
+
 export const getArticles = () => {
     return db.collection("articles")
         .where('published', '==', true)
@@ -80,6 +91,11 @@ export const getUnpublishedArticles = () => {
         .catch(error => {
             throw error;
         });
+}
+
+
+export const getPaidArticlePreviews = () => {
+    return fetch('/api/articles');
 }
 
 export const getUserMetrics = (userId) => {

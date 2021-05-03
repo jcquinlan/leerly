@@ -18,7 +18,7 @@ import {Container, devices} from '../components/styled';
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
   const mixpanelContextApi = useMixpanelContext();
-  const isAdmin = appContextApi.claims && appContextApi.claims.is_admin;
+  const isAdmin = appContextApi.claims?.is_admin;
   const router = useRouter();
   // If we are just loading the landing page, lets not wait to fetch all the user's data, since
   // we dont need it to render the component.
@@ -88,7 +88,7 @@ function MyApp({ Component, pageProps }) {
     return [
         <Link key="home" id="/" className="menu-item" href="/">home</Link>,
         <Link key="about" id="/about" className="menu-item" href="/about">about us</Link>,
-        <Link key="free" id="/free" className="menu-item" href="/free">free articles</Link>,
+        <Link key="free" id="/free" className="menu-item" href="/demo">demo articles</Link>,
         <Link key="register" id="/register" className="menu-item" href={registerString}>register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]
@@ -97,8 +97,13 @@ function MyApp({ Component, pageProps }) {
   const renderSignedInLinks = () => {
     const links = [
         <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
-        <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
     ];
+
+    if (appContextApi.userHasBasicPlan) {
+      links.push(
+        <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
+      )
+    }
 
     if (isAdmin) {
       links.push([
@@ -109,7 +114,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     links.push([
-        <Link key="settings" id="/settings" className="menu-item" href="/settings">settings</Link>,
+        <Link key="settings" id="/settings" className="menu-item" href="/settings">account</Link>,
     ]);
 
     links.push([

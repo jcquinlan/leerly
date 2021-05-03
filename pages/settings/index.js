@@ -19,18 +19,23 @@ function SettingsPage () {
         <Container>
             <HeroWrapper>
                 <HeroContent>
-                    <Title>settings</Title>
+                    <Title>account</Title>
                 </HeroContent>
             </HeroWrapper>
 
             <Divider />
 
             <Section>
-                <SectionTitle>Billing</SectionTitle>
+                <SectionTitle>Billing / Plans</SectionTitle>
                 <SectionSubtitle>Note: Ending your subscription will delete your account completely.</SectionSubtitle>
                 <ul>
-                    <li><Link href={billingUrl}>Manage billing</Link></li>
+                    <li><Link href={billingUrl}>Manage billing / plans</Link></li>
                 </ul>
+            </Section>
+
+            <Section>
+                <SectionTitle>Support</SectionTitle>
+                <span>For support, please email <a href="mailto:leerlylearning@gmail.com">leerlylearning@gmail.com</a></span>
             </Section>
         </Container>
     );
