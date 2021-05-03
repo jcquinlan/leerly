@@ -10,6 +10,9 @@ import {createNewVocab} from '../services/vocabService';
 import {translateText} from '../services/translationService';
 import AppContext from '../contexts/appContext';
 import { Colors } from './styled';
+import { useLocalStorage, TRANSLATIONS_TODAY_KEY, initialTranslationsToday } from '../hooks/useLocalStorage';
+
+const MAX_FREE_TRANSLATIONS = 10;
 
 const Popover = dynamic(
     () => import('react-text-selection-popover'),
@@ -63,21 +66,34 @@ export const SimplifiedSelectedTextPopover = ({elementRef}) => {
     );
 }
 
-const SelectedTextPopover = ({elementRef, articleBody}) => {
+const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const router = useRouter();
     const {addToast} = useToasts();
-    const {user} = useContext(AppContext);
+    const {user, userHasBasicPlan} = useContext(AppContext);
     const [isSavingVocab, setIsSavingVocab] = useState(false);
     const [hasSavedVocab, setHasSavedVocab] = useState(false);
     const [isSelecting, setIsSelecting] = useState(true);
     const [translatedText, setTranslatedText] = useState('');
+    const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
+    const noMoreFreeTranslations = !userHasBasicPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
     const debouncedHandleTextSelect = useDebouncedCallback(async () => {
+        if (noMoreFreeTranslations) {
+            return;
+        }
+
         setIsSelecting(false);
         const textToTranslate = getTextSelection();
 
         if (textToTranslate) {
             const translatedText = await translateText(textToTranslate);
             setTranslatedText(translatedText.translation);
+
+            if (!isDemo && !userHasBasicPlan) {
+                setTranslationsToday(currentTranslationsToday => ({
+                    ...currentTranslationsToday,
+                    count: currentTranslationsToday.count + 1
+                }));
+            }
         }
     }, 1000);
 
@@ -133,8 +149,12 @@ const SelectedTextPopover = ({elementRef, articleBody}) => {
         }
     };
 
-    const popoverText = isSelecting || !translatedText ? 'highlight text to translate' : translatedText;
+    const popoverText = isSelecting || !translatedText ?
+        'highlight text to translate' :
+        translatedText;
 
+    // TODO - cleanup this horrible logic. Oh my god it's awful.
+    // Just make it easy to understand what text/buttons are being display, and when.
     return (
         <Popover
             placementStrategy={placeRightBelow}
@@ -142,13 +162,18 @@ const SelectedTextPopover = ({elementRef, articleBody}) => {
             onTextSelect={debouncedHandleTextSelect.callback}
             onTextUnselect={resetPopoverState}>
             <PopoverBody>
-                <span>{popoverText}</span>
+                {!noMoreFreeTranslations && <span>{popoverText}</span>}
+                {noMoreFreeTranslations && <span>Upgrade your plan to save vocab words</span>}
                 {translatedText && <br />}
-                {!!user && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
+                {(!!user && userHasBasicPlan) && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
                     {hasSavedVocab ? 'Vocab saved!' : 'Add to vocab'}
                 </button>}
 
-                {!user && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/register')}>
+                {(!!user || !userHasBasicPlan) && !isDemo && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/settings')}>
+                    Upgrade your plan to save vocab words
+                </button>}
+
+                {(!user || isDemo) && !userHasBasicPlan && translatedText && <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/register')}>
                     Sign up to save vocab words
                 </button>}
             </PopoverBody>

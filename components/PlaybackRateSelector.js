@@ -8,8 +8,8 @@ const options = [
   { value: 1, label: '1x' }
 ];
 
-const PlaybackRateSelector = ({onChange}) => (
-  <Select options={options} defaultValue={options[3]} onChange={onChange}/>
+const PlaybackRateSelector = ({disabled, onChange}) => (
+  <Select isDisabled={disabled} options={options} defaultValue={options[3]} onChange={onChange}/>
 );
 
 export default PlaybackRateSelector;

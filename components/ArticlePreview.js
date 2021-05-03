@@ -1,22 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {useRouter} from 'next/router';
 import styled from 'styled-components';
 import moment from 'moment';
 import TypeList from './TypeList';
 import {ReadCheck, devices} from './styled';
 import colors from './styled/colors';
+import appContext from '../contexts/appContext';
 
 const ArticlePreview = ({article, read}) => {
+    const {userHasBasicPlan} = useContext(appContext);
     const router = useRouter();
 
     const goToArticle = () => {
+        if (!article.free && !userHasBasicPlan) {
+            return;
+        }
+
         router.push(`/articles/${article.id}`);
     };
 
     const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
-        <ArticlePreviewWrapper onClick={goToArticle}>
+        <ArticlePreviewWrapper clickable={article.free || userHasBasicPlan} onClick={goToArticle}>
             <ArticleInfo>
                 <Header>
                     <div>
@@ -93,9 +99,10 @@ export const ArticlePreviewWrapper = styled.div`
     border: 1px solid #eee;
     border-radius: 5px;
     margin-bottom: 30px;
-    cursor: pointer;
     box-shadow: 0px 10px 30px -30px rgba(0,0,0,0.3);
     ${props => props.selected ? 'border-color: blue;' : ''}
+    ${props => props.clickable ? `cursor: pointer` : ``};
+    ${props => !props.clickable ? `opacity: 0.3` : ``};
 `;
 
 const ImageAttribution = styled.div`

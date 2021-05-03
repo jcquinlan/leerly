@@ -12,20 +12,20 @@ import {
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
-import useGetArticles from '../hooks/useGetArticles';
 import useGuardRoute from '../hooks/useGuardRoute';
 import {getArticleReadStatuses, getUserMetrics} from '../services/articleService';
 import AppContext from '../contexts/appContext';
 import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
+import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
 
 const PAGE_SIZE = 10;
 
 function ArticlePage () {
     useGuardRoute();
 
-    const {user} = useContext(AppContext);
-    const {articles, loading, error} = useGetArticles();
+    const {user, userHasBasicPlan} = useContext(AppContext);
+    const {articles, loading, error} = useGetDashboardArticles();
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
@@ -146,7 +146,7 @@ function ArticlePage () {
                 Time spent listening
             </Stat>
 
-            <Stat>
+            <Stat disabled={!userHasBasicPlan}>
                 <p>{cardsStudied}</p>
                 Vocab cards reviewed
             </Stat>
@@ -237,4 +237,8 @@ const Stat = styled.div`
         color: #000;
         font-weight: bold;
     }
+
+    ${props => props.disabled ? `
+        opacity: .3;
+    `: ``}
 `;

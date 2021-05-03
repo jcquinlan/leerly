@@ -21,9 +21,11 @@ import {getAllVocab, deleteVocab} from '../services/vocabService';
 import VocabQuiz from '../components/VocabQuiz';
 import useUserMetrics from '../hooks/useUserMetrics';
 import { updateUserCardsStudiedActivityMetric } from '../services/articleService';
+import useGuardPaidRoute from '../hooks/useGuardPaidRoute';
 
 function VocabPage () {
     useGuardRoute();
+    useGuardPaidRoute();
 
     const {user} = useContext(AppContext);
     const [loading, setLoading] = useState(true);

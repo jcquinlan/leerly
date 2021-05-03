@@ -1,7 +1,9 @@
 import {useState} from 'react';
+import moment from 'moment';
 
 export const REFERRAL_CODE_KEY = 'leerly_referral_code';
 export const STORYBOOK_ACTIVE_KEY = 'leerly_storybook_active';
+export const TRANSLATIONS_TODAY_KEY = 'sldkuen_12f489j_block';
 
 export function useLocalStorage(key, initialValue) {
     // State to store our value
@@ -37,4 +39,11 @@ export function useLocalStorage(key, initialValue) {
     };
   
     return [storedValue, setValue];
+  }
+
+  export const initialTranslationsToday = () => {
+    return {
+      date: moment().startOf('day'),
+      count: 0
+    };
   }

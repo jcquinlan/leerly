@@ -10,8 +10,8 @@ import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGetArticles from '../hooks/useGetArticles';
 
-function ArticlePage () {
-    const {articles, loading, error} = useGetArticles({free: true});
+function DemoPage () {
+    const {articles, loading, error} = useGetArticles({demo: true});
 
     if (loading) {
         return <LoadingPage></LoadingPage>
@@ -22,7 +22,7 @@ function ArticlePage () {
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>free articles</Title>
+                <Title>demo articles</Title>
                 <Subtitle>Try out comprehensible input, with slow audio and instant translation</Subtitle>
             </HeroContent>
         </HeroWrapper>
@@ -38,4 +38,4 @@ function ArticlePage () {
     );
 }
 
-export default ArticlePage;
+export default DemoPage;
