@@ -1,10 +1,25 @@
 import {auth} from './index';
 
 export const registerUser = async (email, password) => {
-    return auth.createUserWithEmailAndPassword(email, password)
-        .catch(function(error) {
-            throw error;
+    try {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email, password})
         });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw error;
+        }
+
+        const userData = await response.json();
+        return userData;
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const signInUser = async (email, password) => {

@@ -17,6 +17,12 @@ import {
   Flex,
   NarrowContainer
 } from '../components/styled';
+import {
+  Plans,
+  PlanContainer,
+  PlanBody,
+  PlanHeader
+} from '../components/Plans';
 import mixpanelContext from '../contexts/mixpanelContext';
 
 function App() {
@@ -77,12 +83,12 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <MainHeroContent>
           <Title>leerly.</Title>
           <Subtitle>
-            Improve your Spanish with Compelling, Comprehensible Input.
+            Learn Spanish with Compelling, Comprehensible Input.
             <Faint> Qué guay.</Faint>
           </Subtitle>
 
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <a href={registerUrl()}><SignUpButton>Start now with a free month</SignUpButton></a>
+            <a href={registerUrl()}><SignUpButton>Start now for free</SignUpButton></a>
           </div>
         </MainHeroContent>
       </HeroWrapper>
@@ -225,37 +231,41 @@ news sites, all summarized and translated to intermediate Spanish by native spea
     <PageContainer paddingTop="0px">
       <SectionDivider />
 
-      <SectionHeader>Pricing</SectionHeader>
-        <p>leerly is free for the first month, then <Free>$5/month</Free>.</p>
-        {/* <Plans>
-          <PlanContainer>
-            <PlanHeader>
-              Free
-            </PlanHeader>
-            <PlanBody>
-              <ul>
-                <li>Save/study vocab</li>
-                <li>High-quality audio of each article</li>
-              </ul>
-            </PlanBody>
-          </PlanContainer>
+      <SectionHeader>Plans / Pricing</SectionHeader>
+      <DescriptionText>
+        Two plans, upgrade at anytime. Also, refunds always available, no questions asked.
+      </DescriptionText>
+      <Plans>
+        <PlanContainer>
+          <PlanHeader>
+            Free
+          </PlanHeader>
+          <PlanBody>
+          <ul>
+              <li>Access to limited articles</li>
+              <li>High-quality audio</li>
+              <li>Limited in-app translations</li>
+              <li>Access to the weekly speaking sessions</li>
+            </ul>
+          </PlanBody>
+        </PlanContainer>
 
-          <PlanContainer>
-            <PlanHeader>
-              $5/month
-            </PlanHeader>
-            <PlanBody>
-              <ul>
-                <li>Unlimited translations</li>
-                <li>Save/study vocab</li>
-                <li>High-quality audio of each article</li>
-                <li>Access to all articles</li>
-                <li>Priority access to weekly speaking sessions</li>
-              </ul>
-            </PlanBody>
-          </PlanContainer>
-        </Plans> */}
-
+        <PlanContainer>
+          <PlanHeader special={true}>
+            $5/month
+          </PlanHeader>
+          <PlanBody>
+            <ul>
+              <li>Access to all articles</li>
+              <li>High-quality audio</li>
+              <li>Unlimited in-app translations</li>
+              <li>Built-in flashcards</li>
+              <li>Audio speed controls</li>
+              <li>Priority access to the weekly speaking sessions</li>
+            </ul>
+          </PlanBody>
+        </PlanContainer>
+      </Plans>
       <SectionDivider />
 
       <Question>
@@ -309,7 +319,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <HeroWrapper>
         <HeroContent>
-          <a href={registerUrl()}><SignUpButton>Start now with a free month</SignUpButton></a>
+          <a href={registerUrl()}><SignUpButton>Start now for free</SignUpButton></a>
         </HeroContent>
       </HeroWrapper>
 
@@ -329,30 +339,6 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 }
 
 export default App;
-
-const Plans = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-const PlanContainer = styled.div`
-  margin-right: 10px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-`;
-
-const PlanHeader = styled.div`
-  border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
-  font-weight: bold;
-  font-size: 24px;
-  text-align: center;
-`;
-const PlanBody = styled.div`
-  // ul {
-  //   padding: 0;
-  // }
-`;
 
 const MainImage = styled.div`
   margin-top: 90px;

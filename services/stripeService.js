@@ -2,6 +2,36 @@ import {loadStripe} from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_CLIENT_KEY);
 
+export const createStripeCustomer = async (email) => {
+    const response = await fetch('/api/stripe/create-stripe-customer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email})
+    });
+
+    const customer = await response.json();
+    return customer;
+}
+
+// TODO - we only use this endpoint when creating a free account,
+// so we always knows the price/product we want to use, so that is
+// hardcoded into the backend. We should refactor this to eventually
+// handle different potential prices/products.
+export const createStripeSubscription = async (customerId) => {
+    const response = await fetch('/api/stripe/create-stripe-subscription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({customerId})
+    });
+
+    const subscription = await response.json();
+    return subscription;
+}
+
 export const redirectToStripeCheckout = async (id, email, referralCode) => {
     const stripe = await stripePromise;
     const response = await fetch('/api/stripe/create-stripe-session', {

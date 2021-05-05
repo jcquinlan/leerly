@@ -33,35 +33,36 @@ function MyApp({ Component, pageProps }) {
     Router.events.on('routeChangeComplete', () => { !!window && window.scrollTo(0, 0); });
 
     auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const profile = await getUserProfile(user.uid);
-        const profileData = profile.data();
+        if (user) {
+          const profile = await getUserProfile(user.uid);
+          const profileData = profile.data();
 
-        const subscriptions = await getUserPlans(profileData.customerId)
-        const activePlans = subscriptions
-          .map(({plan}) => plan)
-          .filter(plan => plan.active);
+          const subscriptions = await getUserPlans(profileData.customerId);
 
-        appContextApi.setPlans(activePlans);
+          const activePlans = subscriptions
+            .map(({plan}) => plan)
+            .filter(plan => plan.active);
 
-        appContextApi.setUser(user);
-        appContextApi.setUserProfile(profileData);
-        const claimRef = await getUserClaims(user.uid);
-        const claimData = claimRef.data();
+          appContextApi.setPlans(activePlans);
+          appContextApi.setUser(user);
+          appContextApi.setUserProfile(profileData);
 
-        if (claimData) {
-          appContextApi.setClaims(claimData)
+          const claimRef = await getUserClaims(user.uid);
+          const claimData = claimRef.data();
+
+          if (claimData) {
+            appContextApi.setClaims(claimData)
+          }
+
+          appContextApi.setLoading(false);
+        } else {
+          appContextApi.setUser(null);
+          appContextApi.setClaims(null);
+          // If the user is not logged in, we don't need to fetch their profile data
+          // so we have nothing to load, and need to set loading to false to unblock
+          // the rest of the UI from rendering.
+          appContextApi.setLoading(false);
         }
-
-        appContextApi.setLoading(false);
-      } else {
-        appContextApi.setUser(null);
-        appContextApi.setClaims(null);
-        // If the user is not logged in, we don't need to fetch their profile data
-        // so we have nothing to load, and need to set loading to false to unblock
-        // the rest of the UI from rendering.
-        appContextApi.setLoading(false);
-      }
     });
   }, []);
 
@@ -148,6 +149,7 @@ function MyApp({ Component, pageProps }) {
             <span><strong><Link href="/dashboard">leerly.</Link></strong></span>
             <span><Link href="/privacy">privacy</Link></span>
             <span><Link href="/terms">terms of service</Link></span>
+            <span>support: <a href="mailto:leerlylearning@gmail.com">leerlylearning@gmail.com</a></span>
           </Footer>
         </FooterContainer>
       </ToastProvider>

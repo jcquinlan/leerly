@@ -71,7 +71,7 @@ function RegisterPage () {
 
 export default RegisterPage;
 
-const RegisterLink = styled.a `
+const RegisterLink = styled.a`
     color: #1f4ab8;
     font-size: 14px;
     text-decoration: underline;
