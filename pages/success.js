@@ -13,7 +13,7 @@ function SuccessPage () {
     const mixpanel = useContext(mixpanelContext);
     const [_, setReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
     const [referralCodeCreated, setReferralCodeCreated] = useState(false);
-    const {id, email, session_id, referralCode} = router.query
+    const {id, email, session_id, referralCode} = router.query;
 
     useEffect(() => {
         if (mixpanel) {

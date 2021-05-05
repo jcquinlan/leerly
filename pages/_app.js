@@ -37,12 +37,16 @@ function MyApp({ Component, pageProps }) {
         const profile = await getUserProfile(user.uid);
         const profileData = profile.data();
 
-        const subscriptions = await getUserPlans(profileData.customerId)
-        const activePlans = subscriptions
-          .map(({plan}) => plan)
-          .filter(plan => plan.active);
+        try {
+          const subscriptions = await getUserPlans(profileData.customerId)
+              const activePlans = subscriptions
+              .map(({plan}) => plan)
+              .filter(plan => plan.active);
 
-        appContextApi.setPlans(activePlans);
+          appContextApi.setPlans(activePlans);
+        } catch (e) {
+          console.error(e);
+        }
 
         appContextApi.setUser(user);
         appContextApi.setUserProfile(profileData);
