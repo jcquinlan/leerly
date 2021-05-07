@@ -28,7 +28,7 @@ function SuccessPage () {
                 .then(() => getStripeSession(session_id))
                 .then((session) => {
                     const customerId = session.customer;
-                    updateCustomerSubscribedStatus(id, {subscribed: true, customerId})
+                    updateCustomerSubscribedStatus(id, customerId);
                 })
                 .catch(err => console.error(err));
         }
@@ -71,7 +71,7 @@ function SuccessPage () {
 
         <Button>
             {/* TODO -- Replace with the next router link */}
-            <a href="/dashboard">Start reading articles</a>
+            <a href="/sign-in">Start reading articles</a>
         </Button>
 
         </Container>

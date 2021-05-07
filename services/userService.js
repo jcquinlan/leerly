@@ -11,18 +11,26 @@ export const createUserProfileDocument = async ({email, user_uid}) => {
     });
 }
 
-export const updateCustomerSubscribedStatus = async (id, attributes) => {
-    const doc = await db.collection("user_profiles").doc(id)
-    const docData = await doc.get();
-
-    if (!docData.data()) {
-        throw new Error('Customer record not found.')
-    }
-
-    doc.set(attributes, {merge: true})
-        .catch(error => {
-            throw error;
+export const updateCustomerSubscribedStatus = async (uid, customerId) => {
+    try {
+        const response = await fetch(`/api/users/${uid}/profile`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({customerId})
         });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw error;
+        }
+
+        const userData = await response.json();
+        return userData;
+    } catch (e) {
+        throw e;
+    }
 }
 
 export const getUserProfile = async (uid) => {

@@ -54,7 +54,7 @@ function MyApp({ Component, pageProps }) {
         const claimData = claimRef.data();
 
         if (claimData) {
-          appContextApi.setClaims(claimData)
+          appContextApi.setClaims(claimData);
         }
 
         appContextApi.setLoading(false);
@@ -152,6 +152,7 @@ function MyApp({ Component, pageProps }) {
             <span><strong><Link href="/dashboard">leerly.</Link></strong></span>
             <span><Link href="/privacy">privacy</Link></span>
             <span><Link href="/terms">terms of service</Link></span>
+            <span>support: <a href="mailto:leerlylearning@gmail.com">leerlylearning@gmail.com</a></span>
           </Footer>
         </FooterContainer>
       </ToastProvider>
