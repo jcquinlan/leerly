@@ -1,8 +1,8 @@
 import {useState, useMemo} from 'react';
 
 const PLANS = {
-    FREE_PLAN: 'leerly Starter Plan',
-    BASIC_PLAN: 'leerly Basic'
+    FREE_PLAN: 'leerly Starter',
+    BASIC_PLAN: 'leerly Pro'
 };
 
 const initialAppState = {

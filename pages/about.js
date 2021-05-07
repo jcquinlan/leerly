@@ -44,7 +44,7 @@ function AboutPage () {
             </AboutUsText>
 
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '60px 0'}}>
-                <a href="/register"><Button>Start now with a free month</Button></a>
+                <a href="/register"><Button>Start now for free</Button></a>
             </div>
             
             <Sources>
