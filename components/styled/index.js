@@ -211,7 +211,6 @@ export const NoticeCard = styled(Card)`
         color: #333;
       }` : ``
     )}
-
 `;
 
 export const NoticeCardMain = styled.span`

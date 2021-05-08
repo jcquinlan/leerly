@@ -103,7 +103,7 @@ function MyApp({ Component, pageProps }) {
         <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
     ];
 
-    if (appContextApi.userHasBasicPlan) {
+    if (appContextApi.userHasProPlan) {
       links.push(
         <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
       )

@@ -8,7 +8,9 @@ import {
     Divider,
     Title,
     Subtitle,
-    HelpText
+    HelpText,
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -18,13 +20,15 @@ import AppContext from '../contexts/appContext';
 import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
 import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
+import { useRouter } from 'next/router';
 
 const PAGE_SIZE = 10;
 
 function ArticlePage () {
     useGuardRoute();
 
-    const {user, userHasBasicPlan} = useContext(AppContext);
+    const router = useRouter();
+    const {user, userHasProPlan} = useContext(AppContext);
     const {articles, loading, error} = useGetDashboardArticles();
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
@@ -125,6 +129,13 @@ function ArticlePage () {
 
         <Divider />
 
+        {!userHasProPlan && (
+            <NoticeCard onClick={() => router.push('/settings')}>
+                <span>leerly Pro members get vocab studying, all articles, unlimited translations, and more.</span> <br />
+                <NoticeCardMain>Upgrade now ⟶</NoticeCardMain>
+            </NoticeCard>
+        )}
+
         <LevelInfo>
             <LevelInfoHeader>
                 <CurrentLevel>lvl. {levelData.level}</CurrentLevel>
@@ -146,7 +157,7 @@ function ArticlePage () {
                 Time spent listening
             </Stat>
 
-            <Stat disabled={!userHasBasicPlan}>
+            <Stat disabled={!userHasProPlan}>
                 <p>{cardsStudied}</p>
                 Vocab cards reviewed
             </Stat>

@@ -3,15 +3,15 @@ import AppContext from '../contexts/appContext';
 import {useRouter} from 'next/router';
 
 const useGuardPaidRoute = () => {
-    const {userHasBasicPlan} = useContext(AppContext);
+    const {userHasProPlan} = useContext(AppContext);
     const router = useRouter();
 
     // Guard the route with a check to see if the user is an admin.
     useEffect(() => {
-        if (!userHasBasicPlan) {
+        if (!userHasProPlan) {
             router.replace('/dashboard');
         }
-    }, [userHasBasicPlan]);
+    }, [userHasProPlan]);
 }
 
 export default useGuardPaidRoute;

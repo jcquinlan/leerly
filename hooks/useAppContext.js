@@ -2,7 +2,7 @@ import {useState, useMemo} from 'react';
 
 const PLANS = {
     FREE_PLAN: 'leerly Starter',
-    BASIC_PLAN: 'leerly Pro'
+    PRO_PLAN: 'leerly Pro'
 };
 
 const initialAppState = {
@@ -40,8 +40,8 @@ const useAppContext = () => {
         setAppState(state => ({...state, plans}));
     }
 
-    const userHasBasicPlan = useMemo(() => {
-        return appState.plans.some(plan => plan.name === PLANS.BASIC_PLAN);
+    const userHasProPlan = useMemo(() => {
+        return appState.plans.some(plan => plan.name === PLANS.PRO_PLAN);
     }, [appState.plans])
 
     const isAdmin = !!appState?.claims?.is_admin;
@@ -49,7 +49,7 @@ const useAppContext = () => {
     return {
         ...appState,
         isAdmin,
-        userHasBasicPlan,
+        userHasProPlan,
         setUser,
         setNavOpen,
         setClaims,
