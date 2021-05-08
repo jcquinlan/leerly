@@ -29,7 +29,7 @@ function SettingsPage () {
                 <SectionTitle>Billing / Plans</SectionTitle>
                 <SectionSubtitle>Note: Ending your subscription will delete your account completely.</SectionSubtitle>
                 <ul>
-                    <li><Link href={billingUrl}>Manage billing / plans</Link></li>
+                    <li><Link href={billingUrl}>Manage billing / change plan</Link></li>
                 </ul>
             </Section>
 

@@ -101,13 +101,8 @@ function MyApp({ Component, pageProps }) {
   const renderSignedInLinks = () => {
     const links = [
         <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
-    ];
-
-    if (appContextApi.userHasProPlan) {
-      links.push(
         <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
-      )
-    }
+    ];
 
     if (isAdmin) {
       links.push([
@@ -173,7 +168,7 @@ const FooterContainer = styled(Container)`
 `;
 const Footer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
 
   span {
@@ -184,6 +179,10 @@ const Footer = styled.div`
 
   @media ${devices.laptop} {
     justify-content: left;
+  }
+
+  @media ${devices.mobileL} {
+    flex-direction: row;
   }
 `;
 

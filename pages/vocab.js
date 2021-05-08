@@ -12,7 +12,8 @@ import {
     Colors,
     NoticeCard,
     NoticeCardMain,
-    Button
+    Button,
+    devices
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import useGuardRoute from '../hooks/useGuardRoute';
@@ -21,13 +22,11 @@ import {getAllVocab, deleteVocab} from '../services/vocabService';
 import VocabQuiz from '../components/VocabQuiz';
 import useUserMetrics from '../hooks/useUserMetrics';
 import { updateUserCardsStudiedActivityMetric } from '../services/articleService';
-import useGuardPaidRoute from '../hooks/useGuardPaidRoute';
 
 function VocabPage () {
     useGuardRoute();
-    useGuardPaidRoute();
 
-    const {user} = useContext(AppContext);
+    const {user, userHasProPlan} = useContext(AppContext);
     const [loading, setLoading] = useState(true);
     const [vocabList, setVocabList] = useState([]);
     const [disableDelete, setDisableDelete] = useState(false);
@@ -37,7 +36,7 @@ function VocabPage () {
     const hasSufficientCardsToStudy = vocabList.length > 9;
 
     useEffect(() => {
-        if (!!user) {
+        if (!!user && userHasProPlan) {
             getAllVocab(user.uid)
                 .then(vocab => {
                     const vocabData = vocab.docs.map(current => {
@@ -47,7 +46,7 @@ function VocabPage () {
                 })
                 .finally(() => setLoading(false));
         }
-    }, [user]);
+    }, [user, userHasProPlan]);
 
     const handleDeleteVocab = async (vocabId) => {
         if (disableDelete) return;
@@ -82,6 +81,37 @@ function VocabPage () {
         });
          
         csvExporter.generateCsv(data);
+    }
+
+    if (!userHasProPlan) {
+        return (
+            <>
+            <Container>
+                <HeroWrapper>
+                    <HeroContent>
+                        <Title>vocab / studying</Title>
+                        <Subtitle>All your saved vocab, ready for studying.</Subtitle>
+                    </HeroContent>
+                </HeroWrapper>
+
+                <Divider />
+
+                <p style={{textAlign: 'center'}}>
+                    Paying customers can save words and their translations <br /> directly from articles, and study
+                    them here in leerly.
+                </p>
+
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <a href="/settings"><Button>Upgrade your plan</Button></a>
+                </div>
+
+                <ImageContainer>
+                    <img src="/images/vocab.gif" alt="Words highlighting in an article as the audio plays"/>
+                    <img src="/images/study.gif" alt="Words highlighting in an article as the audio plays"/>
+                </ImageContainer>
+            </Container>
+            </>
+        )
     }
 
     if (loading) {
@@ -219,5 +249,28 @@ const Example = styled.div`
     margin-bottom: 0px;
     font-weight: bold;
     color: #666;
+`;
+
+const ImageContainer = styled.div`
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+
+    img {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 30px;
+        height: auto;
+    }
+
+    @media ${devices.tablet} {
+        flex-direction: row;
+        margin: 90px 0;
+
+        img {
+            margin-bottom: 0;
+        }
+    }
 `;
 
