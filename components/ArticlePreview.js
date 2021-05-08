@@ -8,11 +8,11 @@ import colors from './styled/colors';
 import appContext from '../contexts/appContext';
 
 const ArticlePreview = ({article, read}) => {
-    const {userHasBasicPlan} = useContext(appContext);
+    const {userHasProPlan} = useContext(appContext);
     const router = useRouter();
 
     const goToArticle = () => {
-        if (!article.free && !userHasBasicPlan) {
+        if (!article.free && !userHasProPlan) {
             return;
         }
 
@@ -22,7 +22,7 @@ const ArticlePreview = ({article, read}) => {
     const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
     return (
-        <ArticlePreviewWrapper clickable={article.free || userHasBasicPlan} onClick={goToArticle}>
+        <ArticlePreviewWrapper clickable={article.free || userHasProPlan} onClick={goToArticle}>
             <ArticleInfo>
                 <Header>
                     <div>

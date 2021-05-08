@@ -3,13 +3,13 @@ import appContext from '../contexts/appContext';
 import {getArticles, getFreeArticles, getPaidArticlePreviews} from '../services/articleService';
 
 const useDashboardArticles = () => {
-    const {userHasBasicPlan} = useContext(appContext);
+    const {userHasProPlan} = useContext(appContext);
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (userHasBasicPlan) {
+        if (userHasProPlan) {
             getArticles()
                 .then(articlesRef => {
                     const articleData = articlesRef.docs.map(doc => ({id: doc.id, ...doc.data()}));

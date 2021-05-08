@@ -5,7 +5,7 @@ import useGetArticle from './useGetArticle';
 
 const useGuardArticle = (articleId) => {
     const {article, loading: articleLoading, error} = useGetArticle(articleId);
-    const {user, userProfile, userHasBasicPlan, loading: userLoading} = useContext(AppContext);
+    const {user, userProfile, userHasProPlan, loading: userLoading} = useContext(AppContext);
     const router = useRouter();
 
     // Guard the route with a check to see if the user can access the article.
@@ -28,7 +28,7 @@ const useGuardArticle = (articleId) => {
             return;
         }
 
-        if (!userHasBasicPlan && !article.free) {
+        if (!userHasProPlan && !article.free) {
             router.replace('/dashboard');
             return;
         }

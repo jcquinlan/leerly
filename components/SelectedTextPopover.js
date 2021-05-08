@@ -34,13 +34,13 @@ const getTextSelection = () => {
 const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const router = useRouter();
     const {addToast} = useToasts();
-    const {user, userHasBasicPlan} = useContext(AppContext);
+    const {user, userHasProPlan} = useContext(AppContext);
     const [isSavingVocab, setIsSavingVocab] = useState(false);
     const [hasSavedVocab, setHasSavedVocab] = useState(false);
     const [isSelecting, setIsSelecting] = useState(true);
     const [translatedText, setTranslatedText] = useState('');
     const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
-    const noMoreFreeTranslations = !userHasBasicPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
+    const noMoreFreeTranslations = !userHasProPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
 
     const debouncedHandleTextSelect = useDebouncedCallback(async () => {
         if (user && noMoreFreeTranslations) {
@@ -54,7 +54,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
             const translatedText = await translateText(textToTranslate);
             setTranslatedText(translatedText.translation);
 
-            if (!!user && !userHasBasicPlan) {
+            if (!!user && !userHasProPlan) {
                 setTranslationsToday(currentTranslationsToday => ({
                     ...currentTranslationsToday,
                     count: currentTranslationsToday.count + 1
@@ -137,7 +137,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
         }
 
         // Paying user has translated text -> Show Vocab button
-        if (user && translatedText && userHasBasicPlan) {
+        if (user && translatedText && userHasProPlan) {
             return [
                 <br />,
                 <button disabled={isSavingVocab || hasSavedVocab} onClick={handleAddToVocabList}>
@@ -147,7 +147,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
         }
 
         // Free user has translated text -> Show upgrade message
-        if (user && translatedText && !userHasBasicPlan) {
+        if (user && translatedText && !userHasProPlan) {
             return [
                 <br />,
                 <button disabled={isSavingVocab || hasSavedVocab} onClick={() => router.push('/settings')}>

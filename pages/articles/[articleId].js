@@ -53,7 +53,7 @@ function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
-    const {isAdmin, user, userHasBasicPlan} = useContext(AppContext);
+    const {isAdmin, user, userHasProPlan} = useContext(AppContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
@@ -350,7 +350,7 @@ function ArticlePage () {
                 <PlaybackRateRow>
                     <PlaybackRateSelectorWrapper>
                         <HelpText>Speed</HelpText>
-                        <PlaybackRateSelector disabled={!userHasBasicPlan} onChange={handlePlaybackRateChange} />
+                        <PlaybackRateSelector disabled={!userHasProPlan} onChange={handlePlaybackRateChange} />
                     </PlaybackRateSelectorWrapper>
                 </PlaybackRateRow>
             )}
