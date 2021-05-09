@@ -93,6 +93,7 @@ function MyApp({ Component, pageProps }) {
         <Link key="home" id="/" className="menu-item" href="/">home</Link>,
         <Link key="about" id="/about" className="menu-item" href="/about">about us</Link>,
         <Link key="free" id="/free" className="menu-item" href="/demo">demo articles</Link>,
+        <Link key="roadmap" id="/roadmap" className="menu-item" href="/roadmap">roadmap</Link>,
         <Link key="register" id="/register" className="menu-item" href={registerString}>register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]
@@ -102,6 +103,7 @@ function MyApp({ Component, pageProps }) {
     const links = [
         <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
         <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
+        <Link key="roadmap" id="/roadmap" className="menu-item" href="/roadmap">roadmap</Link>,
     ];
 
     if (isAdmin) {

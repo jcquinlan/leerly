@@ -329,8 +329,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <QuestionText>That's it?</QuestionText>
         <DescriptionText>
           As <i>if</i>. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
-          long list of things we want to finish building: discussions on each article in beginner Spanish, group lessons with native speakers,
-          visual cues in each article to accompany the audio, etc.
+          long list of things we want to finish building. <a href="/roadmap">Check out our public roadmap</a> to get an idea of what we mean.
         </DescriptionText>
       </Question>
     </PageContainer>
