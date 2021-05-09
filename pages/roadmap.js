@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import {
     Container,
@@ -11,6 +11,7 @@ import {
     Button,
     Card
 } from '../components/styled';
+import appContext from '../contexts/appContext';
 
 const roadmapIdeas = [
     {
@@ -42,6 +43,12 @@ const roadmapIdeas = [
         title: 'Have popular Spanish teachers as guest writers',
         description: 'It would be interesting if we had guest stars right some articles for us. Maybe Spanish language teacher influencers or something.',
         status: 'hypothetical'
+    },
+
+    {
+        title: 'Support numerous Spanish dialects',
+        description: 'We want to include writing and audio from a wider range of Spanish-speaking natives from around the world',
+        status: 'coming-soon'
     },
     {
         title: 'Make vocab studying a proper spaced-repition experience',
@@ -79,6 +86,8 @@ const renderRoadmapIdea = (idea) => {
 }
 
 function RoadmapPage () {
+    const {user} = useContext(appContext);
+
     return (
         <>
         <Container>
@@ -108,9 +117,11 @@ function RoadmapPage () {
             {roadmapIdeas.map(renderRoadmapIdea)}
         </IdeaList>
 
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '60px 0'}}>
-            <a href="/register"><Button>Join leerly for free</Button></a>
-        </div>
+        {!user && (
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '60px 0'}}>
+                <a href="/register"><Button>Join leerly for free</Button></a>
+            </div>
+        )}
 
         </Container>
         </>
