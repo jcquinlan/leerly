@@ -76,6 +76,7 @@ export const getDemoArticles = () => {
 export const getArticles = () => {
     return db.collection("articles")
         .where('published', '==', true)
+        .where('types', 'array-contains-any', ['politics'])
         .orderBy('added_at', 'desc')
         .get()
         .catch(error => {

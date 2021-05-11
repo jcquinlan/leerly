@@ -21,6 +21,7 @@ import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
 import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
 import { useRouter } from 'next/router';
+import TypeSelector from '../components/TypeSelector';
 
 const PAGE_SIZE = 10;
 
@@ -34,6 +35,7 @@ function ArticlePage () {
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
     const [offset, setOffset] = useState(0);
+    const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
 
     const articlesToShow = useMemo(() => {
         if (!articles) {
@@ -113,6 +115,15 @@ function ArticlePage () {
         }
     }, [articles]);
 
+    const handleSelectedFilterType = (newType) => {
+        const typeIsAlreadySelected = selectedFilterTypes.includes(newType);
+        if (typeIsAlreadySelected) {
+            setSelectedFilterTypes(selectedFilterTypes.filter(type => type !== newType));
+        } else {
+            setSelectedFilterTypes([...selectedFilterTypes, newType]);
+        }
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -162,6 +173,8 @@ function ArticlePage () {
                 Vocab cards reviewed
             </Stat>
         </StatsRow>
+
+        <TypeSelector selectedTypes={selectedFilterTypes} onSelect={handleSelectedFilterType} />
 
         <ArticlesList>
             {articlesToShow.map(article => (
