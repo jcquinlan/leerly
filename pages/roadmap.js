@@ -41,7 +41,7 @@ const roadmapIdeas = [
     },
     {
         title: 'Have popular Spanish teachers as guest writers',
-        description: 'It would be interesting if we had guest stars right some articles for us. Maybe Spanish language teacher influencers or something.',
+        description: 'It would be interesting if we had guest stars write some articles for us. Maybe Spanish language teacher influencers or something.',
         status: 'hypothetical'
     },
 
@@ -51,7 +51,7 @@ const roadmapIdeas = [
         status: 'coming-soon'
     },
     {
-        title: 'Make vocab studying a proper spaced-repition experience',
+        title: 'Make vocab studying a proper spaced-repetition experience',
         description: 'We could detext which words you struggle with, and show those to you more often.',
         status: 'coming-soon'
     }
