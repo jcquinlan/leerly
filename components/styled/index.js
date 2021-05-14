@@ -139,6 +139,13 @@ export const Button = styled.button`
     }
 `;
 
+export const GhostButton = styled.button`
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+`;
+
 export const Card = styled.div`
   background-color: #fff;
   border-radius: 5px;

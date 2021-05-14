@@ -2,9 +2,18 @@ import {adminFirestore} from '../../../services/admin';
 
 export default async (req, res) => {
     if (req.method === 'GET') {
-        const articles = await adminFirestore
+        const filtersString = req.query.filters;
+        const filters = filtersString ? filtersString.split(',') : [];
+
+        let articlesQuery = adminFirestore
             .collection('articles')
             .where('free', '!=', true)
+
+        if (filters.length) {
+            articlesQuery = articlesQuery.where('types', 'array-contains-any', filters);
+        }
+
+        const articles = await articlesQuery
             .get()
             .catch(err => {
                 console.log(err);

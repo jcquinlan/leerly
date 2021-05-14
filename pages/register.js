@@ -10,7 +10,8 @@ import {
     Button,
     Input,
     Card,
-    Colors
+    Colors,
+    GhostButton
 } from '../components/styled';
 import {
     Plans,
@@ -231,10 +232,6 @@ const ExplanationText = styled.div`
     span {
         margin: 0 10px;
     }
-`;
-
-const GhostButton = styled.button`
-
 `;
 
 const PlanSection = styled.div`
