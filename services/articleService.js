@@ -51,11 +51,17 @@ export const getArticle = (articleId) => {
         });
 }
 
-export const getFreeArticles = () => {
-    return db.collection("articles")
-        .orderBy('added_at', 'desc')
+export const getFreeArticles = (filters) => {
+    let query = db.collection("articles")
+        .where('published', '==', true)
         .where('free', '==', true)
-        .limit(100)
+
+    if (filters.length) {
+        query = query.where('types', 'array-contains-any', filters);
+    }
+
+    return query
+        .orderBy('added_at', 'desc')
         .get()
         .catch(error => {
             throw error;
@@ -73,9 +79,15 @@ export const getDemoArticles = () => {
         });
 }
 
-export const getArticles = () => {
-    return db.collection("articles")
+export const getArticles = (filters) => {
+    let query = db.collection("articles")
         .where('published', '==', true)
+
+    if (filters.length) {
+        query = query.where('types', 'array-contains-any', filters);
+    }
+
+    return query
         .orderBy('added_at', 'desc')
         .get()
         .catch(error => {
@@ -94,8 +106,8 @@ export const getUnpublishedArticles = () => {
 }
 
 
-export const getPaidArticlePreviews = () => {
-    return fetch('/api/articles');
+export const getPaidArticlePreviews = (filters) => {
+    return fetch(`/api/articles?filters=${filters.join(',')}`);
 }
 
 export const getUserMetrics = (userId) => {

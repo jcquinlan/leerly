@@ -2,7 +2,7 @@ import {useState, useEffect, useContext} from 'react';
 import appContext from '../contexts/appContext';
 import {getArticles, getFreeArticles, getPaidArticlePreviews} from '../services/articleService';
 
-const useDashboardArticles = () => {
+const useDashboardArticles = (filters) => {
     const {userHasProPlan} = useContext(appContext);
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,7 +10,7 @@ const useDashboardArticles = () => {
 
     useEffect(() => {
         if (userHasProPlan) {
-            getArticles()
+            getArticles(filters)
                 .then(articlesRef => {
                     const articleData = articlesRef.docs.map(doc => ({id: doc.id, ...doc.data()}));
                     setArticles(articleData);
@@ -23,7 +23,10 @@ const useDashboardArticles = () => {
                     setLoading(false);
                 });
         } else {
-            Promise.all([getFreeArticles(), getPaidArticlePreviews()])
+            // We separately load the non-free articles because we want to make sure
+            // we don't send the article bodies to the client, so we strip them out
+            // on the server in a custom endpoint
+            Promise.all([getFreeArticles(filters), getPaidArticlePreviews(filters)])
                 .then(async ([freeArticles, paidArticlePreviews]) => {
                     const freeArticlesData = freeArticles.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                     const paidArticlePreviewsData = await paidArticlePreviews.json();
@@ -43,7 +46,7 @@ const useDashboardArticles = () => {
                 });
         }
 
-    }, []);
+    }, [filters]);
 
     return {
         articles,

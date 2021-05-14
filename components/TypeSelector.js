@@ -1,21 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
+import {Colors} from './styled';
 import {ArticleTypeList} from '../services/articleService';
 
 const TypeSelector = ({onSelect, selectedTypes}) => {
     return (
         <TypeSelectorWrapper>
-            <h6>What type of article is this?</h6>
-            <p>Select all that apply</p>
-
             {ArticleTypeList.map(type => {
+                const selected = selectedTypes.includes(type.type);
+
                 return (
-                    <Pill
+                    <TypePill
                         key={type.type}
-                        selected={selectedTypes.includes(type.type)}
+                        selected={selected}
+                        color={selected ? Colors.ArticleTypes.copy[type.type] : null}
+                        backgroundColor={selected ? Colors.ArticleTypes.background[type.type] : null}
                         onClick={() => onSelect(type.type)}>
                         {type.display}
-                    </Pill>
+                    </TypePill>
                 );
             })}
         </TypeSelectorWrapper>
@@ -24,30 +26,17 @@ const TypeSelector = ({onSelect, selectedTypes}) => {
 
 const TypeSelectorWrapper = styled.div`
     margin-bottom: 30px;
-
-    h6 {
-        font-size: 20px;
-        margin-bottom: 0;
-    }
-
-    p {
-        margin: 0 0 15px 0;
-    }
 `;
-const Pill = styled.div`
-    display: inline-flex;
-    padding: 15px 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 15px;
-    margin-bottom: 10px;
-    user-select: none;
 
-    ${props => props.selected ? `
-        background-color: #1f4ab8; 
-        color: #fff;
-    `: ''}
+const TypePill = styled.div`
+    display: inline-block;
+    background-color: ${props => props.backgroundColor || '#eee'};
+    color: ${props => props.color || '#000'};
+    margin-right: 5px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-top: 5px;
+    cursor: pointer;
 `;
 
 

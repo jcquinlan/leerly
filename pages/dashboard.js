@@ -10,7 +10,8 @@ import {
     Subtitle,
     HelpText,
     NoticeCard,
-    NoticeCardMain
+    NoticeCardMain,
+    GhostButton
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -21,6 +22,7 @@ import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
 import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
 import { useRouter } from 'next/router';
+import TypeSelector from '../components/TypeSelector';
 
 const PAGE_SIZE = 10;
 
@@ -29,7 +31,8 @@ function ArticlePage () {
 
     const router = useRouter();
     const {user, userHasProPlan} = useContext(AppContext);
-    const {articles, loading, error} = useGetDashboardArticles();
+    const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
+    const {articles, loading, error} = useGetDashboardArticles(selectedFilterTypes);
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
@@ -113,6 +116,23 @@ function ArticlePage () {
         }
     }, [articles]);
 
+    const handleSelectedFilterType = (newType) => {
+        if (selectedFilterTypes.length >= 10) {
+            return;
+        }
+
+        const typeIsAlreadySelected = selectedFilterTypes.includes(newType);
+        if (typeIsAlreadySelected) {
+            setSelectedFilterTypes(selectedFilterTypes.filter(type => type !== newType));
+        } else {
+            setSelectedFilterTypes([...selectedFilterTypes, newType]);
+        }
+    }
+
+    const clearSelectedFilterTypes = () => {
+        setSelectedFilterTypes([]);
+    }
+
     if (loading) {
         return <LoadingPage></LoadingPage>
     }
@@ -162,6 +182,14 @@ function ArticlePage () {
                 Vocab cards reviewed
             </Stat>
         </StatsRow>
+
+        <Filters>
+            <FiltersHeader>
+                <span>Filters (limit 10)</span>
+                <GhostButton onClick={clearSelectedFilterTypes}>Clear filters</GhostButton>
+            </FiltersHeader>
+            <TypeSelector selectedTypes={selectedFilterTypes} onSelect={handleSelectedFilterType} />
+        </Filters>
 
         <ArticlesList>
             {articlesToShow.map(article => (
@@ -252,4 +280,14 @@ const Stat = styled.div`
     ${props => props.disabled ? `
         opacity: .3;
     `: ``}
+`;
+
+const Filters = styled.div`
+    margin-bottom: 30px;
+`;
+
+const FiltersHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
 `;

@@ -121,7 +121,11 @@ function SubmitPage () {
 
         <Divider />
 
-        <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+        <TypeSelectorWrapper>
+            <h6>What type of article is this?</h6>
+            <p>Select all that apply</p>
+            <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+        </TypeSelectorWrapper>
 
         <ArticleImageSelector image={image} onSelectImage={(image) => setImage(image)} />
 
@@ -153,4 +157,14 @@ export default SubmitPage;
 
 const AudioWrapper = styled.div`
     margin-bottom: 30px;
+`;
+const TypeSelectorWrapper = styled.div`
+    h6 {
+        font-size: 20px;
+        margin-bottom: 0;
+    }
+
+    p {
+        margin: 0 0 15px 0;
+    }
 `;
