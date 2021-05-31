@@ -1,4 +1,4 @@
-import {db} from './index';
+import {db, storage} from './index';
 
 export const createUserProfileDocument = async ({email, user_uid}) => {
     return db.collection("user_profiles").doc(user_uid).set({
@@ -49,4 +49,18 @@ export const getUserPlans = async (customerId) => {
 
     return fetch(`/api/stripe/get-user-subscriptions?customerId=${customerId}`)
         .then(res => res.json());
+}
+
+export const uploadProfileImage = (blob, metadata) => {
+    const storageRef = storage.ref().child(`profile_images/${metadata.uid}/${blob.name}`);
+    return storageRef.put(blob, metadata);
+}
+
+export const updateUserProfile = (uid, attrs) => {
+    return db.collection('user_profiles').doc(uid).set(attrs, {merge: true});
+}
+
+export const getUserProfileImageURL = (profileImage) => {
+    const storageRef = storage.ref();
+    return storageRef.child(`profile_images/${profileImage}`).getDownloadURL();
 }
