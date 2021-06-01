@@ -21,13 +21,11 @@ import AppContext from '../../contexts/appContext';
 import useGuardRoute from '../../hooks/useGuardRoute';
 import { updateUserProfile } from '../../services/userService';
 
-
-
 function SettingsPage () {
     useGuardRoute();
 
     const {addToast} = useToasts();
-    const {user, userProfile} = useContext(AppContext);
+    const {user, userProfile, updateUserProfileLocally} = useContext(AppContext);
     const {data, loading, error} = useAsync(() => getBillingURL(userProfile.customerId), (data) => data);
     const billingUrl = data ? data.url : '';
     const [userName, setUserName] = useState('');
@@ -80,6 +78,7 @@ function SettingsPage () {
         updateUserProfile(user.uid, profileAttrs)
             .then(() => {
                 addToast('Profile updated', {appearance: 'success'})
+                updateUserProfileLocally(profileAttrs);
             })
             .catch(() => {
                 addToast('Error updating profile', {appearance: 'error'})

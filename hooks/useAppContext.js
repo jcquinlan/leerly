@@ -32,6 +32,18 @@ const useAppContext = () => {
         setAppState(state => ({...state, userProfile}));
     }
 
+    const updateUserProfileLocally = (attrs) => {
+        setAppState(state => (
+            {
+                ...state,
+                userProfile: {
+                    ...state.userProfile,
+                    ...attrs
+                }
+            }
+        ));
+    }
+
     const setLoading = (boolean) => {
         setAppState(state => ({...state, loading: boolean}));
     }
@@ -55,7 +67,8 @@ const useAppContext = () => {
         setClaims,
         setUserProfile,
         setLoading,
-        setPlans
+        setPlans,
+        updateUserProfileLocally
     }
 }
 
