@@ -137,19 +137,21 @@ function MyApp({ Component, pageProps }) {
         <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
 
-            <div style={{display: 'flex'}}>
-              <div style={{marginRight: '10px'}}>
-                <UserCartoonAvatar size={20} />
+            {!appContextApi.loading && isSignedIn && (
+              <div style={{display: 'flex'}}>
+                <div style={{marginRight: '10px'}}>
+                  <UserCartoonAvatar size={20} />
+                </div>
+                <span>{userDisplayName}</span>
               </div>
-              <span>{userDisplayName}</span>
-            </div>
+            )}
 
             {isSignedIn ? renderSignedInLinks() : null}
             {!isSignedIn ? renderSignedOutLinks() : null}
           </Menu>
         </MobileNav>
 
-        {!appContextApi.loading && (
+        {!appContextApi.loading && isSignedIn && (
           <Header>
             <Container>
               <ProfileInfoDisplay>
