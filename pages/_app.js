@@ -14,12 +14,14 @@ import useMixpanelContext from '../hooks/useMixpanel';
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims, getUserPlans } from '../services/userService';
 import {Container, devices} from '../components/styled';
+import UserCartoonAvatar from '../components/UserCartoonAvatar';
 
 function MyApp({ Component, pageProps }) {
   const appContextApi = useAppContext();
   const mixpanelContextApi = useMixpanelContext();
   const isAdmin = appContextApi.claims?.is_admin;
   const router = useRouter();
+
   // If we are just loading the landing page, lets not wait to fetch all the user's data, since
   // we dont need it to render the component.
   const isLandingPage = useMemo(() => {
@@ -125,6 +127,8 @@ function MyApp({ Component, pageProps }) {
     return links;
   };
 
+  const userDisplayName = appContextApi.userProfile?.name || appContextApi.user?.email;
+
   return (
     <>
     <MixpanelContext.Provider value={mixpanelContextApi}>
@@ -132,11 +136,31 @@ function MyApp({ Component, pageProps }) {
       <ToastProvider>
         <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
-            {appContextApi.user && <span>{appContextApi.user.email}</span>}
+
+            {!appContextApi.loading && isSignedIn && (
+              <div style={{display: 'flex'}}>
+                <div style={{marginRight: '10px'}}>
+                  <UserCartoonAvatar size={20} />
+                </div>
+                <span>{userDisplayName}</span>
+              </div>
+            )}
+
             {isSignedIn ? renderSignedInLinks() : null}
             {!isSignedIn ? renderSignedOutLinks() : null}
           </Menu>
         </MobileNav>
+
+        {!appContextApi.loading && isSignedIn && (
+          <Header>
+            <Container>
+              <ProfileInfoDisplay>
+                <UserCartoonAvatar size={20} />
+                <span>{userDisplayName}</span>
+              </ProfileInfoDisplay>
+            </Container>
+          </Header>
+        )}
 
         {appContextApi.loading && !isLandingPage ? (
           <LoadingPage />
@@ -196,5 +220,14 @@ const MobileNav = styled.div`
 
   span {
     cursor: pointer;
+  }
+`;
+
+const Header = styled.div``;
+const ProfileInfoDisplay = styled.div`
+  display: flex;
+
+  span {
+    margin-left: 10px;
   }
 `;

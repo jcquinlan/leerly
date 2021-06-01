@@ -20,6 +20,12 @@ export default {
     EasyLight: '#e0ffef',
     EasyLightHover: '#d1ffe7',
 
+    CartoonAvatars: {
+        GreenMunsell: '#06A77D',
+        Flax: '#D5C67A',
+        Marigold: '#F1A208',
+        MaximumBluePurple: '#A4B0F5'
+    },
 
     ArticleTypes: {
         background: {

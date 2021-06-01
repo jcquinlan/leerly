@@ -271,6 +271,7 @@ const NarrowContainerWrapper = styled.div`
   justify-content: center;
 `;
 const NarrowContainerContent = styled.div`
+    width: 100%;
     max-width: ${props => props.width};
 `;
 export const NarrowContainer = ({children, width = '600px'}) => {
