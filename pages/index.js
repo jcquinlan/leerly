@@ -99,6 +99,12 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <ImageSectionDivider />
 
+      <div style={{display: 'flex', justifyContent: 'center', marginBottom: '60px'}}>
+        <a href="https://www.producthunt.com/posts/leerly?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-leerly" target="_blank">
+          <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=296854&theme=light" alt="leerly - Learn Spanish with compelling, comprehensible input | Product Hunt" style={{width: "250px", height: "54px"}} width="250" height="54" />
+        </a>
+      </div>
+
       <div style={{marginBottom: '90px'}}>
         <NarrowContainer>
           <SectionExplanation>We give you popular articles every week in basic Spanish, because learning a language is as simple as…</SectionExplanation>

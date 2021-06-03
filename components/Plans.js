@@ -6,11 +6,11 @@ export const PlanContainer = styled.div`
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 15px;
-  min-width: 400px;
   margin-top: 30px;
 
   @media ${devices.tablet} {
     margin-top: 0;
+    min-width: 400px;
   }
 
   ${props => props.selected ? `
