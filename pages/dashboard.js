@@ -3,15 +3,11 @@ import styled from 'styled-components';
 import ReactPaginate from 'react-paginate';
 import {
     Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Subtitle,
     HelpText,
     NoticeCard,
     NoticeCardMain,
-    GhostButton
+    GhostButton,
+    devices
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -23,6 +19,7 @@ import {calculateStatsLevel} from '../utils/stats';
 import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
 import { useRouter } from 'next/router';
 import TypeSelector from '../components/TypeSelector';
+import TodoList from '../components/TodoList';
 
 const PAGE_SIZE = 10;
 
@@ -140,14 +137,14 @@ function ArticlePage () {
     return (
         <>
         <Container>
-        <HeroWrapper>
+        {/* <HeroWrapper>
             <HeroContent>
                 <Title>dashboard</Title>
                 <Subtitle>See all the recent articles, or search through the archives of older material.</Subtitle>
             </HeroContent>
-        </HeroWrapper>
+        </HeroWrapper> */}
 
-        <Divider />
+        {/* <Divider /> */}
 
         {!userHasProPlan && (
             <NoticeCard onClick={() => router.push('/settings')}>
@@ -156,32 +153,45 @@ function ArticlePage () {
             </NoticeCard>
         )}
 
-        <LevelInfo>
-            <LevelInfoHeader>
-                <CurrentLevel>lvl. {levelData.level}</CurrentLevel>
-                <span>{levelData.percentage * 100}%</span>
-                <span>lvl. {levelData.level + 1}</span>
-            </LevelInfoHeader>
-            <ProgressBar progress={levelData.percentage * 100} />
-            <HelpText>You progress in level by reading more articles, listening to more audio, and studying more vocab</HelpText>
-        </LevelInfo>
+        <DashboardHeader>
+            <TodoWrapper style={{marginTop: '20px'}}>
+                <TodoList
+                    readStatuses={readStatuses}
+                    playTime={playTime}
+                    level={levelData?.level}
+                />
+            </TodoWrapper>
 
-        <StatsRow>
-            <Stat>
-                <p>{Object.keys(readStatuses).length}</p>
-                Articles read
-            </Stat> 
 
-            <Stat>
-                {timeString}
-                Time spent listening
-            </Stat>
+            <div style={{flex: 1}}>
+                <LevelInfo>
+                    <LevelInfoHeader>
+                        <CurrentLevel>lvl. {levelData.level}</CurrentLevel>
+                        <span>{levelData.percentage * 100}%</span>
+                        <span>lvl. {levelData.level + 1}</span>
+                    </LevelInfoHeader>
+                    <ProgressBar progress={levelData.percentage * 100} />
+                    <HelpText>You progress in level by reading more articles, listening to more audio, and studying more vocab</HelpText>
+                </LevelInfo>
 
-            <Stat disabled={!userHasProPlan}>
-                <p>{cardsStudied}</p>
-                Vocab cards reviewed
-            </Stat>
-        </StatsRow>
+                <StatsRow>
+                    <Stat>
+                        <p>{Object.keys(readStatuses).length}</p>
+                        Articles read
+                    </Stat> 
+
+                    <Stat>
+                        {timeString}
+                        Time spent listening
+                    </Stat>
+
+                    <Stat disabled={!userHasProPlan}>
+                        <p>{cardsStudied}</p>
+                        Vocab cards reviewed
+                    </Stat>
+                </StatsRow>
+            </div>
+        </DashboardHeader>
 
         <Filters>
             <FiltersHeader>
@@ -290,4 +300,20 @@ const FiltersHeader = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+`;
+
+const DashboardHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 30px;
+`;
+
+const TodoWrapper = styled.div`
+    margin-top: 20px;
+    display: none;
+
+    @media ${devices.tablet} {
+        display: initial;
+    }
 `;

@@ -4,6 +4,7 @@ import moment from 'moment';
 export const REFERRAL_CODE_KEY = 'leerly_referral_code';
 export const STORYBOOK_ACTIVE_KEY = 'leerly_storybook_active';
 export const TRANSLATIONS_TODAY_KEY = 'sldkuen_12f489j_block';
+export const ONE_TRANSLATION_DONE_KEY = '3uhw3irwh3_deuhfss_block';
 
 export function useLocalStorage(key, initialValue) {
     // State to store our value

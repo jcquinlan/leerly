@@ -12,6 +12,7 @@ import { Colors } from './styled';
 import {
     useLocalStorage,
     TRANSLATIONS_TODAY_KEY,
+    ONE_TRANSLATION_DONE_KEY,
     initialTranslationsToday
 } from '../hooks/useLocalStorage';
 
@@ -39,6 +40,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const [hasSavedVocab, setHasSavedVocab] = useState(false);
     const [isSelecting, setIsSelecting] = useState(true);
     const [translatedText, setTranslatedText] = useState('');
+    const [oneTranslationDone, setOneTranslationDone] = useLocalStorage(ONE_TRANSLATION_DONE_KEY, false);
     const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const noMoreFreeTranslations = !userHasProPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
 
@@ -53,6 +55,9 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
         if (textToTranslate) {
             const translatedText = await translateText(textToTranslate);
             setTranslatedText(translatedText.translation);
+            if (!oneTranslationDone) {
+                setOneTranslationDone(true);
+            }
 
             if (!!user && !userHasProPlan) {
                 setTranslationsToday(currentTranslationsToday => ({

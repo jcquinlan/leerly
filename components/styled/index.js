@@ -32,7 +32,7 @@ export const Subtitle = styled.h3`
 export const Container = styled.div`
   position: relative;
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 920px;
   padding: 15px;
   padding-top: ${props => props.paddingTop || '60px'};
   width: 100%;
@@ -198,7 +198,7 @@ export const HelpText = styled.p`
 
 export const NoticeCard = styled(Card)`
     background: rgb(31,74,184);
-    background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);;
+    background: linear-gradient(157deg, rgba(31,74,184,1) 0%, rgba(63,199,143,1) 100%);
     color: #fff;
     margin-bottom: 30px;
     border: none;
