@@ -27,6 +27,7 @@
     "react-confetti": "^6.0.0",
     "react-dom": "16.14.0",
     "react-image-crop": "^8.6.9",
+    "react-modal": "^3.14.2",
     "react-paginate": "^7.0.0",
     "react-player": "^2.7.0",
     "react-select": "^4.3.0",

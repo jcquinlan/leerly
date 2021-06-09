@@ -40,17 +40,25 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
     const [hasSavedVocab, setHasSavedVocab] = useState(false);
     const [isSelecting, setIsSelecting] = useState(true);
     const [translatedText, setTranslatedText] = useState('');
+    const [tooManyWords, setTooManyWords] = useState(false);
     const [oneTranslationDone, setOneTranslationDone] = useLocalStorage(ONE_TRANSLATION_DONE_KEY, false);
     const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const noMoreFreeTranslations = !userHasProPlan && translationsToday.count > MAX_FREE_TRANSLATIONS;
 
     const debouncedHandleTextSelect = useDebouncedCallback(async () => {
+        const textToTranslate = getTextSelection();
+        const tooManyWords = textToTranslate.split(' ').length > 5;
+
         if (user && noMoreFreeTranslations) {
             return;
         }
 
+        if (tooManyWords) {
+            setTooManyWords(true);
+            return;
+        }
+
         setIsSelecting(false);
-        const textToTranslate = getTextSelection();
 
         if (textToTranslate) {
             const translatedText = await translateText(textToTranslate);
@@ -73,6 +81,7 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
         setTranslatedText('');
         setIsSavingVocab(false);
         setHasSavedVocab(false);
+        setTooManyWords(false);
     }
 
     const getSentenceContainingSnippet = (snippet, text) => {
@@ -127,6 +136,10 @@ const SelectedTextPopover = ({elementRef, articleBody, isDemo}) => {
 
         if (translatedText) {
             return <span>{translatedText}</span>;
+        }
+
+        if (tooManyWords) {
+            return <span>Select no more than <br /> 5 words at a time.</span>
         }
 
         return <span>highlight text to translate</span>;

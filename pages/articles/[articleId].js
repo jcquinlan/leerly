@@ -16,7 +16,8 @@ import {
     AudioWrapper,
     FakeAudioWidget,
     TranscriptWord,
-    HelpText
+    HelpText,
+    NarrowContainer
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -38,6 +39,7 @@ import {
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
+import ArticleComments from '../../components/ArticleComments';
 import {
     useLocalStorage,
     STORYBOOK_ACTIVE_KEY,
@@ -425,6 +427,12 @@ function ArticlePage () {
                     <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
             )}
+
+            <NarrowContainer>
+                <div style={{marginTop: '90px'}}>
+                    <ArticleComments article={article}/>
+                </div>
+            </NarrowContainer>
         </WideContainer>
         </>
     );
@@ -544,7 +552,8 @@ const AudioOffsetWrapper = styled.div`
     align-items: center;
     flex-direction: column;
     position: sticky;
-    top: 0px; 
+    top: 0px;
+    z-index: 99;
 
     @media ${devices.mobileL} {
         flex-direction: row;

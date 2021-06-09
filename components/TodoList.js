@@ -4,11 +4,10 @@ import appContext from '../contexts/appContext';
 import { useLocalStorage, ONE_TRANSLATION_DONE_KEY } from '../hooks/useLocalStorage';
 
 const TodoList = ({readStatuses, playTime, level}) => {
-    const {userProfile} = useContext(appContext);
+    const {userProfileIsComplete} = useContext(appContext);
     const [wordWasTranslated] = useLocalStorage(ONE_TRANSLATION_DONE_KEY, false)
     const minutesListened = playTime / 60
     const articlesRead = Object.keys(readStatuses).length;
-    const profileIsComplete = userProfile && userProfile.name && userProfile.levels?.spanish;
 
     return (
         <TodoCard>
@@ -17,7 +16,7 @@ const TodoList = ({readStatuses, playTime, level}) => {
                 <Goal complete={articlesRead >= 1}>Mark an article as "read"</Goal>
                 <Goal complete={wordWasTranslated}>Translate a word</Goal>
                 <Goal complete={minutesListened >= 5}>Listen to 5 minutes of audio</Goal>
-                <Goal complete={profileIsComplete}>Fill out your profile</Goal>
+                <Goal complete={userProfileIsComplete}>Fill out your profile</Goal>
                 <Goal complete={level >= 3}>Get to level 3</Goal>
             </ul>
         </TodoCard>

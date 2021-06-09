@@ -5,10 +5,11 @@ const useAsync = (fn, dataPreparer) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
+    const getData = () => {
         fn()
             .then(incData => {
                 const preparedData = dataPreparer(incData);
+                console.log(incData)
                 setData(preparedData);
             })
             .catch(err => {
@@ -17,12 +18,21 @@ const useAsync = (fn, dataPreparer) => {
             .finally(() => {
                 setLoading(false);
             });
+    }
+
+    useEffect(() => {
+        getData();
     }, []);
+
+    const reload = () => {
+        getData();
+    }
 
     return {
         data,
         loading,
-        error
+        error,
+        reload
     }
 }
 

@@ -1,15 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Avatar from "boring-avatars";
 import Colors from './styled/colors';
-import appContext from '../contexts/appContext';
 
-const UserCartoonAvatar = ({size = 80}) => {
-    const {userProfile} = useContext(appContext);
-
+const UserCartoonAvatar = ({userId, size = 80}) => {
     return (
         <Avatar
             size={size}
-            name={userProfile?.email || 'default'}
+            name={userId}
             variant="beam"
             colors={[
                 Colors.Primary,
