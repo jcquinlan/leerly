@@ -11,7 +11,8 @@ const initialAppState = {
     userProfile: null,
     claims: null,
     navOpen: false,
-    plans: []
+    plans: [],
+    modal: null
 };
 const useAppContext = () => {
     const [appState, setAppState] = useState(initialAppState);
@@ -19,6 +20,10 @@ const useAppContext = () => {
     const setUser = (user) => {
         setAppState(state => ({...state, user}));
     };
+
+    const setModal = (modal) => {
+        setAppState(state => ({...state, modal}));
+    }
 
     const setNavOpen = (boolean) => {
         setAppState(state => ({...state, navOpen: boolean}));
@@ -54,7 +59,14 @@ const useAppContext = () => {
 
     const userHasProPlan = useMemo(() => {
         return appState.plans.some(plan => plan.name === PLANS.PRO_PLAN);
-    }, [appState.plans])
+    }, [appState.plans]);
+
+    const userProfileIsComplete = useMemo(() => {
+        return (
+            !!appState.userProfile?.name,
+            !!appState.userProfile?.levels?.spanish
+        )
+    }, [appState.userProfile]);
 
     const isAdmin = !!appState?.claims?.is_admin;
 
@@ -62,13 +74,15 @@ const useAppContext = () => {
         ...appState,
         isAdmin,
         userHasProPlan,
+        userProfileIsComplete,
         setUser,
         setNavOpen,
         setClaims,
         setUserProfile,
         setLoading,
         setPlans,
-        updateUserProfileLocally
+        updateUserProfileLocally,
+        setModal
     }
 }
 

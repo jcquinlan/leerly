@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Router, {useRouter} from 'next/router';
 import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
+import Modal from 'react-modal';
 import {auth, analytics} from '../services/index';
 import AppContext from '../contexts/appContext';
 import MixpanelContext from '../contexts/mixpanelContext';
@@ -95,7 +96,6 @@ function MyApp({ Component, pageProps }) {
         <Link key="home" id="/" className="menu-item" href="/">home</Link>,
         <Link key="about" id="/about" className="menu-item" href="/about">about us</Link>,
         <Link key="free" id="/free" className="menu-item" href="/demo">demo articles</Link>,
-        <Link key="roadmap" id="/roadmap" className="menu-item" href="/roadmap">roadmap</Link>,
         <Link key="register" id="/register" className="menu-item" href={registerString}>register</Link>,
         <Link key="sign-in" id="/sign-in" className="menu-item" href="/sign-in">sign in</Link>
     ]
@@ -105,7 +105,6 @@ function MyApp({ Component, pageProps }) {
     const links = [
         <Link key="dashboard" id="/dashboard" className="menu-item" href="/dashboard">dashboard</Link>,
         <Link key="vocab" id="/vocab" className="menu-item" href="/vocab">vocab / study</Link>,
-        <Link key="roadmap" id="/roadmap" className="menu-item" href="/roadmap">roadmap</Link>,
     ];
 
     if (isAdmin) {
@@ -134,13 +133,21 @@ function MyApp({ Component, pageProps }) {
     <MixpanelContext.Provider value={mixpanelContextApi}>
     <AppContext.Provider value={appContextApi}>
       <ToastProvider>
+        <Modal
+          isOpen={!!appContextApi.modal}
+          onRequestClose={() => appContextApi.setModal(null)}
+          style={customModalStyles}
+          contentLabel="Example Modal"
+        >
+          {appContextApi.modal}
+        </Modal>
         <MobileNav>
           <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
 
             {!appContextApi.loading && isSignedIn && (
               <div style={{display: 'flex'}}>
                 <div style={{marginRight: '10px'}}>
-                  <UserCartoonAvatar size={20} />
+                  <UserCartoonAvatar userId={appContextApi.user?.uid} size={20} />
                 </div>
                 <span>{userDisplayName}</span>
               </div>
@@ -155,7 +162,7 @@ function MyApp({ Component, pageProps }) {
           <Header>
             <Container>
               <ProfileInfoDisplay>
-                <UserCartoonAvatar size={20} />
+                <UserCartoonAvatar userId={appContextApi.user?.uid} size={20} />
                 <span>{userDisplayName}</span>
               </ProfileInfoDisplay>
             </Container>
@@ -183,7 +190,18 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default MyApp;
+
+const customModalStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 
 const FooterContainer = styled(Container)`
   padding-bottom: 30px;

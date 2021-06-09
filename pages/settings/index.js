@@ -102,7 +102,7 @@ function SettingsPage () {
                 <Card style={{marginBottom: '60px'}}>
                     <Flex>
                         <AvatarSection>
-                            <UserCartoonAvatar />
+                            <UserCartoonAvatar userId={user?.uid} />
                         </AvatarSection>
 
                         <div style={{flex: 1}}>
