@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Avatar from "boring-avatars";
 import Colors from './styled/colors';
-import appContext from '../contexts/appContext';
 
 const UserCartoonAvatar = ({userId, size = 80}) => {
     return (
