@@ -7,29 +7,12 @@ export const createNewComment = async ({
     userData,
     articleData
 }) => {
-    // return db.collection("article_comments").add({
-    //     type: 'basic',
-    //     userId,
-    //     articleId,
-    //     text,
-    //     created_at: new Date(),
-    //     deleted_at: null,
-    //     reported: false,
-    //     replyTo: null,
-    //     userData,
-    //     articleData
-    // })
-    // .then(commentRef => commentRef.get())
-    // .catch(error => {
-    //     throw error;
-    // });
-
     const payload = {
         userId,
         text,
         userData,
         articleData 
-    }
+    };
 
     return fetch(`/api/articles/${articleId}/comments`, {
         method: 'POST',
