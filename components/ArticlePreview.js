@@ -20,6 +20,11 @@ const ArticlePreview = ({article, read}) => {
     };
 
     const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+    const commentCountText = () => {
+        if (!article.commentCount) return '0 comments';
+        if (article.commentCount === 1) return '1 comment';
+        return `${article.commentCount} comments`;
+    }
 
     return (
         <ArticlePreviewWrapper clickable={article.free || userHasProPlan} onClick={goToArticle}>
@@ -31,7 +36,10 @@ const ArticlePreview = ({article, read}) => {
                     </div>
                 </Header>
 
-                <TypeList types={article.types} />
+                <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <TypeList types={article.types} />
+                    <CommentCountWrapper>{commentCountText()}</CommentCountWrapper>
+                </div>
 
                 {!!article?.image && (
                     <ImageAttribution>
@@ -129,6 +137,8 @@ const ImageBox = styled.div`
 `;
 
 const ArticleInfo = styled.div`
+    width: 100%;
+
     @media ${devices.tablet} {
         margin-right: 30px;
     }
@@ -158,4 +168,8 @@ const BodyPreviewMask = styled.div`
     width: 100%;
     height: 100%;
     background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.5) 20%, rgba(255,255,255,1));
+`;
+
+const CommentCountWrapper = styled.span`
+    font-size: 12px;
 `;
