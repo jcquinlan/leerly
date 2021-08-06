@@ -252,6 +252,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
               <li>High-quality audio</li>
               <li>Limited in-app translations</li>
               <li>Access to the weekly speaking sessions</li>
+              <li>Participate in discussions on articles</li>
             </ul>
           </PlanBody>
         </PlanContainer>
@@ -268,23 +269,12 @@ news sites, all summarized and translated to intermediate Spanish by native spea
               <li>Built-in flashcards</li>
               <li>Audio speed controls</li>
               <li>Priority access to the weekly speaking sessions</li>
+              <li>Participate in discussions on articles</li>
             </ul>
           </PlanBody>
         </PlanContainer>
       </Plans>
       <SectionDivider />
-
-      <Question>
-        <QuestionText>What do I get with my subscription?</QuestionText>
-        <FeaturesList>
-          <li>New articles throughout the week, in B1/B2 Spanish</li>
-          <li>Access to all past articles</li>
-          <li>Audio for each article, slowly read by a native speaker</li>
-          <li>Highlight to translate any text instantly while you read</li>
-          <li>Save vocab directly from articles for reviewing later</li>
-          <li>Access to weekly video chat conversations with a native speaker and other leerly users</li>
-        </FeaturesList>
-      </Question>
 
       <Question>
         <QuestionText>Do you have a trial?</QuestionText>

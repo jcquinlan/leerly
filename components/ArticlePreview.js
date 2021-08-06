@@ -8,6 +8,7 @@ import colors from './styled/colors';
 import appContext from '../contexts/appContext';
 
 const ArticlePreview = ({article, read}) => {
+    console.log(article.level);
     const {userHasProPlan} = useContext(appContext);
     const router = useRouter();
 

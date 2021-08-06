@@ -24,6 +24,7 @@ export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
 });
 
 export const createNewArticle = async (articleAttrs) => {
+    console.log(articleAttrs);
     return db.collection("articles").add({
         ...articleAttrs,
         sent: false,

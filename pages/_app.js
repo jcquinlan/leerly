@@ -78,6 +78,7 @@ function MyApp({ Component, pageProps }) {
         appContextApi.setUser(null);
         appContextApi.setClaims(null);
         appContextApi.setNavOpen(false);
+        router.push('/');
       });
   }
 
