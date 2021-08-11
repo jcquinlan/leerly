@@ -1,7 +1,4 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const baseUrl = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ?
-  'http://localhost:3000' :
-  'https://leerly.io';
 
 export default async (req, res) => {
   if (req.method === 'GET') {

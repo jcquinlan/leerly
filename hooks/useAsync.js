@@ -9,7 +9,6 @@ const useAsync = (fn, dataPreparer) => {
         fn()
             .then(incData => {
                 const preparedData = dataPreparer(incData);
-                console.log(incData)
                 setData(preparedData);
             })
             .catch(err => {

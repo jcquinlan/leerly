@@ -9,14 +9,12 @@ import {
     GhostButton,
     devices
 } from '../components/styled';
-import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGuardRoute from '../hooks/useGuardRoute';
 import {getArticleReadStatuses, getUserMetrics} from '../services/articleService';
 import AppContext from '../contexts/appContext';
 import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
-import useGetDashboardArticles from '../hooks/useGetDashboardArticles';
 import { useRouter } from 'next/router';
 import TypeSelector from '../components/TypeSelector';
 import TodoList from '../components/TodoList';
@@ -27,13 +25,16 @@ function ArticlePage () {
     useGuardRoute();
 
     const router = useRouter();
-    const {user, userHasProPlan} = useContext(AppContext);
+    const {user, userHasProPlan, articles, loadArticles} = useContext(AppContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
-    const {articles, loading, error} = useGetDashboardArticles(selectedFilterTypes);
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
     const [cardsStudied, setCardsStudied] = useState(0);
     const [offset, setOffset] = useState(0);
+
+    useEffect(() => {
+        loadArticles(selectedFilterTypes);
+    }, [selectedFilterTypes]);
 
     const articlesToShow = useMemo(() => {
         if (!articles) {
@@ -130,21 +131,9 @@ function ArticlePage () {
         setSelectedFilterTypes([]);
     }
 
-    if (loading) {
-        return <LoadingPage></LoadingPage>
-    }
-
     return (
         <>
         <Container>
-        {/* <HeroWrapper>
-            <HeroContent>
-                <Title>dashboard</Title>
-                <Subtitle>See all the recent articles, or search through the archives of older material.</Subtitle>
-            </HeroContent>
-        </HeroWrapper> */}
-
-        {/* <Divider /> */}
 
         {!userHasProPlan && (
             <NoticeCard onClick={() => router.push('/settings')}>

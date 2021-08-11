@@ -14,6 +14,7 @@ import {
     Checkbox
 } from '../../components/styled';
 import TypeSelector from '../../components/TypeSelector';
+import LevelSelector from '../../components/LevelSelector';
 import ArticleImageSelector from '../../components/ArticleImageSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle, uploadAudio} from '../../services/articleService';
@@ -30,6 +31,7 @@ function SubmitPage () {
     const [formState, setFormState] = useState({});
     const [audioURL, setAudioURL] = useState(null);
     const [image, setImage] = useState(null);
+    const [level, setLevel] = useState(null);
     const [audioFile, setAudioFile] = useState(null);
     const [saving, setSaving] = useState(false);
     const formIsFilled = useMemo(() => {
@@ -41,7 +43,7 @@ function SubmitPage () {
             formState.transcriptId &&
             !!selectedTypes.length
         );
-    }, [formState]);
+    }, [formState, image, selectedTypes]);
 
     const handleClick = async () => {
         setSaving(true);
@@ -54,6 +56,7 @@ function SubmitPage () {
                 title: formState.title,
                 free: formState.free || false,
                 types: selectedTypes,
+                language: 'spanish',
                 audio: `audios/${audioFile.name}`,
                 image: unsplashImageToSimplifiedImage(image),
                 transcriptId: formState.transcriptId,
@@ -121,17 +124,23 @@ function SubmitPage () {
 
         <Divider />
 
-        <TypeSelectorWrapper>
+        <SelectorWrapper>
             <h6>What type of article is this?</h6>
             <p>Select all that apply</p>
             <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
-        </TypeSelectorWrapper>
+        </SelectorWrapper>
+
+        {/* <SelectorWrapper>
+            <h6>What is the difficulty?</h6>
+            <p>Select just one</p>
+            <LevelSelector level={level} onSelectLevel={(level) => setLevel(level)} />
+        </SelectorWrapper> */}
 
         <ArticleImageSelector image={image} onSelectImage={(image) => setImage(image)} />
 
         {!audioURL && (
             <AudioWrapper>
-                <label for='audio'>Audio file upload (mp3 only)</label>
+                <label htmlFor='audio'>Audio file upload (mp3 only)</label>
                 <input type='file' name='audio' accept='audio/mp3' onChange={handleSelectedFile} />
             </AudioWrapper>
         )}
@@ -142,7 +151,7 @@ function SubmitPage () {
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
 
         <div>
-            <label for='free'>Article is free?</label>
+            <label htmlFor='free'>Article is free?</label>
             <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
         </div>
 
@@ -158,7 +167,7 @@ export default SubmitPage;
 const AudioWrapper = styled.div`
     margin-bottom: 30px;
 `;
-const TypeSelectorWrapper = styled.div`
+const SelectorWrapper = styled.div`
     h6 {
         font-size: 20px;
         margin-bottom: 0;

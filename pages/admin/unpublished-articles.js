@@ -9,12 +9,12 @@ import {
     Subtitle
 } from '../../components/styled';
 import useGuardAdminRoute from '../../hooks/useGuardAdminRoute';
-import useGetArticles from '../../hooks/useGetArticles';
+import useGetDemoOrUnpublishedArticles from '../../hooks/useGetDemoOrUnpublishedArticles';
 import ArticlePreview from '../../components/ArticlePreview';
 
 function UnpublishedArticlesPage () {
     useGuardAdminRoute();
-    const {articles} = useGetArticles({unpublished: true});
+    const {articles} = useGetDemoOrUnpublishedArticles({unpublished: true});
 
     return (
         <>

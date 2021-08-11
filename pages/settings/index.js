@@ -11,10 +11,10 @@ import {
     Card,
     Button,
     NarrowContainer,
-    Input,
-    Colors
+    Input
 } from '../../components/styled';
 import UserCartoonAvatar from '../../components/UserCartoonAvatar';
+import LevelSelector from '../../components/LevelSelector';
 import useAsync from '../../hooks/useAsync';
 import { getBillingURL } from '../../services/stripeService';
 import AppContext from '../../contexts/appContext';
@@ -111,36 +111,10 @@ function SettingsPage () {
                                 <Input type="text" placeholder="The name you go by" value={userName} onChange={handleNameChange} />
                             </FormControl>
 
-                            <LevelSelector>
+                            <div>
                                 <h5>Select your Spanish level</h5>
-
-                                <Levels>
-                                    <Level selected={userLevel === 'a1'} onClick={() => handleNewUserLevel('a1')}>
-                                        A1
-                                    </Level>
-
-                                    <Level selected={userLevel === 'a2'} onClick={() => handleNewUserLevel('a2')}>
-                                        A2
-                                    </Level>
-
-                                    <Level selected={userLevel === 'b1'} onClick={() => handleNewUserLevel('b1')}>
-                                        B1
-                                    </Level>
-
-                                    <Level selected={userLevel === 'b2'} onClick={() => handleNewUserLevel('b2')}>
-                                        B2
-                                    </Level>
-
-                                    <Level selected={userLevel === 'c1'} onClick={() => handleNewUserLevel('c1')}>
-                                        C1
-                                    </Level>
-
-                                    <Level selected={userLevel === 'c2'} onClick={() => handleNewUserLevel('c2')}>
-                                        C2
-                                    </Level>
-
-                                </Levels>
-                            </LevelSelector>
+                                <LevelSelector level={userLevel} onSelectLevel={handleNewUserLevel} />
+                            </div>
 
                             <Button style={{marginTop: '20px'}} disabled={!profileHasChanged || saving} onClick={saveProfile}>Save changes</Button>
                         </div>
@@ -189,27 +163,6 @@ const FormControl = styled.div`
     }
 `;
 
-const LevelSelector = styled.div``;
-const Levels = styled.div`
-    display: flex;
-    justify-content: space-between;
-`;
-const Level = styled.div`
-    border: 1px solid #eee;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-
-    ${props => props.selected ? `
-        background-color: ${Colors.Primary};
-        color: #fff;
-    `: ``}
-
-    &:hover {
-        background-color: ${Colors.Primary};
-        color: #fff;
-    }
-`;
 const AvatarSection = styled.div`
     margin-right: 30px;
     h5 {
