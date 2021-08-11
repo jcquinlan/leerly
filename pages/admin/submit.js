@@ -41,10 +41,9 @@ function SubmitPage () {
             image &&
             formState.title &&
             formState.transcriptId &&
-            level &&
             !!selectedTypes.length
         );
-    }, [formState, level, image, selectedTypes]);
+    }, [formState, image, selectedTypes]);
 
     const handleClick = async () => {
         setSaving(true);
@@ -58,7 +57,6 @@ function SubmitPage () {
                 free: formState.free || false,
                 types: selectedTypes,
                 language: 'spanish',
-                level: level,
                 audio: `audios/${audioFile.name}`,
                 image: unsplashImageToSimplifiedImage(image),
                 transcriptId: formState.transcriptId,
@@ -132,11 +130,11 @@ function SubmitPage () {
             <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
         </SelectorWrapper>
 
-        <SelectorWrapper>
+        {/* <SelectorWrapper>
             <h6>What is the difficulty?</h6>
             <p>Select just one</p>
             <LevelSelector level={level} onSelectLevel={(level) => setLevel(level)} />
-        </SelectorWrapper>
+        </SelectorWrapper> */}
 
         <ArticleImageSelector image={image} onSelectImage={(image) => setImage(image)} />
 

@@ -79,22 +79,6 @@ export const getDemoArticles = () => {
         });
 }
 
-// export const getArticles = (filters) => {
-//     let query = db.collection("articles")
-//         .where('published', '==', true)
-
-//     if (filters.length) {
-//         query = query.where('types', 'array-contains-any', filters);
-//     }
-
-//     return query
-//         .orderBy('added_at', 'desc')
-//         .get()
-//         .catch(error => {
-//             throw error;
-//         });
-// }
-
 export const getUnpublishedArticles = () => {
     return db.collection("articles")
         .orderBy('added_at', 'desc')
