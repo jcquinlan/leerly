@@ -8,10 +8,10 @@ import {
 } from '../components/styled';
 import LoadingPage from '../components/LoadingPage';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
-import useGetArticles from '../hooks/useGetArticles';
+import useGetDemoOrUnpublishedArticles from '../hooks/useGetDemoOrUnpublishedArticles';
 
 function DemoPage () {
-    const {articles, loading, error} = useGetArticles({demo: true});
+    const {articles, loading, error} = useGetDemoOrUnpublishedArticles({demo: true});
 
     if (loading) {
         return <LoadingPage></LoadingPage>

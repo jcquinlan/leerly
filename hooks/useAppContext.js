@@ -1,4 +1,6 @@
-import {useState, useMemo} from 'react';
+import {useState, useMemo, useEffect} from 'react';
+import firebase, { apps } from 'firebase';
+import { getArticles } from '../services/articleService';
 
 const PLANS = {
     FREE_PLAN: 'leerly Starter',
@@ -12,10 +14,17 @@ const initialAppState = {
     claims: null,
     navOpen: false,
     plans: [],
-    modal: null
+    modal: null,
+    articles: [],
+    idToken: null,
+    loadingArticles: true,
+    articlesError: null
 };
+
 const useAppContext = () => {
     const [appState, setAppState] = useState(initialAppState);
+    const [loadingArticles, setLoadingArticles] = useState(true);
+    const [articlesError, setArticlesError] = useState();
 
     const setUser = (user) => {
         setAppState(state => ({...state, user}));
@@ -57,6 +66,38 @@ const useAppContext = () => {
         setAppState(state => ({...state, plans}));
     }
 
+    const loadArticles = async (filters) => {
+        setLoadingArticles(true);
+
+        try {
+            if (!appState.idToken) return;
+
+            const incomingArticles = await getArticles(appState.idToken, filters);
+            setAppState(state => ({
+                ...state,
+                articles: incomingArticles
+            }))
+        } catch (e) {
+            setArticlesError(e.message);
+        }
+
+        setLoadingArticles(false);
+    }
+
+    const loadIdToken = async () => {
+        const currentUser = firebase.auth().currentUser;
+
+        if (currentUser) {
+            try {
+                const idToken = await currentUser.getIdToken(true);
+                setAppState(state => ({...state, idToken}));
+            } catch (e) {
+                console.error('Unable to get user id token');
+
+            }
+        }
+    };
+
     const userHasProPlan = useMemo(() => {
         return appState.plans.some(plan => plan.name === PLANS.PRO_PLAN);
     }, [appState.plans]);
@@ -75,6 +116,8 @@ const useAppContext = () => {
         isAdmin,
         userHasProPlan,
         userProfileIsComplete,
+        loadingArticles,
+        articlesError,
         setUser,
         setNavOpen,
         setClaims,
@@ -82,7 +125,9 @@ const useAppContext = () => {
         setLoading,
         setPlans,
         updateUserProfileLocally,
-        setModal
+        setModal,
+        loadArticles,
+        loadIdToken
     }
 }
 

@@ -52,6 +52,7 @@ function MyApp({ Component, pageProps }) {
         }
 
         appContextApi.setUser(user);
+        await appContextApi.loadIdToken();
         appContextApi.setUserProfile(profileData);
         const claimRef = await getUserClaims(user.uid);
         const claimData = claimRef.data();

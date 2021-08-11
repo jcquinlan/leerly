@@ -49,7 +49,6 @@ import {
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
-const DEFAULT_STORYBOOK_SECONDS_DELAY = 1;
 
 function ArticlePage () {
     const router = useRouter();

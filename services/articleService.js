@@ -24,7 +24,6 @@ export const ArticleTypeList = Object.keys(ArticleTypes).map(key => {
 });
 
 export const createNewArticle = async (articleAttrs) => {
-    console.log(articleAttrs);
     return db.collection("articles").add({
         ...articleAttrs,
         sent: false,
@@ -80,21 +79,21 @@ export const getDemoArticles = () => {
         });
 }
 
-export const getArticles = (filters) => {
-    let query = db.collection("articles")
-        .where('published', '==', true)
+// export const getArticles = (filters) => {
+//     let query = db.collection("articles")
+//         .where('published', '==', true)
 
-    if (filters.length) {
-        query = query.where('types', 'array-contains-any', filters);
-    }
+//     if (filters.length) {
+//         query = query.where('types', 'array-contains-any', filters);
+//     }
 
-    return query
-        .orderBy('added_at', 'desc')
-        .get()
-        .catch(error => {
-            throw error;
-        });
-}
+//     return query
+//         .orderBy('added_at', 'desc')
+//         .get()
+//         .catch(error => {
+//             throw error;
+//         });
+// }
 
 export const getUnpublishedArticles = () => {
     return db.collection("articles")
@@ -107,8 +106,14 @@ export const getUnpublishedArticles = () => {
 }
 
 
-export const getPaidArticlePreviews = (filters) => {
-    return fetch(`/api/articles?filters=${filters.join(',')}`);
+export const getArticles = (idToken, filters) => {
+    return fetch(`/api/articles${filters.length ? `?filters=${filters.join(',')}` : ''}`, {
+        headers: {
+            'x-leerly-token': idToken
+        }
+    })
+    .then(res => res.json())
+    .then(res => res.data);
 }
 
 export const getUserMetrics = (userId) => {
