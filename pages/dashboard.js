@@ -25,7 +25,7 @@ function ArticlePage () {
     useGuardRoute();
 
     const router = useRouter();
-    const {user, userHasProPlan, articles, loadArticles} = useContext(AppContext);
+    const {user, userHasProPlan, articles, loadArticles, loadingArticles} = useContext(AppContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
@@ -191,7 +191,11 @@ function ArticlePage () {
         </Filters>
 
         <ArticlesList>
-            {articlesToShow.map(article => (
+            {loadingArticles && (
+                <div style={{textAlign: 'center', padding: '20px 0'}}>Loading articles...</div>
+            )}
+
+            {!loadingArticles && articlesToShow.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
             ))}
         </ArticlesList>
