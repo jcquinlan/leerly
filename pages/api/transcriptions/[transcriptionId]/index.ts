@@ -1,4 +1,8 @@
 import fetch from 'node-fetch';
+import {WordMap} from 'corpus';
+import {TranscriptPortion, TranscriptPortionForRender, WordMapEntry} from 'types';
+import {prepareTranscript} from 'services/transcriptionService';
+
 
 const getTranscriptJSON = async (transcriptId) => {
   try {
@@ -36,6 +40,37 @@ const isTranscriptReady = async (transcriptId) => {
   }
 }
 
+const addVocabDataToTranscript = (transcript: TranscriptPortionForRender[]): TranscriptPortionForRender[] => {
+    return transcript.map((section, index) => {
+        const hasWords = !!section.text;
+
+        if (hasWords) {
+            const words = section.text.trim().split(' ').map(word => word.toLowerCase());
+            let sectionWordEntry: WordMapEntry;
+
+            words.forEach(word => {
+                const wordMapEntry = WordMap[word];
+
+                if (wordMapEntry) {
+                    sectionWordEntry = wordMapEntry;
+
+                }
+            });
+
+            if (sectionWordEntry) {
+                return {
+                    ...section,
+                    wordMapEntry: {
+                        grade: sectionWordEntry.grade
+                    }
+                }
+            }
+        }
+        
+        return section;
+    })
+}
+
 export default async (req, res) => {
   if (req.method === 'GET') {
     try {
@@ -43,15 +78,17 @@ export default async (req, res) => {
         const isReady = await isTranscriptReady(transcriptionId);
 
         if (!isReady) {
-          res.statusCode = 202; // Request accept, but processing not finished.
+          res.statusCode = 202; // Request accepted, but processing not finished.
           res.json(null);
           return;
         }
 
         const transcript = await getTranscriptJSON(transcriptionId);
+        const preparedTranscript = prepareTranscript(transcript.transcript);
+        const transcriptWithVocab = addVocabDataToTranscript(preparedTranscript);
 
         res.statusCode = 200;
-        res.json(transcript);
+        res.json({transcript: transcriptWithVocab});
     } catch (e) {
         console.error(e);
         res.status(500);

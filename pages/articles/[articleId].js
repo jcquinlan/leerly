@@ -35,7 +35,6 @@ import {
 } from '../../services/articleService';
 import {
     fetchArticleTranscription,
-    prepareTranscript,
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
@@ -102,8 +101,8 @@ function ArticlePage () {
                     // If the transcript isn't ready yet, or doesn't exist,
                     // we just get a null response, but with a 2XX code (202, specifically)
                     if (json) {
-                        const preparedTranscript = prepareTranscript(json.transcript);
-                        setTranscript(preparedTranscript);
+                        console.log(json.transcript);
+                        setTranscript(json.transcript);
                     }
                 })
         }

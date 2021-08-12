@@ -292,14 +292,14 @@ export const TranscriptWord = styled.span`
         font-weight: bold;
     }
 
-    ${props => props.highlight ? `
+    ${props => props.bodyColor && props.textColor ? `
         border-radius: 5px;
-        background-color: ${Colors.Primary};
-        color: white;
+        background-color: ${props.bodyColor};
+        color: ${props.textColor};
 
         &:hover {
-            color: #fff;
             font-weight: bold;
+            background-color: ${Colors.PrimaryLight};
         }
     `: ``}
 `;

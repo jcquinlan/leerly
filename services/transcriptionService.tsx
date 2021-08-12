@@ -1,4 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import {TranscriptPortionForRender, GlyphColor} from 'types';
+import Colors from 'components/styled/colors';
+
+export const NEW_PARAGRAPH_GLYPH = 'newParagraph';
+export const WORD_GLYPH = 'word';
 
 export const fetchArticleTranscription = (transcriptionId) => {
     return fetch(`/api/transcriptions/${transcriptionId}`)
@@ -10,10 +15,7 @@ export const fetchArticleTranscription = (transcriptionId) => {
         });
 }
 
-export const NEW_PARAGRAPH_GLYPH = 'newParagraph';
-export const WORD_GLYPH = 'word';
-
-export const prepareTranscript = transcript => {
+export const prepareTranscript = (transcript): Omit<TranscriptPortionForRender, 'wordMapEntry'>[] => {
     return transcript.map(speaker => {
         const newParagraphObject = {
             type: NEW_PARAGRAPH_GLYPH
@@ -23,7 +25,8 @@ export const prepareTranscript = transcript => {
             return {
                 ...word,
                 id: uuidv4(),
-                type: WORD_GLYPH
+                type: WORD_GLYPH,
+                highlight: false
             }
         });
 
@@ -31,13 +34,27 @@ export const prepareTranscript = transcript => {
     }).flat();
 }
 
-export const renderTranscriptForReading = (transcript, {component: Component, onClickWord}) => {
-    return transcript.map((glyph, index) => {
+const getGlyphColor = (grade: string): GlyphColor => {
+    switch (grade) {
+        case 'beginner':
+            return {text: '#333', body: Colors.EasyLight };
+        default:
+            return {text: '#000', body: 'transparent'};
+    }
+};
+
+export const renderTranscriptForReading = (transcript: TranscriptPortionForRender[], {component: Component, onClickWord}) => {
+    return transcript.map((glyph) => {
         if (glyph.type === WORD_GLYPH) {
+            const color = glyph.highlight ?
+                {body: Colors.Primary, text: '#fff'} :
+                getGlyphColor(glyph.wordMapEntry?.grade);
+
             return (
                 <Component
                     key={glyph.start_time}
-                    highlight={glyph.highlight}
+                    bodyColor={color?.body}
+                    textColor={color?.text}
                     onClick={() => onClickWord(glyph)}
                 >
                     {glyph.text}
