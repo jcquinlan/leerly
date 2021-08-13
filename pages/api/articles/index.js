@@ -58,7 +58,9 @@ export default async (req, res) => {
                 articlesQuery = articlesQuery.where('types', 'array-contains-any', filters);
             }
 
-            const articles = await articlesQuery.get();
+            const articles = await articlesQuery
+                .orderBy('added_at', 'desc')
+                .get();
 
             const articlesData = articles.docs.map(doc => {
                 const data = doc.data();
