@@ -243,7 +243,7 @@ export const ImageAttribution = styled.p`
 
 
 export const AudioWrapper = styled.div`
-    margin-top: 60px;
+    margin-top: 30px;
     margin-bottom: 10px;
     display: flex;
     justify-content: center;
@@ -286,20 +286,33 @@ export const NarrowContainer = ({children, width = '600px'}) => {
 
 export const TranscriptWord = styled.span`
     cursor: pointer;
+    border-radius: 8px;
 
-    &:hover {
-        color: ${Colors.Primary};
-        font-weight: bold;
-    }
+    ${props => props.isVocab ? `
+      background-color: ${Colors.EasyLight};
+      color: ${Colors.Easy};
+      font-weight: bold;
+    `: ``}
 
-    ${props => props.bodyColor && props.textColor ? `
-        border-radius: 5px;
-        background-color: ${props.bodyColor};
-        color: ${props.textColor};
+    ${props => props.seen && props.isVocab ? `
+      background-color: ${Colors.LightGrey};
+      color: ${Colors.MediumGrey};
+      font-weight: normal;
+    `: ``}
+
+    ${props => props.isActive ? `
+        background-color: ${Colors.Primary};
+        color: #fff;
 
         &:hover {
             font-weight: bold;
             background-color: ${Colors.PrimaryLight};
         }
     `: ``}
+
+    &:hover {
+      color: ${Colors.Primary};
+      background-color: ${Colors.PrimaryLight};
+      font-weight: bold;
+  }
 `;

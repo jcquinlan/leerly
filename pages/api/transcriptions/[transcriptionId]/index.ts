@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
 import {WordMap} from 'corpus';
-import {TranscriptPortion, TranscriptPortionForRender, WordMapEntry} from 'types';
+import {TranscriptPortionForRender, WordMapEntry} from 'types';
 import {prepareTranscript} from 'services/transcriptionService';
+import { UserLevels } from '../../../../constants';
+import { mapUserLevelToWordDifficulty } from 'services/corpusService';
 
 
 const getTranscriptJSON = async (transcriptId) => {
@@ -40,28 +42,22 @@ const isTranscriptReady = async (transcriptId) => {
   }
 }
 
-const addVocabDataToTranscript = (transcript: TranscriptPortionForRender[]): TranscriptPortionForRender[] => {
+const addVocabDataToTranscript = (transcript: Omit<TranscriptPortionForRender, 'wordMapEntry'>[], difficulty?: UserLevels): TranscriptPortionForRender[] => {
+    const userLevel = difficulty ? mapUserLevelToWordDifficulty(difficulty) : null;
+
     return transcript.map((section, index) => {
         const hasWords = !!section.text;
 
         if (hasWords) {
-            const words = section.text.trim().split(' ').map(word => word.toLowerCase());
-            let sectionWordEntry: WordMapEntry;
+            const word = section.text.trim().toLowerCase();
+            const wordMapEntry = WordMap[word];
 
-            words.forEach(word => {
-                const wordMapEntry = WordMap[word];
-
-                if (wordMapEntry) {
-                    sectionWordEntry = wordMapEntry;
-
-                }
-            });
-
-            if (sectionWordEntry) {
+            if (wordMapEntry && (userLevel && wordMapEntry.grade === userLevel)) {
                 return {
                     ...section,
+                    index,
                     wordMapEntry: {
-                        grade: sectionWordEntry.grade
+                        grade: wordMapEntry.grade
                     }
                 }
             }
@@ -74,7 +70,7 @@ const addVocabDataToTranscript = (transcript: TranscriptPortionForRender[]): Tra
 export default async (req, res) => {
   if (req.method === 'GET') {
     try {
-        const {transcriptionId} = req.query;
+        const {transcriptionId, difficulty} = req.query;
         const isReady = await isTranscriptReady(transcriptionId);
 
         if (!isReady) {
@@ -85,7 +81,7 @@ export default async (req, res) => {
 
         const transcript = await getTranscriptJSON(transcriptionId);
         const preparedTranscript = prepareTranscript(transcript.transcript);
-        const transcriptWithVocab = addVocabDataToTranscript(preparedTranscript);
+        const transcriptWithVocab = addVocabDataToTranscript(preparedTranscript, difficulty);
 
         res.statusCode = 200;
         res.json({transcript: transcriptWithVocab});

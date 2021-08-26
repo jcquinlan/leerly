@@ -1,4 +1,5 @@
 import {db, storage} from './index';
+import {DateTime} from 'luxon';
 
 export const createUserProfileDocument = async ({email, user_uid}) => {
     return db.collection("user_profiles").doc(user_uid).set({
@@ -63,4 +64,17 @@ export const updateUserProfile = (uid, attrs) => {
 export const getUserProfileImageURL = (profileImage) => {
     const storageRef = storage.ref();
     return storageRef.child(`profile_images/${profileImage}`).getDownloadURL();
+}
+
+export const updateWordCounts = (idToken, words) => {
+    const timezone = DateTime.now().zoneName;
+    return fetch(`/api/me/words`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-leerly-token': idToken
+            },
+            body: JSON.stringify({tz: timezone, words})
+        })
+        .then(res => res.json()); 
 }

@@ -8,6 +8,9 @@ const wordMap7 = require('./wordMap_7.json');
 const wordMap8 = require('./wordMap_8.json');
 const wordMap9 = require('./wordMap_9.json');
 
+// @TODO - Eventually we want this to simply be a package that we
+// install and import as any other package.
+
 // ORDER MATTERS
 // We want easier words to overwrite hard words, so when we combine
 // the objects together, add in the easier wordMaps after the harder ones

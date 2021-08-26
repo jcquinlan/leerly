@@ -106,7 +106,7 @@ function StorybookPage () {
             return (
                 <TranscriptWord
                     key={glyph.start_time}
-                    highlight={glyphIsInActiveSelection}
+                    isActive={glyphIsInActiveSelection}
                     onClick={() => activateGlyph(glyph)}
                 >
                     {glyph.text}

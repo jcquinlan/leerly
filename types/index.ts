@@ -7,18 +7,22 @@ export type WordMapEntry = {
 export type TranscriptPortion = {
     text: string;
     start_time: number;
-    highlight?: boolean;
-    wordMapEntry?: WordMapEntry;
 }
 
 export type TranscriptPortionForRender = TranscriptPortion & {
     id: string;
     type: string;
+    index: number;
     highlight: boolean;
-    wordMapEntry: WordMapEntry;
+    seen?: boolean;
+    wordMapEntry?: WordMapEntry;
 }
 
-export type GlyphColor = {
-    text: string;
-    body: string;
+export type WordCount = Record<string, number>;
+export type WordCountRecord = {
+    userId: string,
+	week: number,
+	year: number,
+	date: Date,
+	words: WordCount
 }

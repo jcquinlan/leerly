@@ -18,6 +18,7 @@ import {calculateStatsLevel} from '../utils/stats';
 import { useRouter } from 'next/router';
 import TypeSelector from '../components/TypeSelector';
 import TodoList from '../components/TodoList';
+import articlesContext from '../contexts/articlesContext';
 
 const PAGE_SIZE = 10;
 
@@ -25,7 +26,8 @@ function ArticlePage () {
     useGuardRoute();
 
     const router = useRouter();
-    const {user, userHasProPlan, articles, loadArticles, loadingArticles} = useContext(AppContext);
+    const {user, userHasProPlan} = useContext(AppContext);
+    const {articles, loadArticles, loadingArticles} = useContext(articlesContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
     const [readStatuses, setReadStatuses] = useState({});
     const [playTime, setPlayTime] = useState(0);
@@ -33,7 +35,7 @@ function ArticlePage () {
     const [offset, setOffset] = useState(0);
 
     useEffect(() => {
-        loadArticles(selectedFilterTypes);
+        !articles.length && loadArticles(selectedFilterTypes);
     }, [selectedFilterTypes]);
 
     const articlesToShow = useMemo(() => {

@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import {TranscriptPortionForRender, GlyphColor} from 'types';
-import Colors from 'components/styled/colors';
+import {TranscriptPortionForRender} from 'types';
 
 export const NEW_PARAGRAPH_GLYPH = 'newParagraph';
 export const WORD_GLYPH = 'word';
 
-export const fetchArticleTranscription = (transcriptionId) => {
-    return fetch(`/api/transcriptions/${transcriptionId}`)
+export const fetchArticleTranscription = (transcriptionId, userLevel) => {
+    return fetch(`/api/transcriptions/${transcriptionId}${userLevel ? `?difficulty=${userLevel}` : ''}`)
         .then(response => {
             return response.json();
         })
@@ -34,27 +33,15 @@ export const prepareTranscript = (transcript): Omit<TranscriptPortionForRender, 
     }).flat();
 }
 
-const getGlyphColor = (grade: string): GlyphColor => {
-    switch (grade) {
-        case 'beginner':
-            return {text: '#333', body: Colors.EasyLight };
-        default:
-            return {text: '#000', body: 'transparent'};
-    }
-};
-
 export const renderTranscriptForReading = (transcript: TranscriptPortionForRender[], {component: Component, onClickWord}) => {
     return transcript.map((glyph) => {
         if (glyph.type === WORD_GLYPH) {
-            const color = glyph.highlight ?
-                {body: Colors.Primary, text: '#fff'} :
-                getGlyphColor(glyph.wordMapEntry?.grade);
-
             return (
                 <Component
                     key={glyph.start_time}
-                    bodyColor={color?.body}
-                    textColor={color?.text}
+                    isActive={glyph.highlight}
+                    seen={glyph.seen}
+                    isVocab={!!glyph.wordMapEntry}
                     onClick={() => onClickWord(glyph)}
                 >
                     {glyph.text}

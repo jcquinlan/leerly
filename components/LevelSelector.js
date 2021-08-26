@@ -1,31 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
 import Colors from './styled/colors';
+import {UserLevels} from '../constants';
 
 const LevelSelector = ({level, onSelectLevel}) => {
     return (
         <Levels>
-            <Level selected={level === 'a1'} onClick={() => onSelectLevel('a1')}>
+            <Level selected={level === UserLevels.A1} onClick={() => onSelectLevel(UserLevels.A1)}>
                 A1
             </Level>
 
-            <Level selected={level === 'a2'} onClick={() => onSelectLevel('a2')}>
+            <Level selected={level === UserLevels.A2} onClick={() => onSelectLevel(UserLevels.A2)}>
                 A2
             </Level>
 
-            <Level selected={level === 'b1'} onClick={() => onSelectLevel('b1')}>
+            <Level selected={level === UserLevels.B1} onClick={() => onSelectLevel(UserLevels.B1)}>
                 B1
             </Level>
 
-            <Level selected={level === 'b2'} onClick={() => onSelectLevel('b2')}>
+            <Level selected={level === UserLevels.B2} onClick={() => onSelectLevel(UserLevels.B2)}>
                 B2
             </Level>
 
-            <Level selected={level === 'c1'} onClick={() => onSelectLevel('c1')}>
+            <Level selected={level === UserLevels.C1} onClick={() => onSelectLevel(UserLevels.C1)}>
                 C1
             </Level>
 
-            <Level selected={level === 'c2'} onClick={() => onSelectLevel('c2')}>
+            <Level selected={level === UserLevels.C2} onClick={() => onSelectLevel(UserLevels.C2)}>
                 C2
             </Level>
         </Levels>
