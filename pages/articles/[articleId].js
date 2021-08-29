@@ -243,34 +243,53 @@ function ArticlePage () {
     }
 
     const handleMarkAsRead = async () => {
-        if (readStatus) {
-            await deleteArticleReadStatus(readStatus.id);
-            setReadStatus(null);
-        } else {
-            const readStatusRef = await createArticleReadStatus(user.uid, article.id);
-            setReadStatus(readStatusRef);
+        try {
+            if (readStatus) {
+                await deleteArticleReadStatus(readStatus.id);
+                setReadStatus(null);
+            } else {
+                const readStatusRef = await createArticleReadStatus(user.uid, article.id);
+                setReadStatus(readStatusRef);
 
-            // Make sure that we only update the user's word counts once per article session,
-            // even if they repeatedly mark and unmark an article as having been read.
-            if (!hasMarkedAsReadOnce) {
-                setHasMarkedAsReadOnce(true);
-                const totalWordCounts = transcript.reduce((memo, glyph) => {
-                    if (!!glyph.wordMapEntry) {
-                        const glyphText = glyph.text.trim().toLowerCase();
-                        const previousVocabCount = memo[glyphText];
+                // Make sure that we only update the user's word counts once per article session,
+                // even if they repeatedly mark and unmark an article as having been read.
+                if (!hasMarkedAsReadOnce) {
+                    setHasMarkedAsReadOnce(true);
+                    const totalWordCounts = transcript.reduce((memo, glyph) => {
+                        if (glyph.text && glyph.wordMapEntry) {
+                            const glyphText = glyph.text.trim().toLowerCase();
+                            const previousVocabCount = memo[glyphText];
 
-                        if (previousVocabCount) {
-                            memo[glyphText] = memo[glyphText] + 1;
-                        } else {
-                            memo[glyphText] = 1;
+                            if (previousVocabCount) {
+                                memo[glyphText] = memo[glyphText] + 1;
+                            } else {
+                                memo[glyphText] = 1;
+                            }
                         }
-                    }
 
-                    return memo;
-                }, {});
+                        return memo;
+                    }, {});
 
-                updateWordCounts(totalWordCounts);
+                    const finalWordCounts = Object.keys(totalWordCounts).reduce((memo, word) => {
+                        if (!collectedVocabWords[word]) {
+                            memo[word] = totalWordCounts[word];
+                        } else {
+                            const numberOfTimeSeenWord = collectedVocabWords[word];
+                            // If the user hasn't seen the word the maxiumum number of times
+                            // increment the word count for this word by the difference between the two
+                            if (numberOfTimeSeenWord < totalWordCounts[word]) {
+                                memo[word] = totalWordCounts[word] - numberOfTimeSeenWord;
+                            }
+                        }
+
+                        return memo;
+                    }, {});
+
+                    updateWordCounts(finalWordCounts);
+                }
             }
+        } catch (e) {
+            console.error(e);
         }
     }
 
@@ -422,7 +441,7 @@ function ArticlePage () {
             )}
 
             <AudioOffsetWrapper>
-                {userProfile?.levels?.spanish && (
+                {userProfile?.levels?.spanish && transcript && (
                     <div style={{position: 'relative'}}>
                         <WordCounterContainer>
                             <WordCounterNumber>
@@ -519,7 +538,7 @@ function ArticlePage () {
 export default ArticlePage;
 
 const CustomAudioWrapper = styled(AudioWrapper)`
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         margin-left: -100px;
     }
 `;
@@ -536,7 +555,7 @@ const PlaybackRateSelectorWrapper = styled.div`
         text-align: center;
     }
 
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         position: absolute;
         margin-right: -320px;
         margin-top: 17px;
@@ -633,9 +652,11 @@ const AudioOffsetWrapper = styled.div`
     position: sticky;
     top: 0px;
     z-index: 99;
+    margin-left: 60px;
 
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         flex-direction: row;
+        margin-left: 0px;
         top: 30px;
 
         ${PlaybackRateSelectorWrapper} {
@@ -711,14 +732,19 @@ const WordCounterContainer = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    top: -12px;
-    left: -170px;
     background: #fff;
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0px 2px 3px 2px rgb(0 0 0 / 10%);
     font-size: 8px;
     color: ${Colors.MediumGrey};
+    top: 30px;
+    left: -210px;
+
+    @media ${devices.tablet} {
+        top: -12px;
+        left: -170px;
+    }
 `;
 
 const WordCounterNumber = styled.span`
