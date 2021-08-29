@@ -1,4 +1,11 @@
-import React, {useContext, useState, useEffect, useRef, useMemo} from 'react';
+import React, {
+    useContext,
+    useState,
+    useEffect,
+    useRef,
+    useMemo,
+    useCallback
+} from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
@@ -6,7 +13,6 @@ import {useRouter} from 'next/router';
 import {
     Container,
     HeroWrapper,
-    Divider,
     Title,
     Button,
     Colors,
@@ -23,6 +29,7 @@ import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
 import PlaybackRateSelector from '../../components/PlaybackRateSelector';
+import VocabCounter from '../../components/VocabCounter';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -35,7 +42,6 @@ import {
 } from '../../services/articleService';
 import {
     fetchArticleTranscription,
-    prepareTranscript,
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
@@ -46,6 +52,7 @@ import {
     TRANSLATIONS_TODAY_KEY,
     initialTranslationsToday
 } from '../../hooks/useLocalStorage';
+import ArticlesContext from '../../contexts/articlesContext';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -54,12 +61,14 @@ function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
-    const {isAdmin, user, userHasProPlan} = useContext(AppContext);
+    const {isAdmin, user, userProfile, userHasProPlan} = useContext(AppContext);
+    const {updateWordCounts} = useContext(ArticlesContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
+    const [collectedVocabWords, setCollectedVocabWords] = useState({});
     const [totalPlayTime, setTotalPlaytime] = useState(null);
     const articleBodyRef = useRef();
      // We can't use a conventional React ref due to the specific API
@@ -72,6 +81,7 @@ function ArticlePage () {
     const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
     const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const [playbackRate, setPlaybackRate] = useState(null);
+    const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false);
 
     const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
     const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
@@ -96,14 +106,13 @@ function ArticlePage () {
     }, [translationsToday]);
 
     useEffect(() => {
-        if (article?.transcriptId) {
-            fetchArticleTranscription(article.transcriptId)
+        if (article?.transcriptId && userProfile) {
+            fetchArticleTranscription(article.transcriptId, userProfile.levels?.spanish)
                 .then(json => {
                     // If the transcript isn't ready yet, or doesn't exist,
                     // we just get a null response, but with a 2XX code (202, specifically)
                     if (json) {
-                        const preparedTranscript = prepareTranscript(json.transcript);
-                        setTranscript(preparedTranscript);
+                        setTranscript(json.transcript);
                     }
                 })
         }
@@ -115,7 +124,7 @@ function ArticlePage () {
                 img.src = frame.image.urls.small;
             })
         }
-    }, [article?.transcriptId, article?.frames]);
+    }, [article?.transcriptId, article?.frames, userProfile]);
 
     useEffect(() => {
         if (user) {
@@ -181,6 +190,28 @@ function ArticlePage () {
         }
     }, [isPlaying]);
 
+    const collectVocabWord = (word) => {
+        const cleanedWord = word.trim().toLowerCase();
+
+        setCollectedVocabWords(currentCollectedVocabWords => {
+            const currentValue = currentCollectedVocabWords[cleanedWord];
+
+            if (currentValue) {
+                return {
+                    ...currentCollectedVocabWords,
+                    [cleanedWord]: currentValue + 1
+                }
+            } else {
+                return {
+                    ...currentCollectedVocabWords,
+                    [cleanedWord]: 1
+                }
+            }
+        });
+
+        updateWordCounts({[cleanedWord]: 1});
+    }
+
     const updateListeningMetric = (timeDelta) => {
         if (!user) {
             return;
@@ -212,12 +243,53 @@ function ArticlePage () {
     }
 
     const handleMarkAsRead = async () => {
-        if (readStatus) {
-            await deleteArticleReadStatus(readStatus.id);
-            setReadStatus(null);
-        } else {
-            const readStatusRef = await createArticleReadStatus(user.uid, article.id);
-            setReadStatus(readStatusRef);
+        try {
+            if (readStatus) {
+                await deleteArticleReadStatus(readStatus.id);
+                setReadStatus(null);
+            } else {
+                const readStatusRef = await createArticleReadStatus(user.uid, article.id);
+                setReadStatus(readStatusRef);
+
+                // Make sure that we only update the user's word counts once per article session,
+                // even if they repeatedly mark and unmark an article as having been read.
+                if (!hasMarkedAsReadOnce) {
+                    setHasMarkedAsReadOnce(true);
+                    const totalWordCounts = transcript.reduce((memo, glyph) => {
+                        if (glyph.text && glyph.wordMapEntry) {
+                            const glyphText = glyph.text.trim().toLowerCase();
+                            const previousVocabCount = memo[glyphText];
+
+                            if (previousVocabCount) {
+                                memo[glyphText] = memo[glyphText] + 1;
+                            } else {
+                                memo[glyphText] = 1;
+                            }
+                        }
+
+                        return memo;
+                    }, {});
+
+                    const finalWordCounts = Object.keys(totalWordCounts).reduce((memo, word) => {
+                        if (!collectedVocabWords[word]) {
+                            memo[word] = totalWordCounts[word];
+                        } else {
+                            const numberOfTimeSeenWord = collectedVocabWords[word];
+                            // If the user hasn't seen the word the maxiumum number of times
+                            // increment the word count for this word by the difference between the two
+                            if (numberOfTimeSeenWord < totalWordCounts[word]) {
+                                memo[word] = totalWordCounts[word] - numberOfTimeSeenWord;
+                            }
+                        }
+
+                        return memo;
+                    }, {});
+
+                    updateWordCounts(finalWordCounts);
+                }
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 
@@ -238,12 +310,19 @@ function ArticlePage () {
             }
 
             const wordIsActive = glyph.start_time <= e && glyph.end_time >= e;
+            const wordIsVocab = !!glyph.wordMapEntry;
 
             if (wordIsActive) {
                 memo.push({
                     ...glyph,
-                    highlight: true
-                })
+                    highlight: true,
+                    seen: true
+                });
+
+                const isBeingSeenForTheFirstTime = !glyph.seen;
+                if (wordIsVocab && isBeingSeenForTheFirstTime) {
+                    collectVocabWord(glyph.text);
+                }
             } else {
                 memo.push({
                     ...glyph,
@@ -257,7 +336,7 @@ function ArticlePage () {
         setTranscript(updatedTranscript);
     }
 
-    const renderArticleBody = () => {
+    const renderArticleBody = useCallback(() => {
         if (!transcript) {
             return article.body;
         }
@@ -266,7 +345,7 @@ function ArticlePage () {
             component: TranscriptWord,
             onClickWord: (word) => handleWordClick(word.start_time)
         });
-    }
+    }, [transcript, article, userProfile]);
 
     const handleAudioPlayerInitialization = (ref) => {
         if (!audioPlayerRef && !!ref) {
@@ -276,10 +355,6 @@ function ArticlePage () {
                 ref.audioEl.current.playbackRate = playbackRate;
             }
         }
-    }
-
-    if (loading) {
-        return <LoadingPage></LoadingPage>
     }
 
     const toggleStorybook = () => {
@@ -294,6 +369,18 @@ function ArticlePage () {
         setPlaybackRate(option.value);
     }
 
+    const totalVocabWords = useMemo(() => {
+        if (!transcript) {
+            return [];
+        }
+
+        return transcript.filter(glyph => !!glyph.wordMapEntry).map(glyph => glyph.text?.trim().toLowerCase());
+    }, [transcript]);
+
+    if (loading) {
+        return <LoadingPage></LoadingPage>
+    }
+
     if (!article) return null;
 
     const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
@@ -305,10 +392,6 @@ function ArticlePage () {
             <TitleWrapper>
                 <Title>{article.title ? article.title : 'Placeholder Title'}</Title>
             </TitleWrapper>
-
-            <Divider />
-
-            {renderAdminUI()}
 
             <ArticleSubheader>
                 <div>
@@ -357,6 +440,18 @@ function ArticlePage () {
             )}
 
             <AudioOffsetWrapper>
+                {userProfile?.levels?.spanish && totalVocabWords.length && (
+                    <div style={{position: 'relative'}}>
+                        <WordCounterContainer>
+                            <WordCounterNumber>
+                                <VocabCounter count={Object.keys(collectedVocabWords).length} /> / {totalVocabWords.length}
+                            </WordCounterNumber>
+                            <br />
+                            words
+                        </WordCounterContainer>
+                    </div>
+                )}
+
                 {!!audioURL && !playAudio && (
                     <CustomAudioWrapper>
                         <FakeAudioWidget onClick={() => setPlayAudio(true)}>
@@ -427,6 +522,8 @@ function ArticlePage () {
                 </UpgradeWrapper>
             )}
 
+            {renderAdminUI()}
+
             <NarrowContainer>
                 <div style={{marginTop: '90px'}}>
                     <ArticleComments article={article}/>
@@ -440,7 +537,7 @@ function ArticlePage () {
 export default ArticlePage;
 
 const CustomAudioWrapper = styled(AudioWrapper)`
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         margin-left: -100px;
     }
 `;
@@ -457,13 +554,14 @@ const PlaybackRateSelectorWrapper = styled.div`
         text-align: center;
     }
 
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         position: absolute;
         margin-right: -320px;
-        margin-top: 45px;
+        margin-top: 17px;
     }
 `;
 const ArticleSubheader = styled.div`
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -503,7 +601,7 @@ const ArticleWrapper = styled.div`
     margin-top: 30px;
 
     @media ${devices.mobileL} {
-        margin-top: 90px;
+        margin-top: 60px;
     }
 `;
 const FrameContainer = styled.div`
@@ -553,9 +651,11 @@ const AudioOffsetWrapper = styled.div`
     position: sticky;
     top: 0px;
     z-index: 99;
+    margin-left: 60px;
 
-    @media ${devices.mobileL} {
+    @media ${devices.tablet} {
         flex-direction: row;
+        margin-left: 0px;
         top: 30px;
 
         ${PlaybackRateSelectorWrapper} {
@@ -623,4 +723,32 @@ const ArticleData = styled.div`
         font-size: 16px;
         font-weight: bold;
     }
+`;
+
+const WordCounterContainer = styled.div`
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0px 2px 3px 2px rgb(0 0 0 / 10%);
+    font-size: 8px;
+    color: ${Colors.MediumGrey};
+    top: 30px;
+    left: -210px;
+
+    @media ${devices.tablet} {
+        top: -12px;
+        left: -170px;
+    }
+`;
+
+const WordCounterNumber = styled.span`
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: -10px;
 `;

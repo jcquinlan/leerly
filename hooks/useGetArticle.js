@@ -1,9 +1,9 @@
 import {useState, useEffect, useContext} from 'react';
-import appContext from '../contexts/appContext';
+import articlesContext from '../contexts/articlesContext';
 import {getArticle} from '../services/articleService';
 
 const useGetArticle = (articleId) => {
-    const {articles} = useContext(appContext);
+    const {articles} = useContext(articlesContext);
     const [article, setArticle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

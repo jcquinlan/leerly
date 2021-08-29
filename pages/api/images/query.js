@@ -1,5 +1,4 @@
 import Unsplash, {toJson} from 'unsplash-js';
-import {queryUnsplash} from '../../../services/unsplashService';
 
 const unsplash = new Unsplash({ accessKey: process.env.UNSPLASH_ACCESS_KEY });
 

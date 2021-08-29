@@ -15,8 +15,11 @@
     "boring-avatars": "^1.5.5",
     "cors": "^2.8.5",
     "export-to-csv": "^0.2.1",
+    "file-loader": "^6.2.0",
     "firebase": "^7.24.0",
     "firebase-admin": "^9.4.1",
+    "framer-motion": "^4.1.17",
+    "luxon": "^2.0.2",
     "mixpanel-browser": "^2.41.0",
     "moment": "^2.29.1",
     "next": "9.5.5",
@@ -37,10 +40,12 @@
     "stripe": "^8.115.0",
     "styled-components": "^5.2.0",
     "unsplash-js": "^6.3.0",
+    "url-loader": "^4.1.1",
     "use-debounce": "^5.1.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "babel-plugin-styled-components": "^1.12.0"
+    "babel-plugin-styled-components": "^1.12.0",
+    "typescript": "^4.3.5"
   }
 }

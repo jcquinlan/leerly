@@ -1,7 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
+import {TranscriptPortionForRender} from 'types';
 
-export const fetchArticleTranscription = (transcriptionId) => {
-    return fetch(`/api/transcriptions/${transcriptionId}`)
+export const NEW_PARAGRAPH_GLYPH = 'newParagraph';
+export const WORD_GLYPH = 'word';
+
+export const fetchArticleTranscription = (transcriptionId, userLevel) => {
+    return fetch(`/api/transcriptions/${transcriptionId}${userLevel ? `?difficulty=${userLevel}` : ''}`)
         .then(response => {
             return response.json();
         })
@@ -10,10 +14,7 @@ export const fetchArticleTranscription = (transcriptionId) => {
         });
 }
 
-export const NEW_PARAGRAPH_GLYPH = 'newParagraph';
-export const WORD_GLYPH = 'word';
-
-export const prepareTranscript = transcript => {
+export const prepareTranscript = (transcript): Omit<TranscriptPortionForRender, 'wordMapEntry'>[] => {
     return transcript.map(speaker => {
         const newParagraphObject = {
             type: NEW_PARAGRAPH_GLYPH
@@ -23,7 +24,8 @@ export const prepareTranscript = transcript => {
             return {
                 ...word,
                 id: uuidv4(),
-                type: WORD_GLYPH
+                type: WORD_GLYPH,
+                highlight: false
             }
         });
 
@@ -31,13 +33,15 @@ export const prepareTranscript = transcript => {
     }).flat();
 }
 
-export const renderTranscriptForReading = (transcript, {component: Component, onClickWord}) => {
-    return transcript.map((glyph, index) => {
+export const renderTranscriptForReading = (transcript: TranscriptPortionForRender[], {component: Component, onClickWord}) => {
+    return transcript.map((glyph) => {
         if (glyph.type === WORD_GLYPH) {
             return (
                 <Component
                     key={glyph.start_time}
-                    highlight={glyph.highlight}
+                    isActive={glyph.highlight}
+                    seen={glyph.seen}
+                    isVocab={!!glyph.wordMapEntry}
                     onClick={() => onClickWord(glyph)}
                 >
                     {glyph.text}

@@ -1,39 +1,6 @@
-import stripeInstance from 'stripe';
-import {adminAuth, adminFirestore} from '../../../services/admin';
-
-const stripe = stripeInstance(process.env.STRIPE_SECRET_KEY);
-
-const isUserOnPremiumPlan = async (customerId) => {
-    const subscriptionsRequest = await stripe.subscriptions.list({
-        customer: customerId
-    });
-    const subscriptions = subscriptionsRequest.data;
-    return subscriptions.some(sub => sub.plan?.name === 'leerly Pro');
-}
-
-const getUserId = async (req) => {
-    const leerlyTokenHeader = req.headers['x-leerly-token'];
-
-    if (!leerlyTokenHeader) {
-        throw new Error('Token header missing');
-    }
-
-    return await adminAuth
-        .verifyIdToken(leerlyTokenHeader)
-        .then(decodedToken => decodedToken.uid)
-        .catch(error => {
-            throw error
-        });
-}
-
-const getUserProfile = async (req) => {
-    try {
-        const userId = await getUserId(req);
-        return await adminFirestore.collection('user_profiles').doc(userId).get();
-    } catch (e) {
-        throw e;
-    }
-}
+import {adminFirestore} from '../../../services/admin';
+import {getUserProfile} from '../../../services/server/userService';
+import {isUserOnPremiumPlan} from '../../../services/server/stripeService';
 
 export default async (req, res) => {
     if (req.method === 'GET') {

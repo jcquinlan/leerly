@@ -1,5 +1,5 @@
 import '../styles/globals.css'
-import React, {useEffect, useMemo} from 'react';
+import React, {useContext, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import Router, {useRouter} from 'next/router';
 import { slide as Menu } from 'react-burger-menu'
@@ -7,21 +7,21 @@ import {ToastProvider} from 'react-toast-notifications'
 import Modal from 'react-modal';
 import {auth, analytics} from '../services/index';
 import AppContext from '../contexts/appContext';
-import MixpanelContext from '../contexts/mixpanelContext';
 import Link from '../components/Link';
 import LoadingPage from '../components/LoadingPage';
-import useAppContext from '../hooks/useAppContext';
-import useMixpanelContext from '../hooks/useMixpanel';
 import { signOutUser } from '../services/authService';
 import { getUserProfile, getUserClaims, getUserPlans } from '../services/userService';
 import {Container, devices} from '../components/styled';
 import UserCartoonAvatar from '../components/UserCartoonAvatar';
 
-function MyApp({ Component, pageProps }) {
-  const appContextApi = useAppContext();
-  const mixpanelContextApi = useMixpanelContext();
-  const isAdmin = appContextApi.claims?.is_admin;
+import {MixpanelContextProvider} from '../contexts/mixpanelContext';
+import {AppContextProvider} from '../contexts/appContext';
+import {ArticlesContextProvider} from '../contexts/articlesContext';
+
+function MyApp({ component: Component, pageProps }) {
+  const appContextApi = useContext(AppContext);
   const router = useRouter();
+  const isAdmin = appContextApi.claims?.is_admin;
 
   // If we are just loading the landing page, lets not wait to fetch all the user's data, since
   // we dont need it to render the component.
@@ -132,8 +132,6 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-    <MixpanelContext.Provider value={mixpanelContextApi}>
-    <AppContext.Provider value={appContextApi}>
       <ToastProvider>
         <Modal
           isOpen={!!appContextApi.modal}
@@ -186,13 +184,23 @@ function MyApp({ Component, pageProps }) {
           </Footer>
         </FooterContainer>
       </ToastProvider>
-    </AppContext.Provider>
-    </MixpanelContext.Provider>
     </>
   )
 }
 
-export default MyApp;
+function AppWrapper ({Component, pageProps}) {
+  return (
+    <MixpanelContextProvider>
+      <AppContextProvider>
+        <ArticlesContextProvider >
+          <MyApp component={Component} pageProps={pageProps} />
+        </ArticlesContextProvider>
+      </AppContextProvider>
+    </MixpanelContextProvider>
+  )
+}
+
+export default AppWrapper;
 
 const customModalStyles = {
   content : {
