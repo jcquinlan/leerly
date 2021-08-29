@@ -371,11 +371,10 @@ function ArticlePage () {
 
     const totalVocabWords = useMemo(() => {
         if (!transcript) {
-            return 0;
+            return [];
         }
 
-        const allVocabWords = transcript.filter(glyph => !!glyph.wordMapEntry).map(glyph => glyph.text);
-        return Array.from(new Set(allVocabWords));
+        return transcript.filter(glyph => !!glyph.wordMapEntry).map(glyph => glyph.text?.trim().toLowerCase());
     }, [transcript]);
 
     if (loading) {
@@ -441,7 +440,7 @@ function ArticlePage () {
             )}
 
             <AudioOffsetWrapper>
-                {userProfile?.levels?.spanish && transcript && (
+                {userProfile?.levels?.spanish && totalVocabWords.length && (
                     <div style={{position: 'relative'}}>
                         <WordCounterContainer>
                             <WordCounterNumber>
