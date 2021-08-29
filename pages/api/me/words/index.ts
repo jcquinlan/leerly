@@ -36,8 +36,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           .get();
 
         
+        // If so, update the preexisting record
         if (!wordCountRecordsForToday.empty) {
-          // Otherwise, update the preexisting record
           const currentWordCountRecordRef = wordCountRecordsForToday.docs[0];
           const currentWordCountRecord = currentWordCountRecordRef.data().words;
           const updatedWordCounts = Object.keys(words)
@@ -53,8 +53,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               return memo;
             }, {...currentWordCountRecord});
           
-          console.log(updatedWordCounts);
-
           await adminFirestore
             .collection('word_counts')
             .doc(currentWordCountRecordRef.id)
@@ -64,21 +62,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           res.json({});
           return;
         } else {
+          // Otherwise, create a new record for today
           const newWordRecord = {
             userId,
-            week: now.weekNumber,
-            year: now.year,
             date: midnight,
             words
           };
 
-          const wordRecordRef = await adminFirestore
+          await adminFirestore
             .collection('word_counts')
             .add(newWordRecord)
-            .then(wordRecordRef => wordRecordRef.get());
 
           res.statusCode = 201;
-          res.json(wordRecordRef.data());
+          res.json({});
           return;
         }
     } catch (e) {
