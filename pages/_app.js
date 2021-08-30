@@ -6,7 +6,6 @@ import { slide as Menu } from 'react-burger-menu'
 import {ToastProvider} from 'react-toast-notifications'
 import Modal from 'react-modal';
 import {auth, analytics} from '../services/index';
-import AppContext from '../contexts/appContext';
 import Link from '../components/Link';
 import LoadingPage from '../components/LoadingPage';
 import { signOutUser } from '../services/authService';
@@ -15,11 +14,13 @@ import {Container, devices} from '../components/styled';
 import UserCartoonAvatar from '../components/UserCartoonAvatar';
 
 import {MixpanelContextProvider} from '../contexts/mixpanelContext';
-import {AppContextProvider} from '../contexts/appContext';
 import {ArticlesContextProvider} from '../contexts/articlesContext';
+import AppContext, {AppContextProvider} from '../contexts/appContext';
+import UIStateContext, {UIStateContextProvider} from '../contexts/uiStateContext';
 
 function MyApp({ component: Component, pageProps }) {
   const appContextApi = useContext(AppContext);
+  const uiStateContextApi = useContext(UIStateContext);
   const router = useRouter();
   const isAdmin = appContextApi.claims?.is_admin;
 
@@ -78,7 +79,7 @@ function MyApp({ component: Component, pageProps }) {
       .then(() => {
         appContextApi.setUser(null);
         appContextApi.setClaims(null);
-        appContextApi.setNavOpen(false);
+        uiStateContextApi.setNavOpen(false);
         router.push('/');
       });
   }
@@ -142,7 +143,7 @@ function MyApp({ component: Component, pageProps }) {
           {appContextApi.modal}
         </Modal>
         <MobileNav>
-          <Menu isOpen={appContextApi.navOpen} onStateChange={state => appContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
+          <Menu isOpen={uiStateContextApi.navOpen} onStateChange={state => uiStateContextApi.setNavOpen(state.isOpen)} disableAutoFocus>
 
             {!appContextApi.loading && isSignedIn && (
               <div style={{display: 'flex'}}>
@@ -192,9 +193,11 @@ function AppWrapper ({Component, pageProps}) {
   return (
     <MixpanelContextProvider>
       <AppContextProvider>
-        <ArticlesContextProvider >
-          <MyApp component={Component} pageProps={pageProps} />
-        </ArticlesContextProvider>
+        <UIStateContextProvider>
+          <ArticlesContextProvider>
+            <MyApp component={Component} pageProps={pageProps} />
+          </ArticlesContextProvider>
+        </UIStateContextProvider>
       </AppContextProvider>
     </MixpanelContextProvider>
   )

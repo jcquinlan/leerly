@@ -316,3 +316,32 @@ export const TranscriptWord = styled.span`
       font-weight: bold;
   }
 `;
+
+export const PopoverBody = styled.div`
+    margin: 10px 0;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1 px solid #eee;
+    box-shadow: 0px 10px 25px 0px rgba(0,0,0,0.34);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #666;
+
+    button {
+        margin-top: -5px;
+        width: fit-content;
+        background-color: ${Colors.Primary};
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color linear 0.3s;
+
+        &:hover {
+            background-color: #375ebf;
+        }
+    }
+`;

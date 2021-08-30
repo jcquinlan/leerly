@@ -21,7 +21,6 @@ import {
     ImageWrapper,
     AudioWrapper,
     FakeAudioWidget,
-    TranscriptWord,
     HelpText,
     NarrowContainer
 } from '../../components/styled';
@@ -30,6 +29,7 @@ import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
 import PlaybackRateSelector from '../../components/PlaybackRateSelector';
 import VocabCounter from '../../components/VocabCounter';
+import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -342,7 +342,7 @@ function ArticlePage () {
         }
 
         return renderTranscriptForReading(transcript, {
-            component: TranscriptWord,
+            component: TranscriptWordWithPopover,
             onClickWord: (word) => handleWordClick(word.start_time)
         });
     }, [transcript, article, userProfile]);
