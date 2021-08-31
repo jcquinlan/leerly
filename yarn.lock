@@ -5761,6 +5761,11 @@ react-textarea-autosize@^8.3.0:
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
 
+react-tiny-popover@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-tiny-popover/-/react-tiny-popover-7.0.0.tgz#bd99ba87a2686fbdbf2df64df7c19c501a162f8c"
+  integrity sha512-x+8YVJNzwC8voEAmlMcWhvCSWub1NEgFJoYNWdTYPs0eVS8fVT9mA/tgsxoQcGw6PO9dLjMi2PLwaf/zD8gUDA==
+
 react-toast-notifications@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/react-toast-notifications/-/react-toast-notifications-2.4.0.tgz#6213730bd1fe158fc01aeef200687ea94c5c5b24"

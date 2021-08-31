@@ -11,9 +11,7 @@ const initialAppState = {
     user: null,
     userProfile: null,
     claims: null,
-    navOpen: false,
     plans: [],
-    modal: null,
     idToken: null,
 };
 
@@ -22,14 +20,6 @@ const useAppContext = () => {
 
     const setUser = (user) => {
         setAppState(state => ({...state, user}));
-    };
-
-    const setModal = (modal) => {
-        setAppState(state => ({...state, modal}));
-    }
-
-    const setNavOpen = (boolean) => {
-        setAppState(state => ({...state, navOpen: boolean}));
     };
 
     const setClaims = (claims) => {
@@ -92,13 +82,11 @@ const useAppContext = () => {
         userHasProPlan,
         userProfileIsComplete,
         setUser,
-        setNavOpen,
         setClaims,
         setUserProfile,
         setLoading,
         setPlans,
         updateUserProfileLocally,
-        setModal,
         loadIdToken
     }
 }

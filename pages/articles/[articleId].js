@@ -21,7 +21,6 @@ import {
     ImageWrapper,
     AudioWrapper,
     FakeAudioWidget,
-    TranscriptWord,
     HelpText,
     NarrowContainer
 } from '../../components/styled';
@@ -30,6 +29,7 @@ import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
 import PlaybackRateSelector from '../../components/PlaybackRateSelector';
 import VocabCounter from '../../components/VocabCounter';
+import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -336,16 +336,22 @@ function ArticlePage () {
         setTranscript(updatedTranscript);
     }
 
+    const getArticleBody = useCallback(() => {
+        if (!article) return ''
+        return article.body;
+    }, [article]);
+
     const renderArticleBody = useCallback(() => {
         if (!transcript) {
             return article.body;
         }
 
         return renderTranscriptForReading(transcript, {
-            component: TranscriptWord,
-            onClickWord: (word) => handleWordClick(word.start_time)
+            component: TranscriptWordWithPopover,
+            onClickWord: (word) => handleWordClick(word.start_time),
+            getArticleBody
         });
-    }, [transcript, article, userProfile]);
+    }, [transcript, article, userProfile, getArticleBody]);
 
     const handleAudioPlayerInitialization = (ref) => {
         if (!audioPlayerRef && !!ref) {
@@ -478,7 +484,7 @@ function ArticlePage () {
                 )}
             </AudioOffsetWrapper>
 
-            <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
+            <Psst><i>Pssst.</i> You can hover over or highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover isDemo={article.demo} elementRef={articleBodyRef} articleBody={article.body} />
 
