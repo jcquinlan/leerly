@@ -33,7 +33,7 @@ export const prepareTranscript = (transcript): Omit<TranscriptPortionForRender, 
     }).flat();
 }
 
-export const renderTranscriptForReading = (transcript: TranscriptPortionForRender[], {component: Component, onClickWord}) => {
+export const renderTranscriptForReading = (transcript: TranscriptPortionForRender[], {component: Component, onClickWord, getArticleBody}) => {
     return transcript.map((glyph) => {
         if (glyph.type === WORD_GLYPH) {
             return (
@@ -44,6 +44,7 @@ export const renderTranscriptForReading = (transcript: TranscriptPortionForRende
                         text={glyph.text.trim()}
                         isActive={glyph.highlight}
                         seen={glyph.seen}
+                        getArticleBody={getArticleBody}
                         isVocab={!!glyph.wordMapEntry}
                         onClick={() => onClickWord(glyph)}
                     >

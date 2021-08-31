@@ -3,30 +3,44 @@ import styled from 'styled-components';
 import {Popover} from 'react-tiny-popover';
 import {TranscriptWord, PopoverBody} from './styled/index';
 import UIStateContext from '../contexts/uiStateContext';
-import useTranslationPopoverLogic from 'hooks/useTranslationPopoverLogic';
+import useOnClickAway from 'hooks/useOnClickAway';
+import HoverTranslationPopover from './HoverTranslationPopover';
 
 const POPOVER_DELAY = 800;
 
-const TranscriptWordWithPopover = ({text, children, ...props}) => {
-    const {isSelectingText} = useContext(UIStateContext)
+const TranscriptWordWithPopover = ({text, getArticleBody, children, ...props}) => {
+    const {
+        isSelectingText,
+        hoverVocabPopoverOpen,
+        setHoverVocabPopoverOpen
+    } = useContext(UIStateContext)
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const getArticleBody = () => '';
-    const {popoverBody, popoverText, resetPopoverState, translateText} = useTranslationPopoverLogic(getArticleBody);
+
     const popoverTimer = useRef(null);
+    const popoverRef = useRef(null);
+
+    useOnClickAway(popoverRef, () => {
+        setIsOpen(false);
+        setHoverVocabPopoverOpen(false);
+        if (popoverTimer.current) {
+            clearTimeout(popoverTimer.current);
+            popoverTimer.current = null;
+        }
+    })
 
     const handleHover = () => {
-        if (isSelectingText) return;
+        if (isSelectingText || hoverVocabPopoverOpen) return;
 
         const newPopoverTimer = setTimeout(() => {
-            translateText(text);
+            setHoverVocabPopoverOpen(true);
             setIsOpen(true);
         }, POPOVER_DELAY);
+
         popoverTimer.current = newPopoverTimer;
     }
 
-    const handleHoverEnd = () => {
-        setIsOpen(false);
-        if (popoverTimer.current) {
+    const handleMouseLeave = () => {
+        if (!hoverVocabPopoverOpen && popoverTimer.current) {
             clearTimeout(popoverTimer.current);
             popoverTimer.current = null;
         }
@@ -34,9 +48,8 @@ const TranscriptWordWithPopover = ({text, children, ...props}) => {
 
     const renderPopoverContent = () => {
         return (
-            <PopoverBody>
-                {popoverText}
-                {popoverBody}
+            <PopoverBody ref={popoverRef}>
+                <HoverTranslationPopover text={text} getArticleBody={getArticleBody} />
             </PopoverBody>
         )
     }
@@ -45,8 +58,9 @@ const TranscriptWordWithPopover = ({text, children, ...props}) => {
         <Popover
             isOpen={isOpen}
             content={renderPopoverContent()}
+            containerStyle={{zIndex: '99'}}
         >
-            <TranscriptWord {...props} onMouseEnter={handleHover} onMouseLeave={handleHoverEnd} onTouchStart={handleHover}>
+            <TranscriptWord {...props} onMouseEnter={handleHover} onMouseLeave={handleMouseLeave}>
                 {children}
             </TranscriptWord>
         </Popover>

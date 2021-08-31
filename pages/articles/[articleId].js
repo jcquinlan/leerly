@@ -336,6 +336,14 @@ function ArticlePage () {
         setTranscript(updatedTranscript);
     }
 
+    const getArticleBody = useCallback(() => {
+        if (!article) {
+            return ''
+        }
+
+        return article.body;
+    }, [article]);
+
     const renderArticleBody = useCallback(() => {
         if (!transcript) {
             return article.body;
@@ -343,7 +351,8 @@ function ArticlePage () {
 
         return renderTranscriptForReading(transcript, {
             component: TranscriptWordWithPopover,
-            onClickWord: (word) => handleWordClick(word.start_time)
+            onClickWord: (word) => handleWordClick(word.start_time),
+            getArticleBody
         });
     }, [transcript, article, userProfile]);
 

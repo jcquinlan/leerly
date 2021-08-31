@@ -4,14 +4,17 @@ const useUIStateContext = () => {
     const [modal, setModal] = useState(null);
     const [navOpen, setNavOpen] = useState(false);
     const [isSelectingText, setIsSelectingText] = useState(false);
+    const [hoverVocabPopoverOpen, setHoverVocabPopoverOpen] = useState(false);
 
     return {
         modal,
         navOpen,
         isSelectingText,
+        hoverVocabPopoverOpen,
         setModal,
         setNavOpen,
-        setIsSelectingText
+        setIsSelectingText,
+        setHoverVocabPopoverOpen
     }
 }
 
