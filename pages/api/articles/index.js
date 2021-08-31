@@ -32,9 +32,9 @@ export default async (req, res) => {
             const articlesData = articles.docs.map(doc => {
                 const data = doc.data();
 
-                // For people who are not on free accounts, we want to hide the text of the articles
+                // For people who are not on free accounts, only show a small portion of the article bodies
                 if (!userHasPremiumPlan) {
-                    delete data.body;
+                    data.body = data.body.slice(0, 220);
                 }
 
                 return {

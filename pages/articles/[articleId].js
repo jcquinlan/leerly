@@ -337,10 +337,7 @@ function ArticlePage () {
     }
 
     const getArticleBody = useCallback(() => {
-        if (!article) {
-            return ''
-        }
-
+        if (!article) return ''
         return article.body;
     }, [article]);
 
@@ -354,7 +351,7 @@ function ArticlePage () {
             onClickWord: (word) => handleWordClick(word.start_time),
             getArticleBody
         });
-    }, [transcript, article, userProfile]);
+    }, [transcript, article, userProfile, getArticleBody]);
 
     const handleAudioPlayerInitialization = (ref) => {
         if (!audioPlayerRef && !!ref) {
@@ -487,7 +484,7 @@ function ArticlePage () {
                 )}
             </AudioOffsetWrapper>
 
-            <Psst><i>Pssst.</i> You can highlight text to automatically translate it to English.</Psst>
+            <Psst><i>Pssst.</i> You can hover over or highlight text to automatically translate it to English.</Psst>
 
             <SelectedTextPopover isDemo={article.demo} elementRef={articleBodyRef} articleBody={article.body} />
 
