@@ -17,7 +17,6 @@ import AppContext from '../contexts/appContext';
 import ProgressBar from '../components/ProgressBar';
 import {calculateStatsLevel} from '../utils/stats';
 import { useRouter } from 'next/router';
-import TypeSelector from '../components/TypeSelector';
 import TodoList from '../components/TodoList';
 import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
