@@ -26,3 +26,8 @@ export type WordCountRecord = {
 	date: Date,
 	words: WordCount
 }
+
+export type ArticleType = {
+    type: string;
+    display: string;
+}
