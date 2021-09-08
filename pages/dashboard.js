@@ -7,7 +7,8 @@ import {
     NoticeCard,
     NoticeCardMain,
     GhostButton,
-    devices
+    devices,
+    Divider
 } from '../components/styled';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGuardRoute from '../hooks/useGuardRoute';
@@ -18,6 +19,7 @@ import {calculateStatsLevel} from '../utils/stats';
 import { useRouter } from 'next/router';
 import TypeSelector from '../components/TypeSelector';
 import TodoList from '../components/TodoList';
+import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
 
 const PAGE_SIZE = 10;
@@ -35,7 +37,7 @@ function ArticlePage () {
     const [offset, setOffset] = useState(0);
 
     useEffect(() => {
-        !articles.length && loadArticles(selectedFilterTypes);
+        loadArticles(selectedFilterTypes);
     }, [selectedFilterTypes]);
 
     const articlesToShow = useMemo(() => {
@@ -116,21 +118,12 @@ function ArticlePage () {
         }
     }, [articles]);
 
-    const handleSelectedFilterType = (newType) => {
-        if (selectedFilterTypes.length >= 10) {
+    const handleNewFilters = (newFilters) => {
+        if (newFilters.length >= 10) {
             return;
         }
 
-        const typeIsAlreadySelected = selectedFilterTypes.includes(newType);
-        if (typeIsAlreadySelected) {
-            setSelectedFilterTypes(selectedFilterTypes.filter(type => type !== newType));
-        } else {
-            setSelectedFilterTypes([...selectedFilterTypes, newType]);
-        }
-    }
-
-    const clearSelectedFilterTypes = () => {
-        setSelectedFilterTypes([]);
+        setSelectedFilterTypes(newFilters.map(filter => filter.value));
     }
 
     return (
@@ -184,12 +177,13 @@ function ArticlePage () {
             </div>
         </DashboardHeader>
 
+        <Divider />
+
         <Filters>
             <FiltersHeader>
                 <span>Filters (limit 10)</span>
-                <GhostButton onClick={clearSelectedFilterTypes}>Clear filters</GhostButton>
             </FiltersHeader>
-            <TypeSelector selectedTypes={selectedFilterTypes} onSelect={handleSelectedFilterType} />
+            <FilterSelector onChange={handleNewFilters} />
         </Filters>
 
         <ArticlesList>
@@ -289,6 +283,7 @@ const Stat = styled.div`
 
 const Filters = styled.div`
     margin-bottom: 30px;
+    padding: 0 30px;
 `;
 
 const FiltersHeader = styled.div`
