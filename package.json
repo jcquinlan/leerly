@@ -27,6 +27,7 @@
     "react": "16.14.0",
     "react-audio-player": "^0.14.0",
     "react-burger-menu": "^2.9.0",
+    "react-circular-progressbar": "^2.0.4",
     "react-confetti": "^6.0.0",
     "react-dom": "16.14.0",
     "react-image-crop": "^8.6.9",

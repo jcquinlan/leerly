@@ -25,16 +25,11 @@ const useArticlesContext = () => {
         setLoadingArticles(false);
     }
 
-    const updateWordCountsWithIdToken = (wordCounts) => {
-        return updateWordCounts(idToken, wordCounts);
-    }
-
     return {
         articles,
         loadingArticles,
         articlesError,
         loadArticles,
-        updateWordCounts: updateWordCountsWithIdToken
     }
 }
 

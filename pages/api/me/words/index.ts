@@ -5,6 +5,31 @@ import {getUserId} from '../../../../services/server/userService';
 import { WordCount } from 'types';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === 'GET') {
+    const userId = await getUserId(req);
+
+    const wordCountRecords = await adminFirestore
+      .collection('word_counts')
+      .where('userId', '==', userId)
+      .get();
+
+    const wordCountsData = wordCountRecords.docs.map(doc => {
+      const data = doc.data();
+
+      return {
+        ...data,
+        date: {
+          seconds: data.date._seconds,
+          nanoseconds: data.date._nanoseconds
+        }
+      };
+    });
+
+    res.statusCode = 200;
+    res.send(wordCountsData);
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
         const userId = await getUserId(req);
