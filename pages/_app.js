@@ -17,6 +17,7 @@ import {MixpanelContextProvider} from '../contexts/mixpanelContext';
 import {ArticlesContextProvider} from '../contexts/articlesContext';
 import AppContext, {AppContextProvider} from '../contexts/appContext';
 import UIStateContext, {UIStateContextProvider} from '../contexts/uiStateContext';
+import {StatsContextProvider} from '../contexts/statsContext';
 
 function MyApp({ component: Component, pageProps }) {
   const appContextApi = useContext(AppContext);
@@ -133,7 +134,10 @@ function MyApp({ component: Component, pageProps }) {
 
   return (
     <>
-      <ToastProvider>
+      <ToastProvider
+        autoDismiss={true}
+        autoDismiss={3000}
+      >
         <Modal
           isOpen={!!appContextApi.modal}
           onRequestClose={() => appContextApi.setModal(null)}
@@ -195,7 +199,9 @@ function AppWrapper ({Component, pageProps}) {
       <AppContextProvider>
         <UIStateContextProvider>
           <ArticlesContextProvider>
-            <MyApp component={Component} pageProps={pageProps} />
+            <StatsContextProvider>
+              <MyApp component={Component} pageProps={pageProps} />
+            </StatsContextProvider>
           </ArticlesContextProvider>
         </UIStateContextProvider>
       </AppContextProvider>

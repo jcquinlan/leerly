@@ -1,3 +1,7 @@
+export type CleanedFirebaseDate = {
+    seconds: number;
+    nanoseconds: number;
+}
 export type WordMapEntry = {
     grade: string;
     tense?: string;
@@ -21,9 +25,7 @@ export type TranscriptPortionForRender = TranscriptPortion & {
 export type WordCount = Record<string, number>;
 export type WordCountRecord = {
     userId: string,
-	week: number,
-	year: number,
-	date: Date,
+	date: CleanedFirebaseDate,
 	words: WordCount
 }
 
@@ -31,3 +33,9 @@ export type ArticleType = {
     type: string;
     display: string;
 }
+
+export type DayProgress = {
+    progress: number;
+    name: string;
+}
+export type DayProgressMap = Record<string, DayProgress>;

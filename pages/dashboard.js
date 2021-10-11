@@ -1,25 +1,23 @@
 import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import ReactPaginate from 'react-paginate';
+import {useRouter} from 'next/router';
 import {
     Container,
-    HelpText,
     NoticeCard,
     NoticeCardMain,
-    GhostButton,
-    devices,
-    Divider
+    Colors
 } from '../components/styled';
+import {sizes} from '../components/styled/mediaQueries';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
 import useGuardRoute from '../hooks/useGuardRoute';
-import {getArticleReadStatuses, getUserMetrics} from '../services/articleService';
+import {getArticleReadStatuses} from '../services/articleService';
 import AppContext from '../contexts/appContext';
-import ProgressBar from '../components/ProgressBar';
-import {calculateStatsLevel} from '../utils/stats';
-import { useRouter } from 'next/router';
-import TodoList from '../components/TodoList';
+import WeeklyGoalView from '../components/WeeklyGoalView';
+import DailyGoalView from '../components/DailyGoalView';
 import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
+import useWindowSize from '../hooks/useWindowSize';
 
 const PAGE_SIZE = 10;
 
@@ -31,9 +29,8 @@ function ArticlePage () {
     const {articles, loadArticles, loadingArticles} = useContext(articlesContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
     const [readStatuses, setReadStatuses] = useState({});
-    const [playTime, setPlayTime] = useState(0);
-    const [cardsStudied, setCardsStudied] = useState(0);
     const [offset, setOffset] = useState(0);
+    const size = useWindowSize();
 
     useEffect(() => {
         loadArticles(selectedFilterTypes);
@@ -46,15 +43,6 @@ function ArticlePage () {
 
         return articles.slice(offset, offset + PAGE_SIZE);
     }, [articles, offset]);
-
-    const levelData = useMemo(() => {
-        const articlesRead = Object.keys(readStatuses).length;
-        return calculateStatsLevel({
-            minutesListening: playTime,
-            cardsReviewed: cardsStudied,
-            articlesRead
-        });
-    }, [readStatuses, playTime, readStatuses]);
 
     const maxPages = useMemo(() => {
         if (!articles) {
@@ -71,37 +59,6 @@ function ArticlePage () {
     const handlePageChange = (data) => {
         setOffset(data.selected * PAGE_SIZE);
     }
-
-    const timeString = useMemo(() => {
-        if (playTime < 60) {
-            return <p>{playTime} <TimeUnit>seconds</TimeUnit></p>;
-        }
-        
-        const minutes = Math.floor(playTime / 60);
-
-        if (minutes < 60) {
-            return <p>{minutes} <TimeUnit>mins.</TimeUnit></p>;
-        }
-
-        const hours = Math.floor(minutes / 60);
-        const leftoverMinutes = minutes % 60;
-
-        return <p>{hours} <TimeUnit>hrs.</TimeUnit> {leftoverMinutes} <TimeUnit>mins.</TimeUnit></p>;
-    }, [playTime]);
-
-    useEffect(() => {
-        if (user) {
-            getUserMetrics(user.uid)
-                .then(userMetricsRef => {
-                    if (userMetricsRef.exists) {
-                        const userMetricsData = userMetricsRef.data();
-
-                        setPlayTime(userMetricsData.time_listening || 0);
-                        setCardsStudied(userMetricsData.cards_studied || 0);
-                    }
-                });
-        }
-    }, [user]);
 
     useEffect(() => {
         if (articles.length) {
@@ -137,52 +94,23 @@ function ArticlePage () {
         )}
 
         <DashboardHeader>
-            <TodoWrapper style={{marginTop: '20px'}}>
-                <TodoList
-                    readStatuses={readStatuses}
-                    playTime={playTime}
-                    level={levelData?.level}
-                />
-            </TodoWrapper>
+            <DashboardHeaderTitle>Your Weekly Progress</DashboardHeaderTitle>
+            {size.width >= sizes.mobileL && (
+                <WeeklyGoalView />
+            )}
 
-
-            <div style={{flex: 1}}>
-                <LevelInfo>
-                    <LevelInfoHeader>
-                        <CurrentLevel>lvl. {levelData.level}</CurrentLevel>
-                        <span>{levelData.percentage * 100}%</span>
-                        <span>lvl. {levelData.level + 1}</span>
-                    </LevelInfoHeader>
-                    <ProgressBar progress={levelData.percentage * 100} />
-                    <HelpText>You progress in level by reading more articles, listening to more audio, and studying more vocab</HelpText>
-                </LevelInfo>
-
-                <StatsRow>
-                    <Stat>
-                        <p>{Object.keys(readStatuses).length}</p>
-                        Articles read
-                    </Stat> 
-
-                    <Stat>
-                        {timeString}
-                        Time spent listening
-                    </Stat>
-
-                    <Stat disabled={!userHasProPlan}>
-                        <p>{cardsStudied}</p>
-                        Vocab cards reviewed
-                    </Stat>
-                </StatsRow>
-            </div>
+            {size.width < sizes.mobileL && (
+                <DailyGoalView />
+            )}
         </DashboardHeader>
 
-        <Divider />
-
         <Filters>
-            <FiltersHeader>
-                <span>Filters (limit 10)</span>
-            </FiltersHeader>
-            <FilterSelector onChange={handleNewFilters} />
+            <FilterWrapper>
+                <FiltersHeader>
+                    <span>Filters (limit 10)</span>
+                </FiltersHeader>
+                <FilterSelector onChange={handleNewFilters} />
+            </FilterWrapper>
         </Filters>
 
         <ArticlesList>
@@ -212,26 +140,8 @@ function ArticlePage () {
 
 export default ArticlePage;
 
-const LevelInfo = styled.div`
-    padding: 0 30px;
-
-    ${HelpText} {
-        margin: 20px 0;
-        margin-top: 5px;
-    }
-`;
-
-const LevelInfoHeader = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding: 10px 0;
-    font-family: 'Poppins', sans-serif;
-`;
-
-const CurrentLevel = styled.span`
-    font-size: 24px;
-    font-weight: bold;
+const DashboardHeaderTitle = styled.h4`
+    margin-top: 0;
 `;
 
 const PaginationStyles = styled.div`
@@ -249,40 +159,17 @@ const PaginationStyles = styled.div`
         text-decoration: underline;
     }
 `;
-const StatsRow = styled.div`
-    padding: 20px 30px;
-`;
-
-const TimeUnit = styled.span`
-    font-size: 14px;
-`;
-
-const Stat = styled.div`
-    display: inline-block;
-    margin-right: 15px;
-    margin-bottom: 15px;
-    padding: 10px 15px;
-    background-color: #eee;
-    border-radius: 8px;
-    width: fit-content;
-    min-width: 100px;
-    color: #666;
-
-    p {
-        font-size: 30px;
-        margin: 0;
-        color: #000;
-        font-weight: bold;
-    }
-
-    ${props => props.disabled ? `
-        opacity: .3;
-    `: ``}
-`;
 
 const Filters = styled.div`
+    display: flex;
+    justify-content: center;
     margin-bottom: 30px;
     padding: 0 30px;
+`;
+
+const FilterWrapper = styled.div`
+    width: 100%;
+    max-width: 400px;
 `;
 
 const FiltersHeader = styled.div`
@@ -292,17 +179,8 @@ const FiltersHeader = styled.div`
 `;
 
 const DashboardHeader = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
+    border: 1px solid ${Colors.LightGrey};
+    padding: 30px;
     margin-bottom: 30px;
-`;
-
-const TodoWrapper = styled.div`
-    margin-top: 20px;
-    display: none;
-
-    @media ${devices.tablet} {
-        display: initial;
-    }
+    border-radius: 8px;
 `;

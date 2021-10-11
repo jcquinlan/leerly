@@ -345,3 +345,11 @@ export const PopoverBody = styled.div`
         }
     }
 `;
+
+export const ShowTabletAndUp = styled.div`
+    display: none;
+
+    @media ${devices.tablet} {
+      display: initial;
+    }
+`;

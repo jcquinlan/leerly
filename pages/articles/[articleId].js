@@ -52,7 +52,7 @@ import {
     TRANSLATIONS_TODAY_KEY,
     initialTranslationsToday
 } from '../../hooks/useLocalStorage';
-import ArticlesContext from '../../contexts/articlesContext';
+import StatsContext from '../../contexts/statsContext';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -62,7 +62,7 @@ function ArticlePage () {
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
     const {isAdmin, user, userProfile, userHasProPlan} = useContext(AppContext);
-    const {updateWordCounts} = useContext(ArticlesContext);
+    const {updateWordCounts} = useContext(StatsContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
     const [audioURL, setAudioURL] = useState(null);

@@ -1,5 +1,6 @@
 import {useState, useMemo} from 'react';
 import firebase from 'firebase';
+import {getWordCounts} from '../services/userService';
 
 const PLANS = {
     FREE_PLAN: 'leerly Starter',
@@ -12,7 +13,7 @@ const initialAppState = {
     userProfile: null,
     claims: null,
     plans: [],
-    idToken: null,
+    idToken: null
 };
 
 const useAppContext = () => {
