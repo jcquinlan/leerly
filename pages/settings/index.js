@@ -44,7 +44,7 @@ function SettingsPage () {
 
     useEffect(() => {
         if (userProfile) {
-            setUserName(userProfile?.name);
+            setUserName(userProfile?.name || '');
             setUserLevel(userProfile?.levels?.spanish);
         }
     }, [userProfile]);
@@ -57,7 +57,7 @@ function SettingsPage () {
     }, [userName, userLevel, originalUserProfile]);
 
     const handleNameChange = (e) => {
-       setUserName(e.target.value);
+        setUserName(e.target.value);
     }
 
     const handleNewUserLevel = (newLevel) => {
