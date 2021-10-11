@@ -68,7 +68,7 @@ function SettingsPage () {
         const profileAttrs = {
             name: userName,
             levels: {
-                ...userProfile.levels,
+                ...(userProfile.levels ? userProfile.levels : {}),
                 spanish: userLevel
             }
         }
