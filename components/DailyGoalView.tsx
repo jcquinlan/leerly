@@ -6,6 +6,12 @@ import {
     isWordCountToday,
     calculateWordCountSum,
 } from 'utils/stats';
+import {
+    StatsRow,
+    Stat,
+    StatTitle,
+    StatNumber
+} from 'components/styled'
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 
 import 'react-circular-progressbar/dist/styles.css';
@@ -110,32 +116,4 @@ const CircularProgressWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`;
-const PercentageWrapper = styled.div`
-    margin-top: 10px;
-    color: ${Colors.MediumGrey};
-`;
-
-const StatsRow = styled.div`
-    display: flex;
-    justify-content: space-around;
-    margin-top: 40px;
-`;
-
-const Stat = styled.div`
-    border-left: 1px solid grey;
-    padding-left: 10px;
-`;
-const StatTitle = styled.h6`
-    margin: 0;
-    font-weight: 300;
-    font-size: 16px;
-    color: ${Colors.MediumGrey};
-`;
-const StatNumber = styled.p`
-    margin: 0;
-    margin-top: -10px;
-    font-weight: 700;
-    font-size: 48px;
-    font-family: 'Poppins', sans-serif;
 `;

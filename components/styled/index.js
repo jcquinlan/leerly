@@ -353,3 +353,29 @@ export const ShowTabletAndUp = styled.div`
       display: initial;
     }
 `;
+
+export const StatsRow = styled.div`
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+`;
+
+export const Stat = styled.div`
+    border-left: 1px solid grey;
+    padding-left: 10px;
+`;
+
+export const StatTitle = styled.h6`
+    margin: 0;
+    font-weight: 300;
+    font-size: 16px;
+    color: ${Colors.MediumGrey};
+`;
+
+export const StatNumber = styled.p`
+    margin: 0;
+    margin-top: -10px;
+    font-weight: 700;
+    font-size: 48px;
+    font-family: 'Poppins', sans-serif;
+`;
