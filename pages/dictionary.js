@@ -46,7 +46,7 @@ function DictionaryPage () {
             // The percentage of words they need to complete varies depending on the difficulty level.
             const completionNumberForDifficulty =
                 Math.floor(numberOfWordsInDifficulty * DifficultyLevelCompletionPercentages[userProfile.levels.spanish]);
-            const totalProgress = Math.round((seenWordCount / completionNumberForDifficulty) * 100);
+            const totalProgress = Math.round((completedWordCount / completionNumberForDifficulty) * 100);
 
             return {
                 completedWordCount,
@@ -71,7 +71,7 @@ function DictionaryPage () {
     }
 
     return (
-        <Container>
+        <Container paddingTop={20}>
             <Header>
                 <Title>Your overall progress</Title>
                 <Subtitle>See your progress to the next level, word by word.</Subtitle>
