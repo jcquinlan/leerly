@@ -39,3 +39,9 @@ export type DayProgress = {
     name: string;
 }
 export type DayProgressMap = Record<string, DayProgress>;
+
+export type DictionaryEntry = {
+    word: string;
+    count: number;
+};
+export type Dictionary = DictionaryEntry[];

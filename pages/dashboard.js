@@ -18,6 +18,7 @@ import DailyGoalView from '../components/DailyGoalView';
 import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
 import useWindowSize from '../hooks/useWindowSize';
+import Link from 'next/link'
 
 const PAGE_SIZE = 10;
 
@@ -103,6 +104,11 @@ function ArticlePage () {
                 <DailyGoalView />
             )}
         </DashboardHeader>
+        <Link href="/dictionary">
+            <AllProgress>
+                See your full progress ⟶
+            </AllProgress>
+        </Link>
 
         <Filters>
             <FilterWrapper>
@@ -114,11 +120,11 @@ function ArticlePage () {
         </Filters>
 
         <ArticlesList>
-            {loadingArticles && (
+            {loadingArticles && !articlesToShow.length && (
                 <div style={{textAlign: 'center', padding: '20px 0'}}>Loading articles...</div>
             )}
 
-            {!loadingArticles && articlesToShow.map(article => (
+            {articlesToShow.map(article => (
                 <ArticlePreview key={article.id} article={article} read={readStatuses[article.id]}/>
             ))}
         </ArticlesList>
@@ -181,6 +187,16 @@ const FiltersHeader = styled.div`
 const DashboardHeader = styled.div`
     border: 1px solid ${Colors.LightGrey};
     padding: 30px;
-    margin-bottom: 30px;
-    border-radius: 8px;
+    border-radius: 8px 8px 0 0;
+`;
+
+const AllProgress = styled.div`
+    text-align: center;
+    border: 1px solid ${Colors.LightGrey};
+    border-top: none;
+    margin-bottom: 50px;
+    border-radius: 0 0 8px 8px;
+    padding: 15px 0;
+    cursor: pointer;
+    font-family: Source Sans Pro, sans-serif;
 `;

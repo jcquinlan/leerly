@@ -88,3 +88,13 @@ export const getWordCounts = (idToken) => {
         })
         .then(res => res.json()); 
 }
+
+export const getDictionary = (idToken) => {
+    return fetch(`/api/me/dictionary`, {
+            method: 'GET',
+            headers: {
+                'x-leerly-token': idToken
+            }
+        })
+        .then(res => res.json()); 
+}

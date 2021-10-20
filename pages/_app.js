@@ -260,7 +260,11 @@ const MobileNav = styled.div`
   }
 `;
 
-const Header = styled.div``;
+const Header = styled.div`
+    ${Container} {
+      padding-top: 60px;
+    }
+`;
 const ProfileInfoDisplay = styled.div`
   display: flex;
 

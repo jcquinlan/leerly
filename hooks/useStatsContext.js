@@ -1,7 +1,7 @@
 import {useContext, useState} from 'react';
 import appContext from '../contexts/appContext';
 import {updateWordCounts} from '../services/userService';
-import {getWordCounts} from '../services/userService';
+import {getWordCounts, getDictionary} from '../services/userService';
 
 const DEFAULT_DAILY_GOAL = 50;
 
@@ -24,10 +24,15 @@ const useStatsContext = () => {
         setWordCountRecords(incomingWordCounts);
     }
 
+    const loadDictionaryWithIdToken = () => {
+        return getDictionary(idToken);
+    }
+
     return {
         dailyGoal,
         wordCountRecords,
         loadUserWordCounts,
+        loadDictionary: loadDictionaryWithIdToken,
         updateWordCounts: updateWordCountsWithIdToken
     }
 }
