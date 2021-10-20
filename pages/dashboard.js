@@ -35,7 +35,7 @@ function ArticlePage () {
 
     useEffect(() => {
         loadArticles(selectedFilterTypes);
-    }, [articles, selectedFilterTypes]);
+    }, [selectedFilterTypes]);
 
     const articlesToShow = useMemo(() => {
         if (!articles) {
