@@ -34,11 +34,12 @@ export const Container = styled.div`
   margin: 0 auto;
   max-width: 920px;
   padding: 15px;
-  padding-top: ${props => props.paddingTop || '60px'};
+  padding-top: ${props => props.paddingTop || '30px'};
   width: 100%;
 
   @media ${devices.laptop} {
     padding: 30px;
+    padding-top: ${props => props.paddingTop || '60px'};
   }
 `;
 

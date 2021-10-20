@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState, useMemo} from 'react';
 import styled from 'styled-components';
-import {useRouter} from 'next/router';
 import {
     Container,
     StatsRow,
@@ -8,7 +7,8 @@ import {
     StatNumber,
     StatTitle,
     Title,
-    Subtitle
+    Subtitle,
+    devices
 } from '../components/styled';
 import {getNextDifficultyLevel} from '../services/corpusService';
 import DictionaryTable from '../components/DictionaryTable';
@@ -86,18 +86,18 @@ function DictionaryPage () {
             </ProgressBarWrapper>
             <StatsRow style={{margin: '20px 0 30px 0'}}>
                 <Stat>
-                    <StatTitle>Total words seen</StatTitle>
-                    <StatNumber>{seenWordCount}</StatNumber>
+                    <MobileStatTitle>Total words seen</MobileStatTitle>
+                    <MobileStatNumber>{seenWordCount}</MobileStatNumber>
                 </Stat>
 
                 <Stat>
-                    <StatTitle>Total words completed</StatTitle>
-                    <StatNumber>{completedWordCount}</StatNumber>
+                    <MobileStatTitle>Total words completed</MobileStatTitle>
+                    <MobileStatNumber>{completedWordCount}</MobileStatNumber>
                 </Stat>
 
                 <Stat>
-                    <StatTitle>Progress through level</StatTitle>
-                    <StatNumber>{totalProgress}%</StatNumber>
+                    <MobileStatTitle>Progress through level</MobileStatTitle>
+                    <MobileStatNumber>{totalProgress}%</MobileStatNumber>
                 </Stat>
             </StatsRow>
             <DictionaryTable dictionary={dictionary} />
@@ -118,5 +118,21 @@ const ProgressText = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px;
+`;
+
+const MobileStatTitle = styled(StatTitle)`
+    font-size: 14px;
+
+    @media ${devices.tablet} {
+        font-size: 16px;
+    }
+`;
+
+const MobileStatNumber = styled(StatNumber)`
+    font-size: 30px;
+
+    @media ${devices.tablet} {
+        font-size: 48px;
+    }
 `;
 
