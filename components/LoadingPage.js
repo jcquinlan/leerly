@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import LoadingSpinner from './LoadingSpinner';
 
 const LoadingPage = () => {
     return (
         <FullPageWrapper>
-            Loading...
+            <LoadingSpinner />
         </FullPageWrapper>
     )
 }
@@ -12,7 +13,7 @@ const LoadingPage = () => {
 export default LoadingPage;
 
 const FullPageWrapper = styled.div`
-    height: 100vh;
+    height: 65vh;
     width: 100%;
     display: flex;
     justify-content: center;

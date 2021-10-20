@@ -19,6 +19,7 @@ import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
 import useWindowSize from '../hooks/useWindowSize';
 import Link from 'next/link'
+import LoadingPage from '../components/LoadingPage';
 
 const PAGE_SIZE = 10;
 
