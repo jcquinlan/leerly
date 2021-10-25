@@ -35,7 +35,10 @@ function MyApp({ component: Component, pageProps }) {
     // Begin Google Analytics
     analytics();
 
-    Router.events.on('routeChangeComplete', () => { !!window && window.scrollTo(0, 0); });
+    Router.events.on('routeChangeComplete', () => {
+      !!window && window.scrollTo(0, 0);
+      uiStateContextApi.setNavOpen(false);
+    });
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
