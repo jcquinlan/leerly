@@ -1,9 +1,8 @@
 import fetch from 'node-fetch';
 import {WordMap} from 'corpus';
-import {TranscriptPortionForRender, WordMapEntry} from 'types';
+import {TranscriptPortionForRender} from 'types';
 import {prepareTranscript} from 'services/transcriptionService';
-import { UserLevels } from '../../../../constants';
-import { mapUserLevelToWordDifficulty } from 'services/corpusService';
+import {UserLevels, mapUserLevelToWordDifficulty} from '../../../../constants';
 
 
 const getTranscriptJSON = async (transcriptId) => {

@@ -7,9 +7,9 @@ export default async (req, res) => {
         const customerId = req.body.customerId;
 
         const doc = await adminFirestore.collection("user_profiles").doc(uid);
-        const docData = await doc.get();
+        const docRef = await doc.get();
     
-        if (!docData.data()) {
+        if (!docRef.data()) {
             throw new Error('Customer record not found.')
         }
     
@@ -19,7 +19,7 @@ export default async (req, res) => {
             });
         
         res.statusCode = 201;
-        res.json({});
+        res.json(docRef.data());
     } catch (e) {
       console.error(e);
       res.statusCode = 500;

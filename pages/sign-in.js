@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {useToasts} from 'react-toast-notifications';
 import styled from 'styled-components';
 import AppStateContext from '../contexts/appContext';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input, HelpText, Card} from '../components/styled';
+import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input, HelpText, Card, NoticeCard, NoticeCardMain} from '../components/styled';
 import {signInUser} from '../services/authService';
 import {useRouter} from 'next/router';
 
@@ -13,6 +13,7 @@ function RegisterPage () {
     const [formState, setFormState] = useState({});
 
     const redirect = router.query.redirect;
+    const registered = router.query.registered;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -49,6 +50,13 @@ function RegisterPage () {
         </HeroWrapper>
 
         <Divider />
+
+        {registered && (
+            <NoticeCard>
+                <span>You're account is ready!</span> <br />
+                <NoticeCardMain>Sign in to get started</NoticeCardMain>
+            </NoticeCard>
+        )}
 
         <Card>
             <HelpText>

@@ -5,6 +5,13 @@ export default async (req, res) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
+        const profileInfo = req.body.profileInfo;
+
+        if (!(email && password && profileInfo.name && profileInfo.spanish)) {
+          res.statusCode = 400;
+          res.json({error: 'Missing registration data'});
+          return;
+        }
 
         const userRecord = await adminAuth
             .createUser({
@@ -15,6 +22,10 @@ export default async (req, res) => {
         // Create the user's profile as soon as their account is created.
         await adminFirestore.collection("user_profiles").doc(userRecord.uid).set({
             email,
+            name: profileInfo.name,
+            levels: {
+              spanish: profileInfo.spanish
+            },
             active: true,
             subscribed: false
         });

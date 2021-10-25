@@ -16,6 +16,32 @@ export enum WordDifficulties {
     ADVANCED = 'advanced',
 }
 
+export enum WordDifficultiesDisplay {
+    SUPER_BEGINNER = 'Super Beginner',
+    BEGINNER = 'Beginner',
+    BEGINNER_INTERMEDIATE = 'Beginner Intermediate',
+    INTERMEDIATE = 'Intermediate',
+    INTERMEDIATE_ADVANCED = 'Intermediate Advanced',
+    ADVANCED = 'Advanced'
+}
+
+export const mapUserLevelToWordDifficulty = (userLevel: UserLevels, display?: boolean): WordDifficulties | WordDifficultiesDisplay => {
+    switch (userLevel) {
+        case UserLevels.A1:
+            return display ? WordDifficultiesDisplay.SUPER_BEGINNER : WordDifficulties.SUPER_BEGINNER;
+        case UserLevels.A2:
+            return display ? WordDifficultiesDisplay.BEGINNER : WordDifficulties.BEGINNER;
+        case UserLevels.B1:
+            return display ? WordDifficultiesDisplay.BEGINNER_INTERMEDIATE : WordDifficulties.BEGINNER_INTERMEDIATE;
+        case UserLevels.B2:
+            return display ? WordDifficultiesDisplay.INTERMEDIATE : WordDifficulties.INTERMEDIATE;
+        case UserLevels.C1:
+            return display ? WordDifficultiesDisplay.INTERMEDIATE_ADVANCED : WordDifficulties.INTERMEDIATE_ADVANCED;
+        case UserLevels.C2:
+            return display ? WordDifficultiesDisplay.ADVANCED : WordDifficulties.ADVANCED;
+    }
+}
+
 // The number of times a user needs to see a word before it's "completed".
 export const WORD_COMPLETION_NUMBER = 20;
 
