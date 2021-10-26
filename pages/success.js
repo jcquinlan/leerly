@@ -1,19 +1,18 @@
-import React, {useEffect, useState, useContext} from 'react';
-import { useRouter } from 'next/router'
+import React, {useEffect, useState, useContext, useMemo} from 'react';
+import {useRouter} from 'next/router'
+import Link from 'next/link';
 import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Subtitle} from '../components/styled';
 import {updateCustomerSubscribedStatus} from '../services/userService';
 import {addUserToProductionMailingList} from '../services/emailService';
 import {getStripeSession} from '../services/stripeService';
-import {useLocalStorage, REFERRAL_CODE_KEY} from '../hooks/useLocalStorage';
-import {getReferralCode, createReferralRecord} from '../services/referralService';
 import mixpanelContext from '../contexts/mixpanelContext';
 
 function SuccessPage () {
     const router = useRouter();
     const mixpanel = useContext(mixpanelContext);
-    const [_, setReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
-    const [referralCodeCreated, setReferralCodeCreated] = useState(false);
-    const {id, email, session_id, referralCode} = router.query;
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [userData, setUserData] = useState(null);
 
     useEffect(() => {
         if (mixpanel) {
@@ -23,56 +22,68 @@ function SuccessPage () {
     }, []);
 
     useEffect(() => {
+        const {id, email, session_id} = router.query;
+
         if (id && email && session_id) {
             addUserToProductionMailingList(email)
                 .then(() => getStripeSession(session_id))
                 .then((session) => {
                     const customerId = session.customer;
-                    updateCustomerSubscribedStatus(id, customerId);
+                    return updateCustomerSubscribedStatus(id, customerId);
                 })
-                .catch(err => console.error(err));
+                .then((data) => {
+                    setUserData(data);
+                    setError(false);
+                })
+                .catch(err => {
+                    setError(true);
+                    console.error(err)
+                })
+                .finally(() => setLoading(false));
+        }
+    }, [router.query]);
+
+    const titleText = useMemo(() => {
+        if (loading) {
+            return 'Just one minute...';
         }
 
-        if (referralCode && !referralCodeCreated) { 
-            getReferralCode(referralCode)
-                .then(referralCodeRef => {
-                    if (referralCodeRef.docs.length) {
-                        const referralCodeObject = referralCodeRef.docs[0].data();
-                        return referralCodeObject;
-                    }
-                })
-                .then((referralCodeObject) => {
-                    if (referralCodeObject) {
-                        return createReferralRecord(referralCodeObject, email);
-                    }
-                })
-                .then(() => {
-                    setReferralCode(null);
-                    setReferralCodeCreated(true);
-                })
-                .catch(err => console.error(err));
+        if (error) {
+            return 'Uh oh!';
         }
-    }, [id]);
+
+        return `¡Felicitaciones, ${userData.name || userData.email || 'amigo'}!`;
+    }, [loading, error, userData]);
+
+    const subtitleText = useMemo(() => {
+        if (loading) {
+            return `We are finishing up a couple details, please don't close the browser.`;
+        }
+
+        if (error) {
+            return `Something went wrong when trying to finish your account creation. Contact leerly support if you are unable to log in.`;
+        }
+
+        return `You're all good to go! Click below to sign in and start learning.`;
+    }, [loading, error]);
 
     return (
         <>
         <Container>
         <HeroWrapper>
             <HeroContent>
-                <Title>¡Felicitaciones!</Title>
-                <Subtitle>
-                    You're all signed up. You'll get the next newsletter in your inbox, but for now you can search through all our older
-                    articles in the Dashboard.
-                </Subtitle>
+                <Title>{titleText}</Title>
+                <Subtitle>{subtitleText}</Subtitle>
             </HeroContent>
         </HeroWrapper>
 
-        <Divider />
-
-        <Button>
-            {/* TODO -- Replace with the next router link */}
-            <a href="/sign-in">Start reading articles</a>
-        </Button>
+        {!error && !loading && (
+            <div style={{display: 'flex', justifyContent: 'center', margin: '30px 0 60px 0'}}>
+                <Button>
+                    <Link href="/sign-in?registered=true">Start learning</Link>
+                </Button>
+            </div>
+        )}
 
         </Container>
         </>

@@ -10,7 +10,9 @@ import {Container,
     ButtonWithLoading,
     Input,
     HelpText,
-    Card
+    Card,
+    NoticeCard,
+    NoticeCardMain
 } from '../components/styled';
 import {signInUser} from '../services/authService';
 import {useRouter} from 'next/router';
@@ -23,6 +25,7 @@ function RegisterPage () {
     const [submitting, setSubmitting] = useState(false);
 
     const redirect = router.query.redirect;
+    const registered = router.query.registered;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -62,6 +65,13 @@ function RegisterPage () {
         </HeroWrapper>
 
         <Divider />
+
+        {registered && (
+            <NoticeCard>
+                <span>You're account is ready!</span> <br />
+                <NoticeCardMain>Sign in to get started</NoticeCardMain>
+            </NoticeCard>
+        )}
 
         <Card>
             <HelpText>

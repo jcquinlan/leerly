@@ -42,7 +42,6 @@ const LoadingSpinner = () => {
     return (
         <Spinner>
             {letters.map((letter, index) => {
-                if (letter === '.') console.log(buildAnimation(index))
                 return <motion.div animate={buildAnimation(index)} transition={transition}>{letter}</motion.div>
             })}
         </Spinner>

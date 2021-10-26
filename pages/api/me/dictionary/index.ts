@@ -2,8 +2,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import {adminFirestore} from '../../../../services/admin';
 import {getUserProfile, getUserId} from '../../../../services/server/userService';
 import {WordMap} from '../../../../corpus';
-import {mapUserLevelToWordDifficulty} from 'services/corpusService';
-import {WORD_COMPLETION_NUMBER} from '../../../../constants';
+import {WORD_COMPLETION_NUMBER, mapUserLevelToWordDifficulty} from '../../../../constants';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {

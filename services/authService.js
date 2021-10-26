@@ -1,13 +1,13 @@
 import {auth} from './index';
 
-export const registerUser = async (email, password) => {
+export const registerUser = async (email, password, profileInfo) => {
     try {
         const response = await fetch('/api/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({email, password, profileInfo})
         });
 
         if (!response.ok) {
