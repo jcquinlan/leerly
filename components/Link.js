@@ -1,24 +1,20 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import {useRouter} from 'next/router';
-import UIStateContext from '../contexts/uiStateContext';
+import Link from 'next/link';
 
-const Link = ({href, children}) => {
-    const router = useRouter();
-    const {setNavOpen} = useContext(UIStateContext);
-
-    const handleClick = () => {
-        setNavOpen(false);
-        router.push(href);
-    };
-
-    return <LinkSpan onClick={handleClick} role="link">{children}</LinkSpan>;
+const NavLink = ({href, children}) => {
+    return <LinkSpan><Link href={href}>{children}</Link></LinkSpan>;
 };
 
 const LinkSpan = styled.span`
     display: block;
     margin-bottom: 15px;
     font-size: 24px;
+    transition: 0.3s;
+
+    &:hover {
+        transform: translateX(10px);
+    }
 `;
 
-export default Link;
+export default NavLink;

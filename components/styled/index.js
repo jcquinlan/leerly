@@ -380,3 +380,11 @@ export const StatNumber = styled.p`
     font-size: 48px;
     font-family: 'Poppins', sans-serif;
 `;
+
+export const ButtonWithLoading = ({loading, children, ...props}) => {
+  return (
+    <Button disabled={loading} {...props}>
+      {loading ? 'Loading...': children}
+    </Button>
+  )
+}

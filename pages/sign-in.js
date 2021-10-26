@@ -2,15 +2,27 @@ import React, {useState, useContext} from 'react';
 import {useToasts} from 'react-toast-notifications';
 import styled from 'styled-components';
 import AppStateContext from '../contexts/appContext';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input, HelpText, Card, NoticeCard, NoticeCardMain} from '../components/styled';
+import {Container,
+    HeroWrapper,
+    HeroContent,
+    Divider,
+    Title,
+    ButtonWithLoading,
+    Input,
+    HelpText,
+    Card,
+    NoticeCard,
+    NoticeCardMain
+} from '../components/styled';
 import {signInUser} from '../services/authService';
 import {useRouter} from 'next/router';
 
 function RegisterPage () {
     const router = useRouter();
-    const {setLoading} = useContext(AppStateContext);
+    const {setLoading: setLoadingUserData} = useContext(AppStateContext);
     const {addToast} = useToasts();
     const [formState, setFormState] = useState({});
+    const [submitting, setSubmitting] = useState(false);
 
     const redirect = router.query.redirect;
     const registered = router.query.registered;
@@ -19,16 +31,19 @@ function RegisterPage () {
         e.preventDefault();
 
         try {
+            setSubmitting(true);
             await signInUser(formState.email, formState.password);
-            setLoading(true);
+            setLoadingUserData(true);
             if (redirect) {
                 router.push(redirect);
             } else {
                 router.push('/dashboard');
             }
+            setSubmitting(false);
         } catch (error) {
             console.error(error);
             addToast(error.message, {appearance: 'error'});
+            setSubmitting(false);
         }
     };
 
@@ -68,7 +83,9 @@ function RegisterPage () {
             <form onSubmit={handleSubmit}>
                 <Input type='email' name='email' placeholder='email' onChange={handleFormState}/>
                 <Input type='password' name='password' placeholder='password' onChange={handleFormState}/>
-                <Button type='submit' disabled={!formState.email || !formState.password}>sign in</Button>
+                <ButtonWithLoading type='submit' disabled={!formState.email || !formState.password || submitting} loading={submitting}>
+                    sign in
+                </ButtonWithLoading>
             </form>
         </Card>
 
