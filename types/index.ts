@@ -34,6 +34,12 @@ export type ArticleType = {
     display: string;
 }
 
+export type ArticleAnswer = {
+    userId: string;
+    articleId: string;
+    answers: object[]
+}
+
 export type DayProgress = {
     progress: number;
     name: string;

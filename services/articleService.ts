@@ -1,4 +1,5 @@
 import {db, storage} from './index';
+import {ArticleAnswer} from '../types/index';
 
 export const ArticleTypes = {
     'business': 'Business',
@@ -189,3 +190,10 @@ export const uploadAudio = (file) => {
     const storageRef = storage.ref().child(`audios/${file.name}`);
     return storageRef.put(file);
 }
+
+export const createNewAnswer = async (answer: ArticleAnswer) => {
+    return db.collection("article_answers").add(answer)
+        .then(answerRef => answerRef.get())
+        .catch(error => { throw error });
+}; 
+
