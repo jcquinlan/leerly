@@ -1,6 +1,9 @@
+import e from "cors";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+
 import { Colors, Subtitle, Button } from "../components/styled";
+import { useLocalStorage, REFERRAL_CODE_KEY } from "../hooks/useLocalStorage";
 
 const log = true;
 
@@ -9,53 +12,55 @@ export default function ArticleQuestions(props) {
 
   const [counter, setCounter] = useState(0);
   const [activeQuestion, setActiveQuestion] = useState(questions[counter]);
+  const [activeAnswer, setActiveAnswer] = useState({});
 
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
-    setActiveQuestion(questions[counter]);
-  }, [counter]);
+    setActiveQuestion(questions[counter])
+  }, [counter])
 
   useEffect(() => {
-    console.log("answers", answers);
-  }, [answers]);
+    if (activeQuestion) {
+      let storedAnswer = window.localStorage.getItem(activeQuestion.id) ?? null;
+      setActiveAnswer({ questionId: activeQuestion.id, answer: storedAnswer});
+    }
+  }, [activeQuestion]);
 
-  const handleSubmit = () => {
-    // check answered
+  useEffect(() => {
+    window.localStorage.setItem(activeAnswer.questionId, activeAnswer.answer);
+  }, [activeAnswer]);
 
-    if (counter + 1 !== questions.length) {
+  const handleSubmit = async prevQuest => {
+    var { questionId, answer: newAnswer } = activeAnswer;
+
+    // push to answers array
+    var allAnswers = await handleAnswers(questionId, newAnswer);
+    setAnswers(allAnswers);
+
+    log && console.log('allAnswers', allAnswers);
+
+    // set counter...
+    if (prevQuest) setCounter(counter - 1);
+    else if (questionId && newAnswer && (counter + 1 !== questions.length)) {
       setCounter(counter + 1);
-      // add to answer state
-    } else {
-      console.log("END");
-      // submit answers to db
-      // public private toggle
     }
   };
 
-  const handlePreviousQuestion = () => {
-    setCounter(counter - 1);
-  };
+  const handleAnswers = async (questionId, newAnswer) => {
+    var allAnswers = [...answers];
+    var answerId;
 
-  const handleAnswers = (questionId, type, answer) => {
-    log && console.log("questionId", questionId);
-    log && console.log("type", type);
-    log && console.log("answer", answer);
+    if (allAnswers.length > 0) allAnswers.map((ans, i) => {
+      if (ans.questionId == questionId) {
+        answerId = i;
+      } 
+    });
 
-    let newAnswers = answers ?? [];
+    if (answerId >= 0) allAnswers[answerId].answer = newAnswer;
+    else allAnswers.push({ questionId: questionId, answer: newAnswer });
 
-    console.log('new', newAnswers)
-
-    if (newAnswers.length > 0) {
-        newAnswers.map((ans, i) => {
-            if (ans.questionId === questionId) {
-                newAnswers[i].answer = answer;
-            } else newAnswers.push({ questionId: questionId, answer: answer});
-        })
-    } else newAnswers.push({ questionId: questionId, answer: answer});
-
-    // BROKEN // NOT PUSHING CORRECTLY
-    setAnswers(newAnswers);
+    return allAnswers;
   };
 
   return (
@@ -71,19 +76,24 @@ export default function ArticleQuestions(props) {
 
         <QuestionForm
           activeQuestion={activeQuestion}
-          handleAnswers={handleAnswers}
+          activeAnswer={activeAnswer}
+          setActiveAnswer={setActiveAnswer}
         />
 
         <ButtonsWrapper>
           <div style={{ margin: "15px 0px 5px 0px" }}>
-            <Button type="secondary" onClick={handleSubmit}>
+            <Button 
+              type="secondary" 
+              onClick={() => handleSubmit()}
+              disabled={!activeAnswer.answer}
+            >
               {counter < questions.length - 1
                 ? "Next Question"
                 : "Submit Answers"}
             </Button>
           </div>
           {counter > 0 && (
-            <PreviousButton onClick={handlePreviousQuestion}>
+            <PreviousButton onClick={() => handleSubmit(true)}>
               Previous Question
             </PreviousButton>
           )}
@@ -94,7 +104,7 @@ export default function ArticleQuestions(props) {
 }
 
 const QuestionForm = (props) => {
-  const { activeQuestion, handleAnswers } = props;
+  const { activeQuestion, activeAnswer, setActiveAnswer } = props;
   const { id, type, metadata } = activeQuestion;
 
   if (metadata && metadata.choices) {
@@ -104,24 +114,32 @@ const QuestionForm = (props) => {
           <RadioButton
             type="radio"
             name="radio"
-            value={choice}
-            // checked={select === choice}
-            onChange={() => handleAnswers(id, type, choice)}
+            value={choice ? choice : activeAnswer}
+            checked={activeAnswer === choice}
+            onChange={() =>
+              setActiveAnswer({
+                questionId: id,
+                answer: choice,
+              })
+            }
           />
           <p> {choice} </p>
         </Choice>
       );
     });
   } else {
-    let openAnswer;
-
     return (
       <OpenAnswerWrapper>
         <textarea
-          onChange={(event) => handleAnswers(id, type, event.target.value)}
-          value={openAnswer}
           rows={4}
+          value={activeAnswer.answer ?? ''}
           placeholder="Write however much or little you'd like."
+          onChange={(event) =>
+            setActiveAnswer({
+              questionId: id,
+              answer: event.target.value,
+            })
+          }
         />
       </OpenAnswerWrapper>
     );
@@ -212,7 +230,7 @@ const RadioButton = styled.input`
   height: 25px;
   margin-right: 10px;
   &:hover ~ ${RadioButtonLabel} {
-    background: #ccc;
+    background: ${Colors.Primary};
     &::after {
       content: "\f005";
       font-family: "FontAwesome";
