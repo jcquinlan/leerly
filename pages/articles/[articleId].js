@@ -530,7 +530,7 @@ function ArticlePage () {
             { readStatus && article.questions && (
                 <ArticleQuestions 
                     articleId={article.id} 
-                    questions={ article.questions }
+                    questions={article.questions}
                 />
             )}
 

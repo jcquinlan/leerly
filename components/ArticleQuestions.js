@@ -1,61 +1,69 @@
 import e from "cors";
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 
+import appContext from '../contexts/appContext';
+import { createNewAnswers } from '../services/answersService';
 import { Colors, Subtitle, Button } from "../components/styled";
-import { useLocalStorage, REFERRAL_CODE_KEY } from "../hooks/useLocalStorage";
 
 const log = true;
 
 export default function ArticleQuestions(props) {
-  const { articleID, questions } = props;
+  const { articleId, questions } = props;
+  const {user} = useContext(appContext);
 
   const [counter, setCounter] = useState(0);
+  const [publish, setPublish] = useState(true);
+
   const [activeQuestion, setActiveQuestion] = useState(questions[counter]);
   const [activeAnswer, setActiveAnswer] = useState({});
-
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
-    setActiveQuestion(questions[counter])
-  }, [counter])
+    console.log("PUBLISH", publish);
+  }, [publish]);
+
+  useEffect(() => {
+    setActiveQuestion(questions[counter]);
+  }, [counter]);
 
   useEffect(() => {
     if (activeQuestion) {
-      let storedAnswer = window.localStorage.getItem(activeQuestion.id) ?? null;
-      setActiveAnswer({ questionId: activeQuestion.id, answer: storedAnswer});
+      let storedAnswer = window.localStorage.getItem(activeQuestion.id) ?? "";
+      setActiveAnswer({ questionId: activeQuestion.id, answer: storedAnswer });
     }
   }, [activeQuestion]);
 
   useEffect(() => {
+    log && console.log("activeAnswer", activeAnswer);
     window.localStorage.setItem(activeAnswer.questionId, activeAnswer.answer);
   }, [activeAnswer]);
 
-  const handleSubmit = async prevQuest => {
+  // LOGIC //////////////////////////////////////////////////////////////////
+  const handleNextQuestion = async (prevQuest) => {
     var { questionId, answer: newAnswer } = activeAnswer;
 
-    // push to answers array
-    var allAnswers = await handleAnswers(questionId, newAnswer);
-    setAnswers(allAnswers);
-
-    log && console.log('allAnswers', allAnswers);
+    // push to allAnswers array
+    const allAnswers = await handleAnswers(questionId, newAnswer);
+    allAnswers && setAnswers(allAnswers)
 
     // set counter...
-    if (prevQuest) setCounter(counter - 1);
-    else if (questionId && newAnswer && (counter + 1 !== questions.length)) {
-      setCounter(counter + 1);
-    }
+    if (prevQuest) setCounter(counter - 1); // previous question 
+    else if (questionId && newAnswer && counter + 1 !== questions.length) {
+      setCounter(counter + 1); // next question
+    } else handleSubmitAnswers(allAnswers); // submit answers
   };
 
   const handleAnswers = async (questionId, newAnswer) => {
     var allAnswers = [...answers];
     var answerId;
 
-    if (allAnswers.length > 0) allAnswers.map((ans, i) => {
-      if (ans.questionId == questionId) {
-        answerId = i;
-      } 
-    });
+    if (allAnswers.length > 0)
+      allAnswers.map((ans, i) => {
+        if (ans.questionId == questionId) {
+          answerId = i;
+        }
+      });
 
     if (answerId >= 0) allAnswers[answerId].answer = newAnswer;
     else allAnswers.push({ questionId: questionId, answer: newAnswer });
@@ -63,6 +71,22 @@ export default function ArticleQuestions(props) {
     return allAnswers;
   };
 
+  const handleSubmitAnswers = async allAnswers => {
+    const { uid = '' } = user;
+
+    if (allAnswers && Array.isArray(allAnswers) ) {
+      try {
+        let res = await createNewAnswers({ uid, articleId, publish, allAnswers });
+        log && console.log('createNewAnswers response:', res)
+      } catch(err) {
+        console.log('Error posting answers to database:', err)
+        return
+      }
+    }
+
+  };
+
+  // RENDER //////////////////////////////////////////////////////////////////
   return (
     <QuestionsContainer>
       <QuestionsWrapper>
@@ -72,8 +96,8 @@ export default function ArticleQuestions(props) {
 
         <Divider />
 
+        {/* QUESTION & BODY */}
         <Subtitle>{activeQuestion.text}</Subtitle>
-
         <QuestionForm
           activeQuestion={activeQuestion}
           activeAnswer={activeAnswer}
@@ -81,10 +105,26 @@ export default function ArticleQuestions(props) {
         />
 
         <ButtonsWrapper>
+
+          {/* PUBLISH ANSWERS TOGGLE */}
+          {counter == questions.length - 1 && (
+            <ToggleWrapper>
+              <ToggleLabel {...{ publish, priv: true }}>Keep Answers Private</ToggleLabel>
+              <ToggleContainer>
+                <ToggleSlider
+                  {...{ publish }}
+                  onClick={() => setPublish(!publish)}
+                />
+              </ToggleContainer>
+              <ToggleLabel {...{ publish, priv: false }}>Make Answers Public</ToggleLabel>
+            </ToggleWrapper>
+          )}
+
+          {/* NEXT QUESTION / SUBMIT ANSWERS */}
           <div style={{ margin: "15px 0px 5px 0px" }}>
-            <Button 
-              type="secondary" 
-              onClick={() => handleSubmit()}
+            <Button
+              type="secondary"
+              onClick={() => handleNextQuestion()}
               disabled={!activeAnswer.answer}
             >
               {counter < questions.length - 1
@@ -92,8 +132,10 @@ export default function ArticleQuestions(props) {
                 : "Submit Answers"}
             </Button>
           </div>
+
+          {/* PREVIOUS QUESTION */}
           {counter > 0 && (
-            <PreviousButton onClick={() => handleSubmit(true)}>
+            <PreviousButton onClick={() => handleNextQuestion(true)}>
               Previous Question
             </PreviousButton>
           )}
@@ -103,6 +145,8 @@ export default function ArticleQuestions(props) {
   );
 }
 
+// COMPONENTS /////////////////////////////////////////////////////////////
+
 const QuestionForm = (props) => {
   const { activeQuestion, activeAnswer, setActiveAnswer } = props;
   const { id, type, metadata } = activeQuestion;
@@ -110,12 +154,12 @@ const QuestionForm = (props) => {
   if (metadata && metadata.choices) {
     return metadata.choices.map((choice) => {
       return (
-        <Choice>
+        <RadioButtonWrapper>
           <RadioButton
             type="radio"
             name="radio"
-            value={choice ? choice : activeAnswer}
-            checked={activeAnswer === choice}
+            checked={activeAnswer.answer === choice}
+            value={activeAnswer.answer}
             onChange={() =>
               setActiveAnswer({
                 questionId: id,
@@ -123,8 +167,9 @@ const QuestionForm = (props) => {
               })
             }
           />
-          <p> {choice} </p>
-        </Choice>
+          <RadioButtonLabel />
+          <p style={{ marginLeft: "0.5rem" }}> {choice} </p>
+        </RadioButtonWrapper>
       );
     });
   } else {
@@ -132,7 +177,7 @@ const QuestionForm = (props) => {
       <OpenAnswerWrapper>
         <textarea
           rows={4}
-          value={activeAnswer.answer ?? ''}
+          value={activeAnswer.answer}
           placeholder="Write however much or little you'd like."
           onChange={(event) =>
             setActiveAnswer({
@@ -160,6 +205,9 @@ const QuestionsContainer = styled.div`
 const QuestionsWrapper = styled.div`
   overflow-wrap: break-word;
   width: 50%;
+  @media screen and (max-width: 600px) {
+    width: 80%;
+  }
 `;
 
 const QuestionsCounter = styled.p`
@@ -200,23 +248,17 @@ const PreviousButton = styled.button`
   border: none;
 `;
 
-const Choice = styled.div`
+const RadioButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  height: 48px;
   position: relative;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  border-radius: 2px;
-  margin-bottom: 10px;
 `;
 
 const RadioButtonLabel = styled.label`
   position: absolute;
-  top: 25%;
   left: 4px;
-  width: 24px;
-  height: 24px;
+  width: 1.8rem;
+  height: 1.8rem;
   border-radius: 50%;
   background: white;
   border: 1px solid #ccc;
@@ -225,37 +267,66 @@ const RadioButtonLabel = styled.label`
 const RadioButton = styled.input`
   opacity: 0;
   z-index: 1;
+  width: 1.8rem;
+  height: 1.8rem;
   cursor: pointer;
-  width: 25px;
-  height: 25px;
   margin-right: 10px;
   &:hover ~ ${RadioButtonLabel} {
     background: ${Colors.Primary};
-    &::after {
-      content: "\f005";
-      font-family: "FontAwesome";
-      display: block;
-      color: white;
-      width: 12px;
-      height: 12px;
-      margin: 4px;
-    }
-  }
-  &:checked + ${Choice} {
-    background: yellowgreen;
-    border: 2px solid yellowgreen;
+    border: 0.3rem solid #ccc;
   }
   &:checked + ${RadioButtonLabel} {
-    background: yellowgreen;
-    border: 1px solid yellowgreen;
-    &::after {
-      content: "\f005";
-      font-family: "FontAwesome";
-      display: block;
-      color: white;
-      width: 12px;
-      height: 12px;
-      margin: 4px;
-    }
+    background: ${Colors.Primary};
+    border: 0.3rem solid #ccc;
+  }
+`;
+
+const ToggleWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  margin: 0.5rem;
+`;
+
+const ToggleLabel = styled.p`
+  margin: 0.3rem; 
+  transform: scale(0.9);
+  font-weight: 800;
+  color: ${({ publish, priv }) => (publish && !priv ? Colors.Primary : (!publish && priv) ?  Colors.Primary : '')};
+`
+
+const ToggleContainer = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  background-color: ${({ publish }) => (publish ? Colors.Primary : "white")};
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  transition: 0.4s;
+`;
+
+const ToggleSlider = styled.span`
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: ${({ publish }) => (publish ? Colors.Primary : "white")};
+  border-radius: 15px;
+  transition: 0.4s;
+  &:before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    width: 19px;
+    height: 19px;
+    border-radius: 100%;
+    background-color: ${({ publish }) => (publish ? "white" : Colors.Primary)};
+    transition: 0.4s;
+    transform: ${({ publish }) => (publish ? "translateX(23.8px)" : '')};
   }
 `;
