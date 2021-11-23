@@ -1,16 +1,15 @@
-import e from "cors";
 import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 
-import appContext from '../contexts/appContext';
-import { createNewAnswers } from '../services/answersService';
+import appContext from "../contexts/appContext";
+import { createNewAnswers } from "../services/answersService";
 import { Colors, Subtitle, Button } from "../components/styled";
 
 const log = true;
 
 export default function ArticleQuestions(props) {
   const { articleId, questions } = props;
-  const {user} = useContext(appContext);
+  const { user } = useContext(appContext);
 
   const [counter, setCounter] = useState(0);
   const [publish, setPublish] = useState(true);
@@ -19,9 +18,7 @@ export default function ArticleQuestions(props) {
   const [activeAnswer, setActiveAnswer] = useState({});
   const [answers, setAnswers] = useState([]);
 
-  useEffect(() => {
-    console.log("PUBLISH", publish);
-  }, [publish]);
+  const [results, setResults] = useState(false);
 
   useEffect(() => {
     setActiveQuestion(questions[counter]);
@@ -45,10 +42,11 @@ export default function ArticleQuestions(props) {
 
     // push to allAnswers array
     const allAnswers = await handleAnswers(questionId, newAnswer);
-    allAnswers && setAnswers(allAnswers)
+    allAnswers && setAnswers(allAnswers);
 
     // set counter...
-    if (prevQuest) setCounter(counter - 1); // previous question 
+    if (prevQuest) setCounter(counter - 1);
+    // previous question
     else if (questionId && newAnswer && counter + 1 !== questions.length) {
       setCounter(counter + 1); // next question
     } else handleSubmitAnswers(allAnswers); // submit answers
@@ -71,75 +69,112 @@ export default function ArticleQuestions(props) {
     return allAnswers;
   };
 
-  const handleSubmitAnswers = async allAnswers => {
-    const { uid = '' } = user;
+  const handleSubmitAnswers = async (allAnswers) => {
+    const { uid = "" } = user;
+    log &&
+      console.log("Attempting to Submit Answers:", {
+        uid,
+        articleId,
+        publish,
+        allAnswers,
+      });
 
-    if (allAnswers && Array.isArray(allAnswers) ) {
+    if (allAnswers && Array.isArray(allAnswers)) {
       try {
-        let res = await createNewAnswers({ uid, articleId, publish, allAnswers });
-        log && console.log('createNewAnswers response:', res)
-      } catch(err) {
-        console.log('Error posting answers to database:', err)
-        return
+        let res = await createNewAnswers({
+          userId: uid,
+          articleId: articleId,
+          isPublic: publish,
+          answers: allAnswers,
+        });
+        log && console.log("createNewAnswers response:", res);
+
+        if (res.status === 201) setResults(true);
+      } catch (err) {
+        console.log("Error posting answers to database:", err);
+        return;
       }
     }
-
   };
 
   // RENDER //////////////////////////////////////////////////////////////////
   return (
     <QuestionsContainer>
       <QuestionsWrapper>
-        <QuestionsCounter>
-          {counter + 1} / {questions.length}
-        </QuestionsCounter>
+        {!results && (
+          <>
+            <QuestionsCounter>
+              {counter + 1} / {questions.length}
+            </QuestionsCounter>
 
-        <Divider />
+            <Divider />
 
-        {/* QUESTION & BODY */}
-        <Subtitle>{activeQuestion.text}</Subtitle>
-        <QuestionForm
-          activeQuestion={activeQuestion}
-          activeAnswer={activeAnswer}
-          setActiveAnswer={setActiveAnswer}
-        />
+            {/* QUESTION & BODY */}
+            <Subtitle>{activeQuestion.text}</Subtitle>
+            <QuestionForm
+              activeQuestion={activeQuestion}
+              activeAnswer={activeAnswer}
+              setActiveAnswer={setActiveAnswer}
+            />
 
-        <ButtonsWrapper>
+            <ButtonsWrapper>
+              {/* PUBLISH ANSWERS TOGGLE */}
+              {counter == questions.length - 1 && (
+                <ToggleWrapper>
+                  <ToggleLabel {...{ publish, priv: true }}>
+                    Keep Answers Private
+                  </ToggleLabel>
+                  <ToggleContainer>
+                    <ToggleSlider
+                      {...{ publish }}
+                      onClick={() => setPublish(!publish)}
+                    />
+                  </ToggleContainer>
+                  <ToggleLabel {...{ publish, priv: false }}>
+                    Make Answers Public
+                  </ToggleLabel>
+                </ToggleWrapper>
+              )}
 
-          {/* PUBLISH ANSWERS TOGGLE */}
-          {counter == questions.length - 1 && (
-            <ToggleWrapper>
-              <ToggleLabel {...{ publish, priv: true }}>Keep Answers Private</ToggleLabel>
-              <ToggleContainer>
-                <ToggleSlider
-                  {...{ publish }}
-                  onClick={() => setPublish(!publish)}
-                />
-              </ToggleContainer>
-              <ToggleLabel {...{ publish, priv: false }}>Make Answers Public</ToggleLabel>
-            </ToggleWrapper>
-          )}
+              {/* NEXT QUESTION / SUBMIT ANSWERS */}
+              <div style={{ margin: "15px 0px 5px 0px" }}>
+                <Button
+                  type="secondary"
+                  onClick={() => handleNextQuestion()}
+                  disabled={!activeAnswer.answer}
+                >
+                  {counter < questions.length - 1
+                    ? "Next Question"
+                    : "Submit Answers"}
+                </Button>
+              </div>
 
-          {/* NEXT QUESTION / SUBMIT ANSWERS */}
-          <div style={{ margin: "15px 0px 5px 0px" }}>
-            <Button
-              type="secondary"
-              onClick={() => handleNextQuestion()}
-              disabled={!activeAnswer.answer}
-            >
-              {counter < questions.length - 1
-                ? "Next Question"
-                : "Submit Answers"}
-            </Button>
-          </div>
+              {/* PREVIOUS QUESTION */}
+              {counter > 0 && (
+                <PreviousButton onClick={() => handleNextQuestion(true)}>
+                  Previous Question
+                </PreviousButton>
+              )}
+            </ButtonsWrapper>
+          </>
+        )}
 
-          {/* PREVIOUS QUESTION */}
-          {counter > 0 && (
-            <PreviousButton onClick={() => handleNextQuestion(true)}>
-              Previous Question
-            </PreviousButton>
-          )}
-        </ButtonsWrapper>
+
+        {/* ANSWER RESULTS */}
+        {results && (
+          <ResultsWrapper>
+            <p>Thanks for Answering</p>
+            <Divider />
+
+            <Subtitle>Here's how your results compare.</Subtitle>
+
+            <div style={{ margin: "15px 0px 5px 0px" }}>
+              <Button type="secondary" onClick={() => handleEdit()}>
+                Edit Answers
+              </Button>
+            </div>
+          </ResultsWrapper>
+        )}
       </QuestionsWrapper>
     </QuestionsContainer>
   );
@@ -288,11 +323,12 @@ const ToggleWrapper = styled.div`
 `;
 
 const ToggleLabel = styled.p`
-  margin: 0.3rem; 
+  margin: 0.3rem;
   transform: scale(0.9);
   font-weight: 800;
-  color: ${({ publish, priv }) => (publish && !priv ? Colors.Primary : (!publish && priv) ?  Colors.Primary : '')};
-`
+  color: ${({ publish, priv }) =>
+    publish && !priv ? Colors.Primary : !publish && priv ? Colors.Primary : ""};
+`;
 
 const ToggleContainer = styled.label`
   position: relative;
@@ -327,6 +363,11 @@ const ToggleSlider = styled.span`
     border-radius: 100%;
     background-color: ${({ publish }) => (publish ? "white" : Colors.Primary)};
     transition: 0.4s;
-    transform: ${({ publish }) => (publish ? "translateX(23.8px)" : '')};
+    transform: ${({ publish }) => (publish ? "translateX(23.8px)" : "")};
   }
+`;
+
+const ResultsWrapper = styled.div`
+  display: absolute;
+  text-align: center;
 `;

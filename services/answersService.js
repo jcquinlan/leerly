@@ -1,13 +1,15 @@
 import {db} from './index';
 
 export const createNewAnswers = async ({
+    userId,
     articleId,
-    publish,
-    allAnswers,
+    isPublic,
+    answers,
 }) => {
     const payload = {
-        isPublic: publish,
-        answers: allAnswers
+        userId,
+        isPublic,
+        answers
     };
 
     return fetch(`/api/articles/${articleId}/answers`, {
