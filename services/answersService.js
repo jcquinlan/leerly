@@ -1,25 +1,22 @@
 import {db} from './index';
 
 export const createNewAnswers = async ({
-    userId,
     articleId,
     publish,
     allAnswers,
 }) => {
     const payload = {
-        userId: userId,
-        articleId: articleId,
-        public: publish,
+        isPublic: publish,
         answers: allAnswers
     };
 
-    // return fetch(`/api/articles/${articleId}/answers`, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(payload)
-    // });
+    return fetch(`/api/articles/${articleId}/answers`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
 }
 
 export const getArticleAnswers = (articleId) => {
