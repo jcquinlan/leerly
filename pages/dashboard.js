@@ -63,7 +63,7 @@ function ArticlePage () {
     }
 
     useEffect(() => {
-        if (articles && articles.length) {
+        if (articles.length) {
             getArticleReadStatuses(user.uid)
                 .then(readStatusesRef => {
                     const readStatusesById = readStatusesRef.docs.reduce((memo, current) => {

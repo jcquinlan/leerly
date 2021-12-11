@@ -103,23 +103,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.json({ error });
     }
   }
-
-  if (req.method === "PUT") {
-    const userId = await getUserId(req);
-    const { isPublic, answers } = req.body;
-    const { articleId } = req.query;
-
-    // Do we want to allow a user to update their answers after already filling them out?
-    // If so, we will need to also handle PUT requests here.
-
-    // Check to see if there is already a UserAnswers record for this user and articleId.
-    // If so, overwrite the existing data with what they just sent up.
-
-    // If there isn't a UserAnswers record (there always should be, though), then create a new record with
-    // the data they just sent up.
-
-    res.statusCode = 200;
-    res.send({ message: "Answers updated" });
-    return;
-  }
 };
