@@ -535,20 +535,15 @@ function ArticlePage () {
                 </>
             )}
 
-            {article.free && !user && (
+            {/* {article.free && !user && (
                 <UpgradeWrapper>
                     <p>Enjoyed reading this? Want to improve your Spanish?</p>
                     <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
-            )}
+            )} */}
 
             {renderAdminUI()}
 
-            {/* <NarrowContainer>
-                <div style={{marginTop: '90px'}}>
-                    <ArticleComments article={article}/>
-                </div>
-            </NarrowContainer> */}
         </WideContainer>
         </>
     );
