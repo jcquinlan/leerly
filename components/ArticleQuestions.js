@@ -1,95 +1,70 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 
-import appContext from "../contexts/appContext";
-import { createNewAnswers } from "../services/answersService";
 import { Colors, Subtitle, Button } from "../components/styled";
+import ArticlesContext from "../contexts/articlesContext";
 
-const log = true;
-
-export default function ArticleQuestions(props) {
-  const { articleId, questions } = props;
-  const { user } = useContext(appContext);
+export default function ArticleQuestions({articleId, questions}) {
+  const {createNewAnswers, getArticleAnswers} = useContext(ArticlesContext);
 
   const [counter, setCounter] = useState(0);
   const [publish, setPublish] = useState(true);
 
   const [activeQuestion, setActiveQuestion] = useState(questions[counter]);
-  const [activeAnswer, setActiveAnswer] = useState({});
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [hasFinished, setHasFinished] = useState(false);
 
-  const [results, setResults] = useState(false);
+  useEffect(() => {
+    getArticleAnswers(articleId)
+      .then(res => {
+        if (!!res.answers) {
+          setAnswers(res.answers);
+          const hasAlreadyAnswered = Object.keys(res.answers).length === questions.length;
+
+          if (hasAlreadyAnswered) {
+            setHasFinished(true);
+          }
+        }
+      });
+  }, []);
 
   useEffect(() => {
     setActiveQuestion(questions[counter]);
   }, [counter]);
 
-  useEffect(() => {
-    if (activeQuestion) {
-      let storedAnswer = window.localStorage.getItem(activeQuestion.id) ?? "";
-      setActiveAnswer({ questionId: activeQuestion.id, answer: storedAnswer });
-    }
-  }, [activeQuestion]);
-
-  useEffect(() => {
-    log && console.log("activeAnswer", activeAnswer);
-    window.localStorage.setItem(activeAnswer.questionId, activeAnswer.answer);
-  }, [activeAnswer]);
-
   // LOGIC //////////////////////////////////////////////////////////////////
   const handleNextQuestion = async (prevQuest) => {
-    var { questionId, answer: newAnswer } = activeAnswer;
-
-    // push to allAnswers array
-    const allAnswers = await handleAnswers(questionId, newAnswer);
-    allAnswers && setAnswers(allAnswers);
-
-    // set counter...
     if (prevQuest) setCounter(counter - 1);
+
     // previous question
-    else if (questionId && newAnswer && counter + 1 !== questions.length) {
+    else if (counter + 1 !== questions.length) {
       setCounter(counter + 1); // next question
-    } else handleSubmitAnswers(allAnswers); // submit answers
+    } else handleSubmitAnswers(answers); // submit answers
   };
 
-  const handleAnswers = async (questionId, newAnswer) => {
-    var allAnswers = [...answers];
-    var answerId;
-
-    if (allAnswers.length > 0)
-      allAnswers.map((ans, i) => {
-        if (ans.questionId == questionId) {
-          answerId = i;
-        }
-      });
-
-    if (answerId >= 0) allAnswers[answerId].answer = newAnswer;
-    else allAnswers.push({ questionId: questionId, answer: newAnswer });
-
-    return allAnswers;
+  const handleAnswer = async (questionId, newAnswer) => {
+    setAnswers(currentAnswers => {
+      return {
+        ...currentAnswers,
+        [questionId]: newAnswer
+      }
+    });
   };
 
-  const handleSubmitAnswers = async (allAnswers) => {
-    const { uid = "" } = user;
-    log &&
-      console.log("Attempting to Submit Answers:", {
-        uid,
-        articleId,
-        publish,
-        allAnswers,
-      });
+  const handleSubmitAnswers = async (answers) => {
+    const hasAnsweredAllQuestion = Object.keys(answers).length === questions.length;
 
-    if (allAnswers && Array.isArray(allAnswers)) {
+    if (answers && hasAnsweredAllQuestion) {
       try {
         let res = await createNewAnswers({
-          userId: uid,
           articleId: articleId,
           isPublic: publish,
-          answers: allAnswers,
+          answers: answers,
         });
-        log && console.log("createNewAnswers response:", res);
 
-        if (res.status === 201) setResults(true);
+        if (res.status === 201) {
+          setHasFinished(true);
+        }
       } catch (err) {
         console.log("Error posting answers to database:", err);
         return;
@@ -101,7 +76,7 @@ export default function ArticleQuestions(props) {
   return (
     <QuestionsContainer>
       <QuestionsWrapper>
-        {!results && (
+        {!hasFinished && (
           <>
             <QuestionsCounter>
               {counter + 1} / {questions.length}
@@ -113,8 +88,8 @@ export default function ArticleQuestions(props) {
             <Subtitle>{activeQuestion.text}</Subtitle>
             <QuestionForm
               activeQuestion={activeQuestion}
-              activeAnswer={activeAnswer}
-              setActiveAnswer={setActiveAnswer}
+              handleAnswer={handleAnswer}
+              answers={answers}
             />
 
             <ButtonsWrapper>
@@ -141,7 +116,7 @@ export default function ArticleQuestions(props) {
                 <Button
                   type="secondary"
                   onClick={() => handleNextQuestion()}
-                  disabled={!activeAnswer.answer}
+                  disabled={!answers[activeQuestion.id]}
                 >
                   {counter < questions.length - 1
                     ? "Next Question"
@@ -161,15 +136,13 @@ export default function ArticleQuestions(props) {
 
 
         {/* ANSWER RESULTS */}
-        {results && (
+        {hasFinished && (
           <ResultsWrapper>
             <p>Thanks for Answering</p>
             <Divider />
 
-            <Subtitle>Here's how your results compare.</Subtitle>
-
             <div style={{ margin: "15px 0px 5px 0px" }}>
-              <Button type="secondary" onClick={() => handleEdit()}>
+              <Button type="secondary" onClick={() => setHasFinished(false)}>
                 Edit Answers
               </Button>
             </div>
@@ -183,7 +156,7 @@ export default function ArticleQuestions(props) {
 // COMPONENTS /////////////////////////////////////////////////////////////
 
 const QuestionForm = (props) => {
-  const { activeQuestion, activeAnswer, setActiveAnswer } = props;
+  const { activeQuestion, answers, handleAnswer } = props;
   const { id, type, metadata } = activeQuestion;
 
   if (metadata && metadata.choices) {
@@ -193,13 +166,10 @@ const QuestionForm = (props) => {
           <RadioButton
             type="radio"
             name="radio"
-            checked={activeAnswer.answer === choice}
-            value={activeAnswer.answer}
+            checked={answers[activeQuestion.id] === choice}
+            value={answers[activeQuestion.id]}
             onChange={() =>
-              setActiveAnswer({
-                questionId: id,
-                answer: choice,
-              })
+              handleAnswer(id, choice)
             }
           />
           <RadioButtonLabel />
@@ -212,13 +182,10 @@ const QuestionForm = (props) => {
       <OpenAnswerWrapper>
         <textarea
           rows={4}
-          value={activeAnswer.answer}
+          value={answers[activeQuestion.id]}
           placeholder="Write however much or little you'd like."
           onChange={(event) =>
-            setActiveAnswer({
-              questionId: id,
-              answer: event.target.value,
-            })
+            handleAnswer(id, event.target.value)
           }
         />
       </OpenAnswerWrapper>

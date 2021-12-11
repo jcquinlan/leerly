@@ -21,8 +21,7 @@ import {
     ImageWrapper,
     AudioWrapper,
     FakeAudioWidget,
-    HelpText,
-    NarrowContainer
+    HelpText
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -523,15 +522,17 @@ function ArticlePage () {
                 </ButtonRow>
             )}
 
-            <QuestionsCounter>
-                Article Questions: { article.questions ? article.questions.length : 0 }
-            </QuestionsCounter>
-     
-            { readStatus && article.questions && (
-                <ArticleQuestions 
-                    articleId={article.id} 
-                    questions={article.questions}
-                />
+            { article.questions && (
+                <>
+                    <QuestionsCounter>
+                        Article Questions: { article.questions ? article.questions.length : 0 }
+                    </QuestionsCounter>
+
+                    <ArticleQuestions 
+                        articleId={article.id} 
+                        questions={article.questions}
+                    />
+                </>
             )}
 
             {article.free && !user && (

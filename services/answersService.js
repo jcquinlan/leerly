@@ -1,13 +1,11 @@
 import {db} from './index';
 
-export const createNewAnswers = async ({
-    userId,
+export const createNewAnswersWithIdToken = async (idToken, {
     articleId,
     isPublic,
     answers,
 }) => {
     const payload = {
-        userId,
         isPublic,
         answers
     };
@@ -15,14 +13,19 @@ export const createNewAnswers = async ({
     return fetch(`/api/articles/${articleId}/answers`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-leerly-token': idToken
         },
         body: JSON.stringify(payload)
     });
 }
 
-export const getArticleAnswers = (articleId) => {
-    return fetch(`/api/articles/${articleId}/answers`)
+export const getArticleAnswersWithIdToken = (idToken, articleId) => {
+    return fetch(`/api/articles/${articleId}/answers`, {
+            headers: {
+                'x-leerly-token': idToken
+            }
+        })
         .then(res => res.json());
 }
 
