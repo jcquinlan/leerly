@@ -188,4 +188,4 @@ export const getArticleAudioURL = (fileName) => {
 export const uploadAudio = (file) => {
     const storageRef = storage.ref().child(`audios/${file.name}`);
     return storageRef.put(file);
-}
+};
