@@ -45,3 +45,29 @@ export type DictionaryEntry = {
     count: number;
 };
 export type Dictionary = DictionaryEntry[];
+
+export type QuestionOptionId = string;
+export enum QuestionTypes {
+    MULTI_CHOICE = 'multi_choice',
+    OPEN_ENDED = 'open_ended'
+};
+
+export const QuestionTypesDisplay = {
+    [QuestionTypes.MULTI_CHOICE]: 'Multiple choice',
+    [QuestionTypes.OPEN_ENDED]: 'Open ended',
+}
+
+export type QuestionOption = {
+    id: QuestionOptionId;
+    text: string;
+};
+
+export type Question = {
+    text: string;
+    id: string;
+    type: QuestionTypes;
+    metadata: {
+        options?: QuestionOption[];
+        answer?: QuestionOptionId | null;
+    }
+}

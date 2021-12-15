@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { Colors, Subtitle, Button } from "../components/styled";
 import ArticlesContext from "../contexts/articlesContext";
+import {QuestionTypes} from 'types';
 
 export default function ArticleQuestions({articleId, questions}) {
   const {createNewAnswers, getArticleAnswers} = useContext(ArticlesContext);
@@ -159,21 +160,21 @@ const QuestionForm = (props) => {
   const { activeQuestion, answers, handleAnswer } = props;
   const { id, type, metadata } = activeQuestion;
 
-  if (metadata && metadata.choices) {
-    return metadata.choices.map((choice) => {
+  if (type === QuestionTypes.MULTI_CHOICE) {
+    return metadata.options.map((option) => {
       return (
         <RadioButtonWrapper>
           <RadioButton
             type="radio"
             name="radio"
-            checked={answers[activeQuestion.id] === choice}
+            checked={answers[activeQuestion.id] === option.id}
             value={answers[activeQuestion.id]}
             onChange={() =>
-              handleAnswer(id, choice)
+              handleAnswer(id, option.id)
             }
           />
           <RadioButtonLabel />
-          <p style={{ marginLeft: "0.5rem" }}> {choice} </p>
+          <p style={{ marginLeft: "0.5rem" }}> {option.text} </p>
         </RadioButtonWrapper>
       );
     });

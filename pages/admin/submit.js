@@ -13,13 +13,14 @@ import {
     Input,
     Checkbox
 } from '../../components/styled';
+import TextareaAutosize from 'react-textarea-autosize';
 import TypeSelector from '../../components/TypeSelector';
-import LevelSelector from '../../components/LevelSelector';
+import QuestionCreator from '../../components/QuestionCreator';
 import ArticleImageSelector from '../../components/ArticleImageSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle, uploadAudio} from '../../services/articleService';
-import TextareaAutosize from 'react-textarea-autosize';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
+import {QuestionTypes} from '../../components/QuestionCreator';
 
 function SubmitPage () {
     useGuardAdminRoute();
@@ -34,6 +35,8 @@ function SubmitPage () {
     const [level, setLevel] = useState(null);
     const [audioFile, setAudioFile] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [questions, setQuestions] = useState([]);
+
     const formIsFilled = useMemo(() => {
         return !!(
             formState.article &&
@@ -41,7 +44,9 @@ function SubmitPage () {
             image &&
             formState.title &&
             formState.transcriptId &&
-            !!selectedTypes.length
+            !!selectedTypes.length &&
+            questions.length &&
+            questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
         );
     }, [formState, image, selectedTypes]);
 
@@ -57,6 +62,7 @@ function SubmitPage () {
                 free: formState.free || false,
                 types: selectedTypes,
                 language: 'spanish',
+                questions,
                 audio: `audios/${audioFile.name}`,
                 image: unsplashImageToSimplifiedImage(image),
                 transcriptId: formState.transcriptId,
@@ -154,6 +160,8 @@ function SubmitPage () {
             <label htmlFor='free'>Article is free?</label>
             <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
         </div>
+
+        <QuestionCreator questions={questions} setQuestions={setQuestions} />
 
         <Button onClick={handleClick} disabled={saving || !formIsFilled}>Submit article</Button>
 
