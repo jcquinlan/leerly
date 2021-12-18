@@ -20,7 +20,7 @@ import ArticleImageSelector from '../../components/ArticleImageSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle, uploadAudio} from '../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
-import {QuestionTypes} from '../../components/QuestionCreator';
+import {QuestionTypes} from 'types';
 
 function SubmitPage () {
     useGuardAdminRoute();
