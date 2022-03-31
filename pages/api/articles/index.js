@@ -20,6 +20,7 @@ export default async (req, res) => {
             let articlesQuery = adminFirestore
                 .collection('articles')
                 .where('published', '==', true)
+                .limit(50);
     
             if (filters.length) {
                 articlesQuery = articlesQuery.where('types', 'array-contains-any', filters);
