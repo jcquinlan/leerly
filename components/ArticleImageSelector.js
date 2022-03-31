@@ -27,7 +27,7 @@ const ArticleImageSelector = ({image, onSelectImage}) => {
     return (
         <ArticleImageSelectorWrapper>
             <div>
-                <label htmlfor='query'>Search for an image</label>
+                <label htmlFor='query'>Search for an image</label>
                 <Input name='query' type='text' onChange={(event) => setQuery(event.target.value)} />
                 <Button disabled={!query} onClick={() => searchImages()}>Search</Button>
             </div>
