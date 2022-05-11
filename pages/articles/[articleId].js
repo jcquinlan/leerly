@@ -404,17 +404,9 @@ function ArticlePage () {
                 <div>
                     <TypeList types={article.types} />
 
-                    {!!article.url && (
-                        <ArticleData>
-                            <a href={article.url} target='_blank'>Read original article ⟶</a>
-                        </ArticleData>
-                    )}
-
-                    {!article.url && !!article.author && (
-                        <ArticleData>
-                            <span>Written by {article.author.name}</span>
-                        </ArticleData>
-                    )}
+                    <ArticleData>
+                        <a href={article.url} target='_blank'>Read original article ⟶</a>
+                    </ArticleData>
                 </div>
 
                 <StorybookToggleMobile>

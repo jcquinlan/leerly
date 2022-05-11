@@ -16,7 +16,7 @@
     "cors": "^2.8.5",
     "export-to-csv": "^0.2.1",
     "file-loader": "^6.2.0",
-    "firebase": "^8.9.1",
+    "firebase": "^7.24.0",
     "firebase-admin": "^9.4.1",
     "framer-motion": "^4.1.17",
     "luxon": "^2.0.2",
