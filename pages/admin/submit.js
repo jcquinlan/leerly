@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useContext, useEffect} from 'react';
+import React, {useState, useMemo, useContext} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import { useRouter } from 'next/router';
@@ -26,7 +26,6 @@ function SubmitPage () {
 
     const router = useRouter();
     const {addToast} = useToasts();
-    const [authors, setAuthors] = useState([]);
     const {user} = useContext(AppContext);
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [formState, setFormState] = useState({});
@@ -38,7 +37,7 @@ function SubmitPage () {
     const formIsFilled = useMemo(() => {
         return !!(
             formState.article &&
-            formState.author &&
+            formState.url &&
             image &&
             formState.title &&
             formState.transcriptId &&
@@ -46,20 +45,8 @@ function SubmitPage () {
         );
     }, [formState, image, selectedTypes]);
 
-
-    // Fetch all current authors
-    useEffect(() => {
-        fetch('/api/authors')
-            .then((res) => res.json())
-            .then(res => setAuthors(res.authors))
-            .catch(() => {
-                addToast(`Error getting authors: ${e.message}`, {appearance: 'error'});
-            });
-    }, []);
-
     const handleClick = async () => {
         setSaving(true);
-
         try {
             await uploadAudio(audioFile);
             const article = await createNewArticle({
@@ -73,8 +60,7 @@ function SubmitPage () {
                 audio: `audios/${audioFile.name}`,
                 image: unsplashImageToSimplifiedImage(image),
                 transcriptId: formState.transcriptId,
-                published: false,
-                author: authors.find(currAuthor => currAuthor.userId === formState.author)
+                published: false
             });
 
             await triggerUnsplashDownload(image);
@@ -160,14 +146,6 @@ function SubmitPage () {
         )}
 
         <Input type="text" name="url" placeholder="url of original article" required onChange={handleFormState} />
-
-        <label htmlFor="author-select">Select the leerly author</label>
-        <AuthorSelect id="author-select" name="author" onChange={handleFormState}>
-            {authors.map(author => (
-                <option value={author.userId}>{author.name}</option>
-            ))}
-        </AuthorSelect>
-
         <Input type="text" name="title" placeholder="title of the article" required onChange={handleFormState} />
         <Input type="text" name="transcriptId" placeholder="the id of the transcript from Sonix" required onChange={handleFormState} />
         <TextareaAutosize style={textAreaStyles} minRows={10} name='article' placeholder='the summarized, translated article' required onChange={handleFormState} />
@@ -198,8 +176,4 @@ const SelectorWrapper = styled.div`
     p {
         margin: 0 0 15px 0;
     }
-`;
-
-const AuthorSelect = styled.select`
-    margin-bottom: 15px;
 `;
