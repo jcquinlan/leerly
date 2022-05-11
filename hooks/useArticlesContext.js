@@ -1,7 +1,7 @@
 import {useContext, useState} from 'react';
 import appContext from '../contexts/appContext';
 import {getArticles} from '../services/articleService';
-import { getArticleAnswersWithIdToken, createNewAnswersWithIdToken } from '../services/answersService';
+import {updateWordCounts} from '../services/userService';
 
 const useArticlesContext = () => {
     const [articles, setArticles] = useState([]);
@@ -25,23 +25,11 @@ const useArticlesContext = () => {
         setLoadingArticles(false);
     }
 
-    const getArticleAnswers = async (answers) => {
-        if (!idToken) return;
-
-        return getArticleAnswersWithIdToken(idToken, answers);
-    }
-
-    const createNewAnswers = async (answers) => {
-        return createNewAnswersWithIdToken(idToken, answers);
-    }
-
     return {
         articles,
         loadingArticles,
         articlesError,
         loadArticles,
-        getArticleAnswers,
-        createNewAnswers
     }
 }
 
