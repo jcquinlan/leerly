@@ -21,7 +21,8 @@ import {
     ImageWrapper,
     AudioWrapper,
     FakeAudioWidget,
-    HelpText
+    HelpText,
+    NarrowContainer
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -45,7 +46,6 @@ import {
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
 import ArticleComments from '../../components/ArticleComments';
-import ArticleQuestions from '../../components/ArticleQuestions';
 import {
     useLocalStorage,
     STORYBOOK_ACTIVE_KEY,
@@ -53,7 +53,6 @@ import {
     initialTranslationsToday
 } from '../../hooks/useLocalStorage';
 import StatsContext from '../../contexts/statsContext';
-import ArticlesContext from '../../contexts/articlesContext';
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -522,28 +521,20 @@ function ArticlePage () {
                 </ButtonRow>
             )}
 
-            { article.questions && (
-                <>
-                    <QuestionsCounter>
-                        Article Questions: { article.questions ? article.questions.length : 0 }
-                    </QuestionsCounter>
-
-                    <ArticleQuestions 
-                        articleId={article.id} 
-                        questions={article.questions}
-                    />
-                </>
-            )}
-
-            {/* {article.free && !user && (
+            {article.free && !user && (
                 <UpgradeWrapper>
                     <p>Enjoyed reading this? Want to improve your Spanish?</p>
                     <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
-            )} */}
+            )}
 
             {renderAdminUI()}
 
+            <NarrowContainer>
+                <div style={{marginTop: '90px'}}>
+                    <ArticleComments article={article}/>
+                </div>
+            </NarrowContainer>
         </WideContainer>
         </>
     );
@@ -702,14 +693,6 @@ const ButtonRow = styled.div`
     justify-content: center;
     margin-top: 30px;
 `;
-
-const QuestionsCounter = styled.p`
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    transform: scale(0.75);
-`;
-
 const MarkAsReadButton = styled(Button)`
     ${props => props.read ? `
         background-color: ${Colors.Green};
