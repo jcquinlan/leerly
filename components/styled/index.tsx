@@ -14,7 +14,10 @@ export const Title = styled.h1`
   }
 `;
 
-export const Subtitle = styled.h3`
+interface SubtitleProps {
+  center?: boolean;
+}
+export const Subtitle = styled.h3<SubtitleProps>`
     font-size: 18px;
     color: #666;
     margin-bottom: 10px;
@@ -29,7 +32,10 @@ export const Subtitle = styled.h3`
     }
 `;
 
-export const Container = styled.div`
+interface ContainerProps {
+  paddingTop?: string;
+}
+export const Container = styled.div<ContainerProps>`
   position: relative;
   margin: 0 auto;
   max-width: 920px;
@@ -65,7 +71,11 @@ export const Divider = styled.div`
   margin: 60px 0;
 `;
 
-export const Button = styled.button`
+interface ButtonProps {
+  secondary?: boolean;
+  vibe?: string;
+}
+export const Button = styled.button<ButtonProps>`
     padding: 10px 20px;
     border: none;
 
@@ -91,7 +101,7 @@ export const Button = styled.button`
       }
     `: ``}
 
-    ${props => props.type === 'danger' ? `
+    ${props => props.vibe === 'danger' ? `
       background-color: ${Colors.LightDanger};
       color: ${Colors.Danger};
 
@@ -100,7 +110,7 @@ export const Button = styled.button`
       }
     `: ``}
 
-    ${props => props.type === 'hard' ? `
+    ${props => props.vibe === 'hard' ? `
       background-color: ${Colors.HardLight};
       color: ${Colors.Hard};
 
@@ -109,7 +119,7 @@ export const Button = styled.button`
       }
     `: ``}
 
-    ${props => props.type === 'medium' ? `
+    ${props => props.vibe === 'medium' ? `
       background-color: ${Colors.MediumLight};
       color: ${Colors.Medium};
 
@@ -118,7 +128,7 @@ export const Button = styled.button`
       }
     `: ``}
 
-    ${props => props.type === 'easy' ? `
+    ${props => props.vibe === 'easy' ? `
       background-color: ${Colors.EasyLight};
       color: ${Colors.Easy};
 
@@ -147,7 +157,13 @@ export const GhostButton = styled.button`
     cursor: pointer;
 `;
 
-export const Card = styled.div`
+interface CardProps {
+  padding?: string;
+  justifyContent?: string;
+  alignItems?: string;
+  flexDirection?: string;
+}
+export const Card = styled.div<CardProps>`
   background-color: #fff;
   border-radius: 5px;
   padding: ${props => props.padding || '15px'};
@@ -158,8 +174,12 @@ export const Card = styled.div`
     padding: ${props => props.padding || '30px'};
   }
 `;
-
-export const Flex = styled.div`
+interface FlexProps {
+  justifyContent?: string;
+  alignItems?: string;
+  flexDirection?: string;
+}
+export const Flex = styled.div<FlexProps>`
     display: flex;
     justify-content: ${props => props.justifyContent || 'initial'};
     align-items: ${props => props.alignItems || 'initial'};
@@ -275,7 +295,11 @@ const NarrowContainerWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
-const NarrowContainerContent = styled.div`
+
+interface NarrowContainerContentProps {
+  width?: string;
+}
+const NarrowContainerContent = styled.div<NarrowContainerContentProps>`
     width: 100%;
     max-width: ${props => props.width};
 `;
@@ -289,7 +313,12 @@ export const NarrowContainer = ({children, width = '600px'}) => {
   )
 }
 
-export const TranscriptWord = styled.span`
+interface TranscriptWordProps {
+  isVocab?: boolean;
+  seen?: boolean;
+  isActive?: boolean;
+}
+export const TranscriptWord = styled.span<TranscriptWordProps>`
     cursor: pointer;
     border-radius: 8px;
 
