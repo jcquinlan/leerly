@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import {Card, Input, Button, Colors} from 'components/styled';
 import {QuestionTypes, Question, QuestionOptionId, QuestionTypesDisplay} from 'types';
 
-
-
 const generateMetadataForQuestionType = (type: QuestionTypes) => {
     switch (type) {
         case QuestionTypes.MULTI_CHOICE:
@@ -16,7 +14,7 @@ const generateMetadataForQuestionType = (type: QuestionTypes) => {
         case QuestionTypes.OPEN_ENDED:
             return {};
     }
-}
+};
 
 const QuestionCreator = ({questions, setQuestions}) => {
     const [newQuestion, setNewQuestion] = useState<Question | null>(null);
