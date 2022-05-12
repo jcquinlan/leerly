@@ -176,6 +176,10 @@ export const Input = styled.input`
     font-size: 16px;
 `;
 
+export const Label = styled.label`
+  margin-bottom: 10px;
+`;
+
 export const Checkbox = styled(Input)`
     width: auto;
 `;

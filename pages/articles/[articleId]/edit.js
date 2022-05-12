@@ -17,6 +17,7 @@ import useGuardAdminRoute from '../../../hooks/useGuardAdminRoute';
 import TypeSelector from '../../../components/TypeSelector';
 import LoadingPage from '../../../components/LoadingPage';
 import ArticleImageSelector from '../../../components/ArticleImageSelector';
+import QuestionCreator from '../../../components/QuestionCreator';
 import useGetArticle from '../../../hooks/useGetArticle';
 import {updateArticle, uploadAudio} from '../../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
@@ -34,6 +35,8 @@ function ArticlePage () {
     const [updatedImage, setUpdatedImage] = useState(false);
     const [audioURL, setAudioURL] = useState(null);
     const [newAudio, setNewAudio] = useState(null);
+    const [questions, setQuestions] = useState([]);
+
     const formIsFilled = useMemo(() => {
         return !!(formState.article && formState.url && formState.title && image && !!selectedTypes.length);
     }, [formState]);
@@ -51,6 +54,10 @@ function ArticlePage () {
           published: article.published,
           transcriptId: article.transcriptId
         });
+
+        if (article.questions) {
+            setQuestions(article.questions);
+        }
       }
     }, [article]);
 
@@ -71,6 +78,7 @@ function ArticlePage () {
                 transcriptId: formState.transcriptId || null,
                 audio: newAudioURL || audioURL || null,
                 types: selectedTypes,
+                questions,
                 image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
             });
 
@@ -169,6 +177,8 @@ function ArticlePage () {
             <label for='published'>Is the article ready to be published?</label>
             <Checkbox type='checkbox' name='published' checked={formState.published || false} onChange={handleCheckboxChange} />
         </div>
+
+        <QuestionCreator questions={questions} setQuestions={setQuestions} />
 
         <Button onClick={handleClick} disabled={!formIsFilled}>Save article</Button>
 
