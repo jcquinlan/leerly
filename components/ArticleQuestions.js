@@ -73,7 +73,6 @@ export default function ArticleQuestions({articleId, questions}) {
     }
   };
 
-  // RENDER //////////////////////////////////////////////////////////////////
   return (
     <QuestionsContainer>
       <QuestionsWrapper>
