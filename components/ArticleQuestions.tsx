@@ -11,60 +11,66 @@ const QuestionsCard = styled(Card)`
 const QuestionsTitle = styled.h3`
     font-size: 24px;
     margin: 0;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
 `;
 const QuestionText = styled.h4`
     margin: 0;
     font-size: 18px;
     font-weight: 300;
+    line-height: 28px;
 `;
 const Question = styled.div`
-    margin-bottom: 15px;
+    margin-bottom: 30px;
 `;
 const QuestionOptionList = styled.ul`
     margin: 0;
     margin-top: 10px;
+    padding-left: 20px;
 
     li {
         font-size: 18px;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
     }
 `;
+const QuestionTextWrapper = styled.div`
+    display: flex;
+`;
+const QuestionIndex = styled.div`
+    margin-right: 10px;
+    font-size: 24px;
+    margin-top: 5px;
+`;
 
-const buildOpenEndedQuestion = (question, index) => {
-    if (question.type !== QuestionTypes.OPEN_ENDED) return null;
-
-    return (
-        <Question>
-            <QuestionText>{index}.) {question.text}</QuestionText>
-        </Question>
-    )
-};
-
-const buildMultiChoiceQuestion = (question, index) => {
-    if (question.type !== QuestionTypes.MULTI_CHOICE) return null;
+const buildQuestion = (question, index) => {
+    const isMultiChoice = question.type === QuestionTypes.MULTI_CHOICE;
 
     return (
         <Question>
-            <QuestionText>{index}.) {question.text}</QuestionText>
-            <QuestionOptionList>
-                {question.metadata.options.map(option => {
-                    return <li>{option.text}</li>
-                })}
-            </QuestionOptionList>
+            <QuestionTextWrapper>
+                <QuestionIndex>
+                    {index}.)
+                </QuestionIndex>
+                <div>
+                    <QuestionText>{question.text}</QuestionText>
+
+                    {isMultiChoice && (
+                        <QuestionOptionList>
+                            {question.metadata.options.map(option => {
+                                return <li>{option.text}</li>
+                            })}
+                        </QuestionOptionList>
+                    )}
+                </div>
+            </QuestionTextWrapper>
         </Question>
     )
 };
 
 const ArticleQuestions = ({questions}) => {
 
-    console.log(questions);
-
     const questionCards = useMemo(() => {
         return questions.map((question, index) => {
-            return question.type === QuestionTypes.OPEN_ENDED ?
-                buildOpenEndedQuestion(question, index + 1) :
-                buildMultiChoiceQuestion(question, index + 1);
+            return buildQuestion(question, index + 1);
         });
     }, [questions]);
 

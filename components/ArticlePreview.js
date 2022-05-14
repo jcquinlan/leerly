@@ -20,11 +20,6 @@ const ArticlePreview = ({article, read}) => {
     };
 
     const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
-    const commentCountText = () => {
-        if (!article.commentCount) return '0 comments';
-        if (article.commentCount === 1) return '1 comment';
-        return `${article.commentCount} comments`;
-    }
 
     return (
         <ArticlePreviewWrapper clickable={article.free || userHasProPlan} onClick={goToArticle}>
@@ -38,7 +33,6 @@ const ArticlePreview = ({article, read}) => {
 
                 <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <TypeList types={article.types} />
-                    <CommentCountWrapper>{commentCountText()}</CommentCountWrapper>
                 </div>
 
                 {!!article?.image && (

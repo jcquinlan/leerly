@@ -2,6 +2,7 @@ import React, {useState, useMemo, useEffect} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {useRouter} from 'next/router';
+import {QuestionTypes} from 'types';
 import {
     Container,
     HeroWrapper,
@@ -38,7 +39,15 @@ function ArticlePage () {
     const [questions, setQuestions] = useState([]);
 
     const formIsFilled = useMemo(() => {
-        return !!(formState.article && formState.url && formState.title && image && !!selectedTypes.length);
+        return !!(
+            formState.article &&
+            formState.url &&
+            formState.title &&
+            image &&
+            !!selectedTypes.length &&
+            questions.length &&
+            questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
+        );
     }, [formState]);
 
     useEffect(() => {
