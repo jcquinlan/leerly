@@ -480,9 +480,11 @@ function ArticlePage () {
                 )}
             </ArticleWrapper>
 
-            <NarrowContainer>
-                <ArticleQuestions questions={article?.questions} />
-            </NarrowContainer>
+            {!!article?.questions?.length && (
+                <NarrowContainer>
+                    <ArticleQuestions questions={article?.questions} />
+                </NarrowContainer>
+            )}
 
             {(!article.free || user) && (
                 <ButtonRow>
