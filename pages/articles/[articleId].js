@@ -6,7 +6,6 @@ import React, {
     useMemo,
     useCallback
 } from 'react';
-import moment from 'moment';
 import styled from 'styled-components';
 import ReactAudioPlayer from 'react-audio-player';
 import {useRouter} from 'next/router';
@@ -29,6 +28,7 @@ import SelectedTextPopover from '../../components/SelectedTextPopover';
 import TypeList from '../../components/TypeList';
 import PlaybackRateSelector from '../../components/PlaybackRateSelector';
 import VocabCounter from '../../components/VocabCounter';
+import ArticleQuestions from '../../components/ArticleQuestions.tsx';
 import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
@@ -45,12 +45,9 @@ import {
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
-import ArticleComments from '../../components/ArticleComments';
 import {
     useLocalStorage,
     STORYBOOK_ACTIVE_KEY,
-    TRANSLATIONS_TODAY_KEY,
-    initialTranslationsToday
 } from '../../hooks/useLocalStorage';
 import StatsContext from '../../contexts/statsContext';
 
@@ -61,7 +58,7 @@ function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
-    const {isAdmin, user, userProfile, userHasProPlan} = useContext(AppContext);
+    const {isAdmin, user, userProfile } = useContext(AppContext);
     const {updateWordCounts} = useContext(StatsContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
@@ -79,31 +76,11 @@ function ArticlePage () {
     const [activeFrame, setActiveFrame] = useState(null);
     const [frames, setFrames] = useState([]);
     const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
-    const [translationsToday, setTranslationsToday] = useLocalStorage(TRANSLATIONS_TODAY_KEY, initialTranslationsToday());
     const [playbackRate, setPlaybackRate] = useState(null);
     const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false);
 
     const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
     const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
-
-    // TODO - find a better place for this.
-    // We want to make sure that by the time out SelectPopover
-    // needs to check for how many translations have been done for
-    // the day, we have already ensured the LS item is set to the current
-    // day. Otherwise there is a race condition where we don't set
-    // the translation count back to 0 when it's a new day.
-    useEffect(() => {
-        if (translationsToday) {
-            const dateMoment = moment(translationsToday.date);
-
-            if (!dateMoment.isSame(moment(), 'day')) {
-                // If there is a translation tracking key,
-                // and the date is not today, then reset the key so it is for today,
-                // and has no counted translations.
-                setTranslationsToday(initialTranslationsToday());
-            }
-        }
-    }, [translationsToday]);
 
     useEffect(() => {
         if (article?.transcriptId && userProfile) {
@@ -230,16 +207,6 @@ function ArticlePage () {
 
     const handleStop = () => {
         setIsPlaying(false);
-    }
-
-    const renderAdminUI = () => {
-        if (isAdmin) {
-            return (
-                <AdminButtons>
-                    <Button onClick={() => router.push(`/articles/${router.query.articleId}/edit`)}>Edit Article</Button>
-                </AdminButtons>
-            )
-        }
     }
 
     const handleMarkAsRead = async () => {
@@ -440,7 +407,7 @@ function ArticlePage () {
                 <PlaybackRateRow>
                     <PlaybackRateSelectorWrapper>
                         <HelpText>Speed</HelpText>
-                        <PlaybackRateSelector disabled={!userHasProPlan} onChange={handlePlaybackRateChange} />
+                        <PlaybackRateSelector onChange={handlePlaybackRateChange} />
                     </PlaybackRateSelectorWrapper>
                 </PlaybackRateRow>
             )}
@@ -513,6 +480,10 @@ function ArticlePage () {
                 )}
             </ArticleWrapper>
 
+            <NarrowContainer>
+                <ArticleQuestions questions={article?.questions} />
+            </NarrowContainer>
+
             {(!article.free || user) && (
                 <ButtonRow>
                     <MarkAsReadButton read={!!readStatus} onClick={handleMarkAsRead}>
@@ -528,13 +499,6 @@ function ArticlePage () {
                 </UpgradeWrapper>
             )}
 
-            {renderAdminUI()}
-
-            <NarrowContainer>
-                <div style={{marginTop: '90px'}}>
-                    <ArticleComments article={article}/>
-                </div>
-            </NarrowContainer>
         </WideContainer>
         </>
     );
