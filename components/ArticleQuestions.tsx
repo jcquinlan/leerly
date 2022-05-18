@@ -45,7 +45,7 @@ const buildQuestion = (question, index) => {
     const isMultiChoice = question.type === QuestionTypes.MULTI_CHOICE;
 
     return (
-        <Question>
+        <Question key={index}>
             <QuestionTextWrapper>
                 <QuestionIndex>
                     {index}.)

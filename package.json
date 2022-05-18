@@ -19,6 +19,7 @@
     "firebase": "^7.24.0",
     "firebase-admin": "^9.4.1",
     "framer-motion": "^4.1.17",
+    "jspdf": "^2.5.1",
     "luxon": "^2.0.2",
     "mixpanel-browser": "^2.41.0",
     "moment": "^2.29.1",
