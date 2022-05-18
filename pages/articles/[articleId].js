@@ -45,11 +45,25 @@ import {
     renderTranscriptForReading
 } from '../../services/transcriptionService';
 import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
+import PrintButton from '../../components/PrintButton';
 import {
     useLocalStorage,
     STORYBOOK_ACTIVE_KEY,
 } from '../../hooks/useLocalStorage';
 import StatsContext from '../../contexts/statsContext';
+
+const RightButtons = styled.div`
+    display: flex;
+    align-items: flex-end;
+
+    button {
+        margin-right: 10px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+`;
 
 // Every 30 seconds, we update the user's time metric in Firebase.
 const TIME_METRIC_BATCH_LENGTH = 30;
@@ -375,18 +389,22 @@ function ArticlePage () {
                     </ArticleData>
                 </div>
 
-                <StorybookToggleMobile>
-                    Storybook is not <br></br> available on mobile (yet)
-                </StorybookToggleMobile>
+                <RightButtons>
+                    <PrintButton article={article} refId="article-body" />
 
-                <StorybookToggleDesktop>
-                    <div>{storybookActive ? 'Storybook is active' : 'Storybook is inactive'}</div>
-                    {articleHasStorybook ? (
-                        <Button onClick={toggleStorybook}>{storybookActive ? 'Disable' : 'Enable'} Storybook</Button>
-                    ) : (
-                        <span>This article does not have Storybook</span>
-                    )}
-                </StorybookToggleDesktop>
+                    <StorybookToggleMobile>
+                        Storybook is not <br></br> available on mobile (yet)
+                    </StorybookToggleMobile>
+
+                    <StorybookToggleDesktop>
+                        <div>{storybookActive ? 'Storybook is active' : 'Storybook is inactive'}</div>
+                        {articleHasStorybook ? (
+                            <Button onClick={toggleStorybook}>{storybookActive ? 'Disable' : 'Enable'} Storybook</Button>
+                        ) : (
+                            <span>This article does not have Storybook</span>
+                        )}
+                    </StorybookToggleDesktop>
+                </RightButtons>
             </ArticleSubheader>
 
             {article.image && (
