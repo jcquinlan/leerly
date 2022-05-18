@@ -125,7 +125,7 @@ const PrintButton = ({article}) => {
         renderText(article.body);
         renderSpace('medium')
 
-        if (article.questions.length) {
+        if (article.questions?.length) {
             renderTitle('Questions');
             renderSpace('medium');
             article.questions.forEach((question, index) => {

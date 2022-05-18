@@ -390,7 +390,7 @@ function ArticlePage () {
                 </div>
 
                 <RightButtons>
-                    <PrintButton article={article} refId="article-body" />
+                    <PrintButton article={article} />
 
                     <StorybookToggleMobile>
                         Storybook is not <br></br> available on mobile (yet)
