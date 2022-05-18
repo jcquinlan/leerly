@@ -181,10 +181,6 @@ function ArticlePage () {
         }
     }, [isPlaying]);
 
-    const handlePrint = () => {
-
-    }
-
     const collectVocabWord = (word) => {
         const cleanedWord = word.trim().toLowerCase();
 
@@ -478,7 +474,7 @@ function ArticlePage () {
             <SelectedTextPopover isDemo={article.demo} elementRef={articleBodyRef} articleBody={article.body} />
 
             <ArticleWrapper>
-                <ArticleBody id="article-body" ref={articleBodyRef}>
+                <ArticleBody ref={articleBodyRef}>
                     {renderArticleBody()}
                 </ArticleBody>
 
