@@ -30,11 +30,8 @@ const TypePill = styled.div`
     margin-right: 5px;
     padding: 5px 15px;
     border-radius: 20px;
-    margin-top: 5px;
 `;
 const TypeListWrapper = styled.div`
-    margin-bottom: 15px;
-
     span {
         font-size: 16px;
         font-weight: bold;

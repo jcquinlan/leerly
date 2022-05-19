@@ -17,6 +17,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import TypeSelector from '../../components/TypeSelector';
 import QuestionCreator from '../../components/QuestionCreator';
 import ArticleImageSelector from '../../components/ArticleImageSelector';
+import LevelSelector from '../../components/LevelSelector';
 import AppContext from '../../contexts/appContext';
 import {createNewArticle, uploadAudio} from '../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
@@ -42,13 +43,14 @@ function SubmitPage () {
             formState.article &&
             formState.url &&
             image &&
+            level &&
             formState.title &&
             formState.transcriptId &&
             !!selectedTypes.length &&
             questions.length &&
             questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
         );
-    }, [formState, image, selectedTypes]);
+    }, [formState, image, selectedTypes, level, questions]);
 
     const handleClick = async () => {
         setSaving(true);
@@ -63,6 +65,7 @@ function SubmitPage () {
                 types: selectedTypes,
                 language: 'spanish',
                 questions,
+                level,
                 audio: `audios/${audioFile.name}`,
                 image: unsplashImageToSimplifiedImage(image),
                 transcriptId: formState.transcriptId,
@@ -136,11 +139,11 @@ function SubmitPage () {
             <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
         </SelectorWrapper>
 
-        {/* <SelectorWrapper>
+        <SelectorWrapper>
             <h6>What is the difficulty?</h6>
             <p>Select just one</p>
             <LevelSelector level={level} onSelectLevel={(level) => setLevel(level)} />
-        </SelectorWrapper> */}
+        </SelectorWrapper>
 
         <ArticleImageSelector image={image} onSelectImage={(image) => setImage(image)} />
 

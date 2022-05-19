@@ -5,6 +5,21 @@ export {default as Colors} from './colors';
 export {default as ReadCheck} from './ReadCheck';
 export {devices} from './mediaQueries';
 
+interface MarginProps {
+  margin?: string;
+  marginTop?: string;
+  marginBottom?: string;
+  marginLeft?: string;
+  marginRight?: string;
+}
+export const Margin = styled.div<MarginProps>`
+  ${props => `margin: ${props.margin};` || ''}
+  ${props => `margin-top: ${props.marginTop};` || ''}
+  ${props => `margin-bottom: ${props.marginBottom};` || ''}
+  ${props => `margin-left: ${props.marginLeft};` || ''}
+  ${props => `margin-right: ${props.marginRight};` || ''}
+`;
+
 export const Title = styled.h1`
   font-size: 30px;
   margin-bottom: 0;
