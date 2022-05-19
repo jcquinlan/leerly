@@ -21,7 +21,8 @@ import {
     AudioWrapper,
     FakeAudioWidget,
     HelpText,
-    NarrowContainer
+    NarrowContainer,
+    Margin
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -30,6 +31,7 @@ import PlaybackRateSelector from '../../components/PlaybackRateSelector';
 import VocabCounter from '../../components/VocabCounter';
 import ArticleQuestions from '../../components/ArticleQuestions.tsx';
 import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
+import DifficultyBadge from '../../components/DifficultyBadge';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -44,12 +46,7 @@ import {
     fetchArticleTranscription,
     renderTranscriptForReading
 } from '../../services/transcriptionService';
-import {generateUnsplashUserLink} from '../../components/ArticleImageSelector';
 import PrintButton from '../../components/PrintButton';
-import {
-    useLocalStorage,
-    STORYBOOK_ACTIVE_KEY,
-} from '../../hooks/useLocalStorage';
 import StatsContext from '../../contexts/statsContext';
 
 const RightButtons = styled.div`
@@ -72,7 +69,7 @@ function ArticlePage () {
     const router = useRouter();
     const {article, loading, error} = useGuardArticle(router.query.articleId);
 
-    const {isAdmin, user, userProfile } = useContext(AppContext);
+    const {user, userProfile} = useContext(AppContext);
     const {updateWordCounts} = useContext(StatsContext);
     const [playAudio, setPlayAudio] = useState(false);
     const [readStatus, setReadStatus] = useState(null);
@@ -87,14 +84,8 @@ function ArticlePage () {
      // reference. It's weird, but it works.
     const [audioPlayerRef, setAudioPlayerRef] = useState(null);
     const [transcript, setTranscript] = useState(null);
-    const [activeFrame, setActiveFrame] = useState(null);
-    const [frames, setFrames] = useState([]);
-    const [storybookActiveKey, setStorybookActiveKey] = useLocalStorage(STORYBOOK_ACTIVE_KEY, true);
     const [playbackRate, setPlaybackRate] = useState(null);
     const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false);
-
-    const articleHasStorybook = useMemo(() => !!article?.frames?.length, [article]);
-    const storybookActive = useMemo(() => !!storybookActiveKey && articleHasStorybook, [storybookActiveKey, articleHasStorybook]);
 
     useEffect(() => {
         if (article?.transcriptId && userProfile) {
@@ -107,15 +98,7 @@ function ArticlePage () {
                     }
                 })
         }
-
-        if (article?.frames?.length) {
-            // Preload all frame images and cache them so they appear instantly
-            article.frames.forEach(frame => {
-                const img = new Image();
-                img.src = frame.image.urls.small;
-            })
-        }
-    }, [article?.transcriptId, article?.frames, userProfile]);
+    }, [article?.transcriptId, userProfile]);
 
     useEffect(() => {
         if (user) {
@@ -146,17 +129,6 @@ function ArticlePage () {
                 getArticleAudioURL(article.audio)
                     .then(url => setAudioURL(url))
                     .catch(error => console.log(error))
-            }
-
-            if (article.frames?.length) {
-                setFrames(article.frames.map(frame => {
-                    return {
-                        ...frame,
-                        end_time: frame.end_time + 1
-                    }
-                // We reverse the array because we want later words to be selected from the
-                // .find() call, if there is any overlap between frames.
-                }).reverse());
             }
         }
     }, [article]);
@@ -281,9 +253,6 @@ function ArticlePage () {
     }
 
     const handleListen = (e) => {
-        const activeFrame = frames.find(frame => frame.start_time <= e && frame.end_time >= e);
-        setActiveFrame(activeFrame);
-
         const updatedTranscript = transcript.reduce((memo, glyph) => {
             if (glyph.type !== 'word') {
                 memo.push(glyph);
@@ -344,10 +313,6 @@ function ArticlePage () {
         }
     }
 
-    const toggleStorybook = () => {
-        setStorybookActiveKey(!storybookActiveKey);
-    }
-
     const handlePlaybackRateChange = (option) => {
         if (audioPlayerRef) {
             audioPlayerRef.playbackRate = option.value;
@@ -382,7 +347,12 @@ function ArticlePage () {
 
             <ArticleSubheader>
                 <div>
-                    <TypeList types={article.types} />
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <Margin marginRight='5px'>
+                            <DifficultyBadge difficulty={article.level} />
+                        </Margin>
+                        <TypeList types={article.types} />
+                    </div>
 
                     <ArticleData>
                         <a href={article.url} target='_blank'>Read original article ⟶</a>
@@ -391,19 +361,6 @@ function ArticlePage () {
 
                 <RightButtons>
                     <PrintButton article={article} />
-
-                    <StorybookToggleMobile>
-                        Storybook is not <br></br> available on mobile (yet)
-                    </StorybookToggleMobile>
-
-                    <StorybookToggleDesktop>
-                        <div>{storybookActive ? 'Storybook is active' : 'Storybook is inactive'}</div>
-                        {articleHasStorybook ? (
-                            <Button onClick={toggleStorybook}>{storybookActive ? 'Disable' : 'Enable'} Storybook</Button>
-                        ) : (
-                            <span>This article does not have Storybook</span>
-                        )}
-                    </StorybookToggleDesktop>
                 </RightButtons>
             </ArticleSubheader>
 
@@ -477,25 +434,6 @@ function ArticlePage () {
                 <ArticleBody ref={articleBodyRef}>
                     {renderArticleBody()}
                 </ArticleBody>
-
-                {storybookActive && (
-                    <FrameContainer>
-                        {activeFrame && (
-                            <>
-                                <FrameText>{activeFrame.text}</FrameText>
-                                <img src={activeFrame.image.urls.small}></img>
-                                {generateUnsplashUserLink(activeFrame.image)}
-                            </>
-                        )}
-
-                        {!activeFrame && !isPlaying && (
-                            <FrameFiller>
-                                The Storybook pictures will display here.
-                                <span>You can disable them above.</span>
-                            </FrameFiller>
-                        )}
-                    </FrameContainer>
-                )}
             </ArticleWrapper>
 
             {!!article?.questions?.length && (
@@ -556,27 +494,6 @@ const ArticleSubheader = styled.div`
     justify-content: space-between;
     align-items: center;
 `;
-const StorybookToggleDesktop = styled.div`
-    flex-direction: column;
-    display: none;
-    text-align: right;
-
-    div {
-        margin-bottom: 5px;
-    }
-
-    @media ${devices.tablet} {
-        display: flex;
-    }
-`;
-
-const StorybookToggleMobile = styled.div`
-    text-align: center;
-
-    @media ${devices.tablet} {
-        display: none;
-    }
-`;
 
 const WideContainer = styled(Container)`
     max-width: 1200px;
@@ -593,41 +510,6 @@ const ArticleWrapper = styled.div`
     @media ${devices.mobileL} {
         margin-top: 60px;
     }
-`;
-const FrameContainer = styled.div`
-    width: 300px;
-    height: 300px;
-    position: sticky;
-    top: 90px;
-    display: none;
-
-    img {
-        width: 100%;
-    }
-
-    @media ${devices.tablet} {
-        display: initial;
-    }
-`;
-const FrameFiller = styled.div`
-    display: flex;
-    padding: 30px;
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    background-color: #eee;
-
-    span {
-        margin-top: 5px;
-    }
-`;
-const FrameText = styled.span`
-    font-size: 20px;
-    text-align: center;
-    width: 100%;
 `;
 const BackLink = styled.span`
     color: ${Colors.Primary};
@@ -687,10 +569,6 @@ const MarkAsReadButton = styled(Button)`
         }
     `: ''}
 
-`;
-
-const AdminButtons = styled.div`
-    margin-bottom: 30px;
 `;
 
 const ArticleBody = styled.div`

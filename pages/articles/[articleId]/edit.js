@@ -19,6 +19,7 @@ import TypeSelector from '../../../components/TypeSelector';
 import LoadingPage from '../../../components/LoadingPage';
 import ArticleImageSelector from '../../../components/ArticleImageSelector';
 import QuestionCreator from '../../../components/QuestionCreator';
+import LevelSelector from '../../../components/LevelSelector';
 import useGetArticle from '../../../hooks/useGetArticle';
 import {updateArticle, uploadAudio} from '../../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
@@ -37,6 +38,7 @@ function ArticlePage () {
     const [audioURL, setAudioURL] = useState(null);
     const [newAudio, setNewAudio] = useState(null);
     const [questions, setQuestions] = useState([]);
+    const [level, setLevel] = useState(null);
 
     const formIsFilled = useMemo(() => {
         return !!(
@@ -44,11 +46,12 @@ function ArticlePage () {
             formState.url &&
             formState.title &&
             image &&
+            level &&
             !!selectedTypes.length &&
             questions.length &&
             questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
         );
-    }, [formState]);
+    }, [formState, questions, image, level, selectedTypes]);
 
     useEffect(() => {
       if (article) {
@@ -63,6 +66,8 @@ function ArticlePage () {
           published: article.published,
           transcriptId: article.transcriptId
         });
+
+        setLevel(article.level || null);
 
         if (article.questions) {
             setQuestions(article.questions);
@@ -88,6 +93,7 @@ function ArticlePage () {
                 audio: newAudioURL || audioURL || null,
                 types: selectedTypes,
                 questions,
+                level,
                 image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
             });
 
@@ -154,7 +160,17 @@ function ArticlePage () {
 
         <Divider />
 
-        <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+        <SelectorWrapper>
+            <h6>What type of article is this?</h6>
+            <p>Select all that apply</p>
+            <TypeSelector onSelect={handleSelectedType} selectedTypes={selectedTypes} />
+        </SelectorWrapper>
+
+        <SelectorWrapper>
+            <h6>What is the difficulty?</h6>
+            <p>Select just one</p>
+            <LevelSelector level={level} onSelectLevel={setLevel} />
+        </SelectorWrapper>
 
         <ArticleImageSelector image={image} onSelectImage={(image) => setImageAndFlagAsNew(image)} />
 
@@ -206,5 +222,16 @@ const AudioWrapper = styled.div`
     button {
         margin-top: 10px;
         width: fit-content;
+    }
+`;
+
+const SelectorWrapper = styled.div`
+    h6 {
+        font-size: 20px;
+        margin-bottom: 0;
+    }
+
+    p {
+        margin: 0 0 15px 0;
     }
 `;

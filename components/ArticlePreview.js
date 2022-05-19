@@ -6,6 +6,8 @@ import TypeList from './TypeList';
 import {ReadCheck, devices} from './styled';
 import colors from './styled/colors';
 import appContext from '../contexts/appContext';
+import {Margin} from './styled';
+import DifficultyBadge from './DifficultyBadge';
 
 const ArticlePreview = ({article, read}) => {
     const {userHasProPlan} = useContext(appContext);
@@ -31,7 +33,11 @@ const ArticlePreview = ({article, read}) => {
                     </div>
                 </Header>
 
-                <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <Margin marginRight='5px'>
+                        <DifficultyBadge difficulty={article.level} />
+                    </Margin>
+
                     <TypeList types={article.types} />
                 </div>
 
