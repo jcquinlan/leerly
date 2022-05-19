@@ -15,6 +15,18 @@ const PrintButton = ({article}) => {
         const doc = new jsPDF('p', 'in', [8.5, 11]);
 
         // ---------- METHODS -----------
+        const renderHeader = () => {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(12);
+            const title = 'leerly.io';
+            const {h: height} = doc.getTextDimensions(title);
+
+            doc.text(title, 6.5, 1);
+            doc.text('Name: __________________________', 1, 1);
+
+            y = y + height + 0.75;
+        };
+
         const renderSpace = (size) => {
             const sizes = {
                 small: .25,
@@ -24,7 +36,7 @@ const PrintButton = ({article}) => {
             };
 
             y = y + sizes[size];
-        }
+        };
 
         const getOptionsHeight = (options) => {
             doc.setFont('helvetica', 'normal');
@@ -36,7 +48,7 @@ const PrintButton = ({article}) => {
 
                 return memo + height + OPTION_MARGIN;
             }, 0);
-        }
+        };
 
         const renderTitle = (text) => {
             doc.setFont('Poppins-Regular', 'normal');
@@ -68,6 +80,8 @@ const PrintButton = ({article}) => {
 
                 if (y + lineHeight >= 10) {
                     doc.addPage();
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(12);
                     y = 1;
                 }
 
@@ -88,6 +102,8 @@ const PrintButton = ({article}) => {
 
             if (y + numberHeight + optionsHeight >= 10) {
                 doc.addPage();
+                doc.setFont('Poppins-Regular', 'normal');
+                doc.setFontSize(16);
                 y = 1;
             }
 
@@ -120,6 +136,7 @@ const PrintButton = ({article}) => {
 
         // ---------- EXECUTION -----------
         doc.setLineHeightFactor(LINE_HEIGHT_FACTOR);
+        renderHeader();
         renderTitle(article.title);
         renderSpace('medium')
         renderText(article.body);
