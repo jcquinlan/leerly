@@ -59,7 +59,7 @@ const WeeklyGoalView = () => {
 
         return Object.values(dayMap).reverse().map(dayObject => {
             return (
-                <CircularProgressWrapper>
+                <CircularProgressWrapper key={dayObject.name}>
                     <CircularProgressbarWithChildren
                         value={dayObject.progress}
                         minValue={0}

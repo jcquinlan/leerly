@@ -108,9 +108,15 @@ export const ArticlePreviewWrapper = styled.div`
     border-radius: 5px;
     margin-bottom: 30px;
     box-shadow: 0px 10px 30px -30px rgba(0,0,0,0.3);
+    transition: 0.3s;
     ${props => props.selected ? 'border-color: blue;' : ''}
     ${props => props.clickable ? `cursor: pointer` : ``};
     ${props => !props.clickable ? `opacity: 0.3` : ``};
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0px 20px 30px -30px rgba(0,0,0,0.4);
+    }
 `;
 
 const ImageAttribution = styled.div`

@@ -42,7 +42,7 @@ const LoadingSpinner = () => {
     return (
         <Spinner>
             {letters.map((letter, index) => {
-                return <motion.div animate={buildAnimation(index)} transition={transition}>{letter}</motion.div>
+                return <motion.div animate={buildAnimation(index)} transition={transition} key={index}>{letter}</motion.div>
             })}
         </Spinner>
     )
