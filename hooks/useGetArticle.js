@@ -1,9 +1,8 @@
 import {useState, useEffect, useContext} from 'react';
 import articlesContext from '../contexts/articlesContext';
-import {getArticle} from '../services/articleService';
 
 const useGetArticle = (articleId) => {
-    const {articles} = useContext(articlesContext);
+    const {articles, loadArticle} = useContext(articlesContext);
     const [article, setArticle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,10 +15,9 @@ const useGetArticle = (articleId) => {
                 setArticle(articleInMemory);
                 setLoading(false);
             } else {
-                getArticle(articleId)
-                    .then(articleDoc => {
-                        const articleData = articleDoc.data();
-                        setArticle({id: articleDoc.id, ...articleData});
+                loadArticle(articleId)
+                    .then(article => {
+                        setArticle(article);
                     })
                     .catch(err => {
                         setError(err);

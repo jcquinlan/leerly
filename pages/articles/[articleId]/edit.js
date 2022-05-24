@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useContext} from 'react';
 import styled from 'styled-components';
 import {useToasts} from 'react-toast-notifications';
 import {useRouter} from 'next/router';
@@ -21,13 +21,15 @@ import ArticleImageSelector from '../../../components/ArticleImageSelector';
 import QuestionCreator from '../../../components/QuestionCreator';
 import LevelSelector from '../../../components/LevelSelector';
 import useGetArticle from '../../../hooks/useGetArticle';
-import {updateArticle, uploadAudio} from '../../../services/articleService';
+import {uploadAudio} from '../../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
+import ArticlesContext from '../../../contexts/articlesContext';
 
 function ArticlePage () {
     useGuardAdminRoute();
 
     const router = useRouter();
+    const {updateArticle} = useContext(ArticlesContext);
     const {article, loading, error} = useGetArticle(router.query.articleId);
 
     const {addToast} = useToasts();

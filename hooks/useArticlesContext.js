@@ -1,16 +1,15 @@
 import {useContext, useState} from 'react';
 import appContext from '../contexts/appContext';
-import {getArticles} from '../services/articleService';
-import {updateWordCounts} from '../services/userService';
+import {getArticles, getArticle, patchArticle} from '../services/articleService';
 
 const useArticlesContext = () => {
     const [articles, setArticles] = useState([]);
-    const [loadingArticles, setLoadingArticles] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [articlesError, setArticlesError] = useState();
     const {idToken} = useContext(appContext);
 
     const loadArticles = async (filters) => {
-        setLoadingArticles(true);
+        setLoading(true);
 
         try {
             if (!idToken) return;
@@ -20,16 +19,45 @@ const useArticlesContext = () => {
         } catch (e) {
             console.error(e);
             setArticlesError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const loadArticle = async (articleId) => {
+        setLoading(true);
+
+        try {
+            if (!idToken) return;
+
+            return await getArticle(idToken, articleId);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        } finally {
+            setLoading(false);
         }
 
-        setLoadingArticles(false);
+    }
+
+    const updateArticle = async (articleId, content) => {
+        try {
+            if (!idToken) return;
+
+            return await patchArticle(idToken, articleId, content);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
     }
 
     return {
         articles,
-        loadingArticles,
+        loading,
         articlesError,
         loadArticles,
+        loadArticle,
+        updateArticle
     }
 }
 

@@ -50,7 +50,7 @@ const ArticlePreview = ({article, read}) => {
             </ArticleInfo>
 
             <MetaInfo>
-                <ArticleTimestamp>{moment(article.added_at.seconds * 1000).format('MM/DD/YYYY')}</ArticleTimestamp>
+                <ArticleTimestamp>{moment(article.added_at).format('MM/DD/YYYY')}</ArticleTimestamp>
                 {!!article.image && (
                     <ImageBox backgroundImage={article.image.urls.small}></ImageBox>
                 )}

@@ -1,8 +1,10 @@
 import {adminFirestore} from '../../../services/admin';
 import {getUserProfile} from '../../../services/server/userService';
 import {isUserOnPremiumPlan} from '../../../services/server/stripeService';
+import {getArticles} from '../../../services/server/serverArticleService';
 
 export default async (req, res) => {
+
     if (req.method === 'GET') {
         try {
             const filtersString = req.query.filters;
@@ -16,45 +18,14 @@ export default async (req, res) => {
                 res.json({error: `No customerId found for user profile ${uid}`});
             }
 
-            const userHasPremiumPlan = await isUserOnPremiumPlan(customerId);
-            let articlesQuery = adminFirestore
-                .collection('articles')
-                .where('published', '==', true)
-                .limit(50);
-    
-            if (filters.length) {
-                articlesQuery = articlesQuery.where('types', 'array-contains-any', filters);
+            const {data: articles, error} = await getArticles();
+
+            if (error) {
+                throw error;
             }
 
-            const articles = await articlesQuery
-                .orderBy('added_at', 'desc')
-                .get();
-
-            const articlesData = articles.docs.map(doc => {
-                const data = doc.data();
-
-                // For people who are not on free accounts, only show a small portion of the article bodies
-                if (!userHasPremiumPlan) {
-                    data.body = data.body.slice(0, 220);
-                }
-
-                return {
-                    id: doc.id,
-                    ...data,
-                    // Wanna know something dumb?
-                    // The Admin SDK handles timestamps a little
-                    // differently than the clientside SDK,
-                    // we we need to manually change _seconds and _nanoseconds
-                    // to just seconds and nanoseconds
-                    added_at: {
-                        seconds: data.added_at._seconds,
-                        nanoseconds: data.added_at._nanoseconds,
-                    }
-                };
-            })
-
             res.statusCode = 200;
-            res.json({data: articlesData});
+            res.json({data: articles});
         } catch (error) {
             res.statusCode = 500;
             res.json({error: error.message});

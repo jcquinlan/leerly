@@ -17,7 +17,7 @@ const useGetDemoOrUnpublishedArticles = ({demo, unpublished} = {demo: false, unp
                 setArticles(articleData);
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 setError(err);
             })
             .finally(() => {
