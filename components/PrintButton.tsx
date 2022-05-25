@@ -107,6 +107,8 @@ const PrintButton = ({article}) => {
                 y = 1;
             }
 
+            doc.setFont('Poppins-Regular', 'normal');
+            doc.setFontSize(16);
             doc.text(numberText, 1, y);
 
             doc.setFontSize(12);
