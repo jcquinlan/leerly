@@ -114,6 +114,19 @@ export const patchArticle = (idToken, articleId, content) => {
     .then(res => res.data);
 }
 
+export const saveArticle = (idToken, content) => {
+    return fetch(`/api/articles`, {
+        headers: {
+            'x-leerly-token': idToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(content),
+        method: 'POST'
+    })
+    .then(res => res.json())
+    .then(res => res.data);
+}
+
 export const getUserMetrics = (userId) => {
     return db.collection("activity_metrics")
         .doc(userId)

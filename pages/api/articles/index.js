@@ -1,7 +1,6 @@
-import {adminFirestore} from '../../../services/admin';
-import {getUserProfile} from '../../../services/server/userService';
+import {getUserProfile, isUserAdmin} from '../../../services/server/userService';
 import {isUserOnPremiumPlan} from '../../../services/server/stripeService';
-import {getArticles} from '../../../services/server/serverArticleService';
+import {getArticles, saveArticle} from '../../../services/server/serverArticleService';
 
 export default async (req, res) => {
 
@@ -18,14 +17,49 @@ export default async (req, res) => {
                 res.json({error: `No customerId found for user profile ${uid}`});
             }
 
-            const {data: articles, error} = await getArticles();
+            const isOnPremiumPlan = await isUserOnPremiumPlan(customerId);
+            const {data: articles, error} = await getArticles(filters);
+
+            const cleanedArticles = isOnPremiumPlan ? articles : articles.map(article => {
+                return {
+                    ...article,
+                    body: body.slice(0, 220)
+                }
+            });
+
 
             if (error) {
                 throw error;
             }
 
             res.statusCode = 200;
-            res.json({data: articles});
+            res.json({data: cleanedArticles});
+        } catch (error) {
+            res.statusCode = 500;
+            res.json({error: error.message});
+        }
+    }
+
+    if (req.method === 'POST') {
+        try {
+            const isAdmin = await isUserAdmin(req);
+
+            if (!isAdmin) {
+                res.statusCode = 401;
+                res.json({error: 'Admins only </3'});
+                return;
+            }
+
+            const {data, error} = await saveArticle(req.body);
+
+            if (error) {
+                res.statusCode = 400;
+                res.json(error);
+                return;
+            }
+
+            res.statusCode = 201;
+            res.json({data: data[0]});
         } catch (error) {
             res.statusCode = 500;
             res.json({error: error.message});

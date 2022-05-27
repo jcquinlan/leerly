@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react';
 import appContext from '../contexts/appContext';
-import {getArticles, getArticle, patchArticle} from '../services/articleService';
+import {getArticles, getArticle, patchArticle, saveArticle} from '../services/articleService';
 
 const useArticlesContext = () => {
     const [articles, setArticles] = useState([]);
@@ -40,11 +40,22 @@ const useArticlesContext = () => {
 
     }
 
-    const updateArticle = async (articleId, content) => {
+    const updateArticleWithToken = async (articleId, content) => {
         try {
             if (!idToken) return;
 
             return await patchArticle(idToken, articleId, content);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+
+    const saveArticleWithToken = async (content) => {
+        try {
+            if (!idToken) return;
+
+            return await saveArticle(idToken, content);
         } catch (e) {
             console.error(e);
             throw e;
@@ -57,7 +68,8 @@ const useArticlesContext = () => {
         articlesError,
         loadArticles,
         loadArticle,
-        updateArticle
+        updateArticle: updateArticleWithToken,
+        saveArticle: saveArticleWithToken
     }
 }
 

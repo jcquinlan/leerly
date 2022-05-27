@@ -1,9 +1,10 @@
 import { sbClient } from ".";
 
-export const getArticles = async () => {
+export const getArticles = async (filters?: string[]) => {
     return await sbClient
         .from('articles')
         .select()
+        .contains('types', filters || [])
         .order('added_at', {ascending: false})
         .limit(50);
 }
@@ -25,7 +26,13 @@ export const updateArticle = async (articleId: string, data: any) => {
         .update(data)
         .eq('id', articleId)
     
-    console.log(response);
-
     return data;
+}
+
+export const saveArticle = async (data: any) => {
+    const response = await sbClient
+        .from('articles')
+        .insert([data]);
+    
+    return response;
 }
