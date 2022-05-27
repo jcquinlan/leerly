@@ -24,3 +24,18 @@ export const getUserProfile = async (req: NextApiRequest) => {
         throw e;
     }
 }
+
+export const isUserAdmin = async (req: NextApiRequest) => {
+    try {
+        const userId = await getUserId(req);
+        const userClaims = await adminFirestore.collection('user_claims').doc(userId).get();
+
+        if (!userClaims.exists) {
+            return false;
+        }
+
+        return userClaims.data().is_admin;
+    } catch (e) {
+        throw e;
+    }
+}

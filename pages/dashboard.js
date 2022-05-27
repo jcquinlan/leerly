@@ -28,7 +28,7 @@ function ArticlePage () {
 
     const router = useRouter();
     const {user, userHasProPlan} = useContext(AppContext);
-    const {articles, loadArticles, loadingArticles} = useContext(articlesContext);
+    const {articles, loadArticles, loading} = useContext(articlesContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
     const [readStatuses, setReadStatuses] = useState({});
     const [offset, setOffset] = useState(0);
@@ -121,7 +121,7 @@ function ArticlePage () {
         </Filters>
 
         <ArticlesList>
-            {loadingArticles && !articlesToShow.length && (
+            {loading && !articlesToShow.length && (
                 <div style={{textAlign: 'center', padding: '20px 0'}}>Loading articles...</div>
             )}
 

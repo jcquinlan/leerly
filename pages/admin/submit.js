@@ -19,7 +19,8 @@ import QuestionCreator from '../../components/QuestionCreator';
 import ArticleImageSelector from '../../components/ArticleImageSelector';
 import LevelSelector from '../../components/LevelSelector';
 import AppContext from '../../contexts/appContext';
-import {createNewArticle, uploadAudio} from '../../services/articleService';
+import ArticlesContext from '../../contexts/articlesContext';
+import {uploadAudio} from '../../services/articleService';
 import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
 import {QuestionTypes} from 'types';
 
@@ -28,6 +29,7 @@ function SubmitPage () {
 
     const router = useRouter();
     const {addToast} = useToasts();
+    const {saveArticle} = useContext(ArticlesContext);
     const {user} = useContext(AppContext);
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [formState, setFormState] = useState({});
@@ -56,7 +58,7 @@ function SubmitPage () {
         setSaving(true);
         try {
             await uploadAudio(audioFile);
-            const article = await createNewArticle({
+            const article = await saveArticle({
                 added_by: user.uid,
                 body: formState.article,
                 url: formState.url,

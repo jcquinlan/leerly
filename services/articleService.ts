@@ -35,22 +35,6 @@ export const createNewArticle = async (articleAttrs) => {
     });
 }
 
-export const updateArticle = async (id, content) => {
-    return db.collection("articles").doc(id).set(content, {merge: true})
-    .catch(error => {
-        throw error;
-    });
-}
-
-export const getArticle = (articleId) => {
-    return db.collection("articles")
-        .doc(articleId)
-        .get()
-        .catch(error => {
-            throw error;
-        });
-}
-
 export const getFreeArticles = (filters) => {
     let query = db.collection("articles")
         .where('published', '==', true)
@@ -95,6 +79,42 @@ export const getArticles = (idToken, filters) => {
         headers: {
             'x-leerly-token': idToken
         }
+    })
+    .then(res => res.json())
+    .then(res => res.data);
+}
+
+export const getArticle = (idToken, articleId) => {
+    return fetch(`/api/articles/${articleId}`, {
+        headers: {
+            'x-leerly-token': idToken
+        }
+    })
+    .then(res => res.json())
+    .then(res => res.data);
+}
+
+export const patchArticle = (idToken, articleId, content) => {
+    return fetch(`/api/articles/${articleId}`, {
+        headers: {
+            'x-leerly-token': idToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(content),
+        method: 'PATCH'
+    })
+    .then(res => res.json())
+    .then(res => res.data);
+}
+
+export const saveArticle = (idToken, content) => {
+    return fetch(`/api/articles`, {
+        headers: {
+            'x-leerly-token': idToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(content),
+        method: 'POST'
     })
     .then(res => res.json())
     .then(res => res.data);
