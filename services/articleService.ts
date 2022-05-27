@@ -35,13 +35,6 @@ export const createNewArticle = async (articleAttrs) => {
     });
 }
 
-// export const updateArticle = async (id, content) => {
-//     return db.collection("articles").doc(id).set(content, {merge: true})
-//     .catch(error => {
-//         throw error;
-//     });
-// }
-
 export const getFreeArticles = (filters) => {
     let query = db.collection("articles")
         .where('published', '==', true)
