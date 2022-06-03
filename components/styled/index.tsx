@@ -436,3 +436,42 @@ export const ButtonWithLoading = ({loading, children, ...props}) => {
     </Button>
   )
 }
+
+export const Icon = ({icon, ...rest}) => {
+  return <span {...rest} className='material-symbols-outlined'>{icon}</span>
+}
+
+const SearchInputWrapper = styled.div`
+  position: relative;
+`;
+const IconWrapper = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: .3s;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+export const SearchInput = ({value, onChange, ...rest}) => {
+  const clearInput = () => {
+    onChange('');
+  };
+
+  const handleChange = (e) => {
+    onChange(e.target.value);
+  };
+
+  return (
+    <SearchInputWrapper>
+      <Input value={value} onChange={handleChange} {...rest} />
+      <IconWrapper>
+        {!!value && <Icon onClick={clearInput} icon='close' />}
+        {!value && <Icon icon='search' />}
+      </IconWrapper>
+    </SearchInputWrapper>
+  )
+}

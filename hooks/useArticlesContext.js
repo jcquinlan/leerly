@@ -8,19 +8,29 @@ const useArticlesContext = () => {
     const [articlesError, setArticlesError] = useState();
     const {idToken} = useContext(appContext);
 
-    const loadArticles = async (filters) => {
+    const loadArticles = async (filters, queryString) => {
         setLoading(true);
 
         try {
             if (!idToken) return;
 
-            const incomingArticles = await getArticles(idToken, filters);
+            const incomingArticles = await getArticles(idToken, filters, queryString);
             setArticles(incomingArticles);
         } catch (e) {
             console.error(e);
             setArticlesError(e.message);
         } finally {
             setLoading(false);
+        }
+    }
+
+    const searchArticlesWithToken = async (filters, query) => {
+        try {
+            if (!idToken) return;
+
+            return await getArticles(idToken, filters, query);
+        } catch (e) {
+            console.error(e);
         }
     }
 
@@ -69,7 +79,8 @@ const useArticlesContext = () => {
         loadArticles,
         loadArticle,
         updateArticle: updateArticleWithToken,
-        saveArticle: saveArticleWithToken
+        saveArticle: saveArticleWithToken,
+        searchArticles: searchArticlesWithToken
     }
 }
 

@@ -6,6 +6,7 @@ export default async (req, res) => {
 
     if (req.method === 'GET') {
         try {
+            const queryString = req.query.query;
             const filtersString = req.query.filters;
             const filters = filtersString ? filtersString.split(',') : [];
 
@@ -18,7 +19,7 @@ export default async (req, res) => {
             }
 
             const isOnPremiumPlan = await isUserOnPremiumPlan(customerId);
-            const {data: articles, error} = await getArticles(filters);
+            const {data: articles, error} = await getArticles(filters, queryString);
 
             const cleanedArticles = isOnPremiumPlan ? articles : articles.map(article => {
                 return {

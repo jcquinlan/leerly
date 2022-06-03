@@ -37,6 +37,7 @@ const TypePill = styled.div`
     border-radius: 20px;
     margin-top: 5px;
     cursor: pointer;
+    transition: 0.3s;
 `;
 
 

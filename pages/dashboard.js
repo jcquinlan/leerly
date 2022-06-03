@@ -6,7 +6,8 @@ import {
     Container,
     NoticeCard,
     NoticeCardMain,
-    Colors
+    Colors,
+    SearchInput
 } from '../components/styled';
 import {sizes} from '../components/styled/mediaQueries';
 import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
@@ -15,11 +16,11 @@ import {getArticleReadStatuses} from '../services/articleService';
 import AppContext from '../contexts/appContext';
 import WeeklyGoalView from '../components/WeeklyGoalView';
 import DailyGoalView from '../components/DailyGoalView';
-import FilterSelector from '../components/FilterSelector';
 import articlesContext from '../contexts/articlesContext';
 import useWindowSize from '../hooks/useWindowSize';
-import Link from 'next/link'
-import LoadingPage from '../components/LoadingPage';
+import useDebounce from '../hooks/useDebounce';
+import Link from 'next/link';
+import TypeSelector from '../components/TypeSelector';
 
 const PAGE_SIZE = 10;
 
@@ -28,15 +29,17 @@ function ArticlePage () {
 
     const router = useRouter();
     const {user, userHasProPlan} = useContext(AppContext);
-    const {articles, loadArticles, loading} = useContext(articlesContext);
+    const {articles, loadArticles, loading, searchArticles} = useContext(articlesContext);
     const [selectedFilterTypes, setSelectedFilterTypes] = useState([]);
     const [readStatuses, setReadStatuses] = useState({});
     const [offset, setOffset] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 400);
     const size = useWindowSize();
 
     useEffect(() => {
-        loadArticles(selectedFilterTypes);
-    }, [selectedFilterTypes]);
+        loadArticles(selectedFilterTypes, debouncedSearchTerm);
+    }, [selectedFilterTypes, debouncedSearchTerm]);
 
     const articlesToShow = useMemo(() => {
         if (!articles) {
@@ -76,12 +79,16 @@ function ArticlePage () {
         }
     }, [articles]);
 
-    const handleNewFilters = (newFilters) => {
-        if (newFilters.length >= 10) {
-            return;
-        }
+    const handleTypeChange = (newType) => {
+        setSelectedFilterTypes(selectedTypes => {
+            const isSelected = selectedTypes.includes(newType);
 
-        setSelectedFilterTypes(newFilters.map(filter => filter.value));
+            if (isSelected) {
+                return selectedTypes.filter(selectedType => selectedType !== newType);
+            } else {
+                return [...selectedTypes, newType];
+            }
+        });
     }
 
     return (
@@ -111,14 +118,14 @@ function ArticlePage () {
             </AllProgress>
         </Link>
 
-        <Filters>
-            <FilterWrapper>
-                <FiltersHeader>
-                    <span>Filters (limit 10)</span>
-                </FiltersHeader>
-                <FilterSelector onChange={handleNewFilters} />
-            </FilterWrapper>
-        </Filters>
+        <div style={{width: '100%'}}>
+            <SearchInput
+                value={searchTerm}
+                onChange={(value) => setSearchTerm(value)}
+                placeholder="Search articles"
+            />
+            <TypeSelector selectedTypes={selectedFilterTypes} onSelect={handleTypeChange} />
+        </div>
 
         <ArticlesList>
             {loading && !articlesToShow.length && (
@@ -165,24 +172,6 @@ const PaginationStyles = styled.div`
     .active  {
         text-decoration: underline;
     }
-`;
-
-const Filters = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
-    padding: 0 30px;
-`;
-
-const FilterWrapper = styled.div`
-    width: 100%;
-    max-width: 400px;
-`;
-
-const FiltersHeader = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
 `;
 
 const DashboardHeader = styled.div`
