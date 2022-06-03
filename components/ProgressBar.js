@@ -1,17 +1,17 @@
-import styled from 'styled-components';
-import {devices} from './styled/mediaQueries';
+import styled from 'styled-components'
+import { devices } from './styled/mediaQueries'
 
-const ProgressBar = ({progress}) => {
-    return (
+const ProgressBar = ({ progress }) => {
+  return (
         <ProgressContainer progress={progress}>
-            <div className="progressbar-complete" style={{width: `${progress}%`}}>
+            <div className="progressbar-complete" style={{ width: `${progress}%` }}>
                 <div className="progressbar-liquid"></div>
             </div>
         </ProgressContainer>
-    )
+  )
 }
 
-export default ProgressBar;
+export default ProgressBar
 
 const ProgressContainer = styled.div`
     position: relative;
@@ -56,4 +56,4 @@ const ProgressContainer = styled.div`
   from { transform: rotate(0deg); }
   from { transform: rotate(360deg); }
 }
-`;
+`

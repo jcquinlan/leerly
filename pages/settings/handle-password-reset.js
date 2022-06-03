@@ -1,44 +1,44 @@
-import React, {useState} from 'react';
-import {useToasts} from 'react-toast-notifications';
-import {useRouter} from 'next/router';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input} from '../../components/styled';
-import {auth} from '../../services';
+import React, { useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
+import { useRouter } from 'next/router'
+import { Container, HeroWrapper, HeroContent, Divider, Title, Button, Input } from '../../components/styled'
+import { auth } from '../../services'
 
 function HandlePasswordResetPage () {
-    const router = useRouter();
-    const {addToast} = useToasts();
-    const [formState, setFormState] = useState({});
-    const actionCode = router.query.oobCode;
-    const actionMode = router.query.mode;
-    const passwordsMatch = formState.password === formState.confirmPassword;
+  const router = useRouter()
+  const { addToast } = useToasts()
+  const [formState, setFormState] = useState({})
+  const actionCode = router.query.oobCode
+  const actionMode = router.query.mode
+  const passwordsMatch = formState.password === formState.confirmPassword
 
-    const handlePasswordReset = (e) => {
-        e.preventDefault();
+  const handlePasswordReset = (e) => {
+    e.preventDefault()
 
-        if (actionMode === 'resetPassword') {
-            auth.verifyPasswordResetCode(actionCode)
-                .then(() => {
-                   if (!passwordsMatch) {
-                       throw Error('Passwords do not match.');
-                   } 
+    if (actionMode === 'resetPassword') {
+      auth.verifyPasswordResetCode(actionCode)
+        .then(() => {
+          if (!passwordsMatch) {
+            throw Error('Passwords do not match.')
+          }
 
-                   return auth.confirmPasswordReset(actionCode, formState.password)
-                })
-                .then(() => {
-                    addToast('Password reset', {appearance: 'success'});
-                    router.push('/sign-in');
-                })
-                .catch((error) => {
-                    addToast(error.message, {appearance: 'error'});
-                });
-        }
-    };
+          return auth.confirmPasswordReset(actionCode, formState.password)
+        })
+        .then(() => {
+          addToast('Password reset', { appearance: 'success' })
+          router.push('/sign-in')
+        })
+        .catch((error) => {
+          addToast(error.message, { appearance: 'error' })
+        })
+    }
+  }
 
-    const handleInputChange = (e) => {
-        setFormState({...formState, [e.target.name]: e.target.value});
-    };
+  const handleInputChange = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value })
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -57,7 +57,7 @@ function HandlePasswordResetPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default HandlePasswordResetPage;
+export default HandlePasswordResetPage

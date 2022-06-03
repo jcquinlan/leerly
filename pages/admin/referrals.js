@@ -1,46 +1,46 @@
-import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Subtitle,
-    Button
-} from '../../components/styled';
-import {getReferralRecords, markRecordAsRedeemed} from '../../services/referralService';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Divider,
+  Title,
+  Subtitle,
+  Button
+} from '../../components/styled'
+import { getReferralRecords, markRecordAsRedeemed } from '../../services/referralService'
 
 function ArticlePage () {
-    const [referrals, setReferrals] = useState([]);
-    const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
+  const [referrals, setReferrals] = useState([])
+  const [isUpdatingRecord, setIsUpdatingRecord] = useState(false)
 
-    useEffect(() => {
-        getReferralRecords()
-            .then(records => {
-                if (!records.empty) {
-                    const formattedReferralRecords = records.docs.map(doc => {
-                        return {
-                            id: doc.id,
-                            ...doc.data()
-                        }
-                    });
+  useEffect(() => {
+    getReferralRecords()
+      .then(records => {
+        if (!records.empty) {
+          const formattedReferralRecords = records.docs.map(doc => {
+            return {
+              id: doc.id,
+              ...doc.data()
+            }
+          })
 
-                    setReferrals(formattedReferralRecords);
-                }
-            })
-    }, []);
-
-    const redeemRecord = async (id) => {
-        if (!isUpdatingRecord) {
-            setIsUpdatingRecord(true);
-            await markRecordAsRedeemed(id)
-            setReferrals(referrals => referrals.filter(record => record.id !== id));
-            setIsUpdatingRecord(false);
+          setReferrals(formattedReferralRecords)
         }
-    }
+      })
+  }, [])
 
-    return (
+  const redeemRecord = async (id) => {
+    if (!isUpdatingRecord) {
+      setIsUpdatingRecord(true)
+      await markRecordAsRedeemed(id)
+      setReferrals(referrals => referrals.filter(record => record.id !== id))
+      setIsUpdatingRecord(false)
+    }
+  }
+
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -51,7 +51,7 @@ function ArticlePage () {
         </HeroWrapper>
 
         <Divider />
-        
+
         <ListWrapper>
         {referrals.map(referral => (
             <ReferralItem onClick={() => redeemRecord(referral.id)}>
@@ -63,12 +63,12 @@ function ArticlePage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default ArticlePage;
+export default ArticlePage
 
-const ListWrapper = styled.div``;
+const ListWrapper = styled.div``
 const ReferralItem = styled.div`
     display: flex;
     justify-content: space-between;
@@ -77,4 +77,4 @@ const ReferralItem = styled.div`
     border: 1px solid #eee;
     border-radius: 8px;
     margin-bottom: 15px;
-`;
+`

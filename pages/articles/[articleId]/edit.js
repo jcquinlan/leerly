@@ -1,50 +1,50 @@
-import React, {useState, useMemo, useEffect, useContext} from 'react';
-import styled from 'styled-components';
-import {useToasts} from 'react-toast-notifications';
-import {useRouter} from 'next/router';
-import {QuestionTypes} from 'types';
+import React, { useState, useMemo, useEffect, useContext } from 'react'
+import styled from 'styled-components'
+import { useToasts } from 'react-toast-notifications'
+import { useRouter } from 'next/router'
+import { QuestionTypes } from 'types'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Input,
-    TextArea,
-    Button,
-    Checkbox
-} from '../../../components/styled';
-import useGuardAdminRoute from '../../../hooks/useGuardAdminRoute';
-import TypeSelector from '../../../components/TypeSelector';
-import LoadingPage from '../../../components/LoadingPage';
-import ArticleImageSelector from '../../../components/ArticleImageSelector';
-import QuestionCreator from '../../../components/QuestionCreator';
-import LevelSelector from '../../../components/LevelSelector';
-import useGetArticle from '../../../hooks/useGetArticle';
-import {uploadAudio} from '../../../services/articleService';
-import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../../services/unsplashService';
-import ArticlesContext from '../../../contexts/articlesContext';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Divider,
+  Title,
+  Input,
+  TextArea,
+  Button,
+  Checkbox
+} from '../../../components/styled'
+import useGuardAdminRoute from '../../../hooks/useGuardAdminRoute'
+import TypeSelector from '../../../components/TypeSelector'
+import LoadingPage from '../../../components/LoadingPage'
+import ArticleImageSelector from '../../../components/ArticleImageSelector'
+import QuestionCreator from '../../../components/QuestionCreator'
+import LevelSelector from '../../../components/LevelSelector'
+import useGetArticle from '../../../hooks/useGetArticle'
+import { uploadAudio } from '../../../services/articleService'
+import { unsplashImageToSimplifiedImage, triggerUnsplashDownload } from '../../../services/unsplashService'
+import ArticlesContext from '../../../contexts/articlesContext'
 
 function ArticlePage () {
-    useGuardAdminRoute();
+  useGuardAdminRoute()
 
-    const router = useRouter();
-    const {updateArticle} = useContext(ArticlesContext);
-    const {article, loading, error} = useGetArticle(router.query.articleId);
+  const router = useRouter()
+  const { updateArticle } = useContext(ArticlesContext)
+  const { article, loading, error } = useGetArticle(router.query.articleId)
 
-    const {addToast} = useToasts();
-    const [selectedTypes, setSelectedTypes] = useState([]);
-    const [formState, setFormState] = useState({});
-    const [image, setImage] = useState(null);
-    const [updatedImage, setUpdatedImage] = useState(false);
-    const [audioURL, setAudioURL] = useState(null);
-    const [newAudio, setNewAudio] = useState(null);
-    const [questions, setQuestions] = useState([]);
-    const [level, setLevel] = useState(null);
+  const { addToast } = useToasts()
+  const [selectedTypes, setSelectedTypes] = useState([])
+  const [formState, setFormState] = useState({})
+  const [image, setImage] = useState(null)
+  const [updatedImage, setUpdatedImage] = useState(false)
+  const [audioURL, setAudioURL] = useState(null)
+  const [newAudio, setNewAudio] = useState(null)
+  const [questions, setQuestions] = useState([])
+  const [level, setLevel] = useState(null)
 
-    const formIsFilled = useMemo(() => {
-        return !!(
-            formState.article &&
+  const formIsFilled = useMemo(() => {
+    return !!(
+      formState.article &&
             formState.url &&
             formState.title &&
             image &&
@@ -52,106 +52,105 @@ function ArticlePage () {
             !!selectedTypes.length &&
             questions.length &&
             questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
-        );
-    }, [formState, questions, image, level, selectedTypes]);
+    )
+  }, [formState, questions, image, level, selectedTypes])
 
-    useEffect(() => {
-      if (article) {
-        setSelectedTypes(article.types);
-        setImage(article.image);
-        setAudioURL(article.audio);
-        setFormState({
-          url: article.url,
-          title: article.title,
-          article: article.body,
-          free: article.free,
-          published: article.published,
-          transcriptId: article.transcriptId
-        });
+  useEffect(() => {
+    if (article) {
+      setSelectedTypes(article.types)
+      setImage(article.image)
+      setAudioURL(article.audio)
+      setFormState({
+        url: article.url,
+        title: article.title,
+        article: article.body,
+        free: article.free,
+        published: article.published,
+        transcriptId: article.transcriptId
+      })
 
-        setLevel(article.level || null);
+      setLevel(article.level || null)
 
-        if (article.questions) {
-            setQuestions(article.questions);
-        }
+      if (article.questions) {
+        setQuestions(article.questions)
       }
-    }, [article]);
+    }
+  }, [article])
 
-    const handleClick = async () => {
-        try {
-            const newAudioURL = newAudio ? `audios/${newAudio.name}` : null;
+  const handleClick = async () => {
+    try {
+      const newAudioURL = newAudio ? `audios/${newAudio.name}` : null
 
-            if (newAudio) {
-                await uploadAudio(newAudio);
-            }
+      if (newAudio) {
+        await uploadAudio(newAudio)
+      }
 
-            await updateArticle(article.id, {
-                body: formState.article,
-                url: formState.url,
-                title: formState.title,
-                free: formState.free || false,
-                published: formState.published || false,
-                transcriptId: formState.transcriptId || null,
-                audio: newAudioURL || audioURL || null,
-                types: selectedTypes,
-                questions,
-                level,
-                image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
-            });
+      await updateArticle(article.id, {
+        body: formState.article,
+        url: formState.url,
+        title: formState.title,
+        free: formState.free || false,
+        published: formState.published || false,
+        transcriptId: formState.transcriptId || null,
+        audio: newAudioURL || audioURL || null,
+        types: selectedTypes,
+        questions,
+        level,
+        image: updatedImage ? unsplashImageToSimplifiedImage(image) : article.image ? article.image : null
+      })
 
-            if (updatedImage) {
-                await triggerUnsplashDownload(image);
-            }
+      if (updatedImage) {
+        await triggerUnsplashDownload(image)
+      }
 
-            addToast('Article updated', {appearance: 'success'});
-            router.push(`/articles/${article.id}`);
-
-        } catch (err) {
-            console.log(err);
-            addToast('An error occurred', {appearance: 'error'});
-        };
+      addToast('Article updated', { appearance: 'success' })
+      router.push(`/articles/${article.id}`)
+    } catch (err) {
+      console.log(err)
+      addToast('An error occurred', { appearance: 'error' })
     };
+  }
 
-    const handleSelectedType = (newType) => {
-        const typeIsAlreadySelected = selectedTypes.includes(newType);
-        if (typeIsAlreadySelected) {
-            setSelectedTypes(selectedTypes.filter(type => type !== newType));
-        } else {
-            setSelectedTypes([...selectedTypes, newType]);
-        }
+  const handleSelectedType = (newType) => {
+    const typeIsAlreadySelected = selectedTypes.includes(newType)
+    if (typeIsAlreadySelected) {
+      setSelectedTypes(selectedTypes.filter(type => type !== newType))
+    } else {
+      setSelectedTypes([...selectedTypes, newType])
     }
+  }
 
-    const handleFormState = (event) => {
-        const newState = {
-            ...formState,
-            [event.target.name]: event.target.value
-        };
-        setFormState(newState);
+  const handleFormState = (event) => {
+    const newState = {
+      ...formState,
+      [event.target.name]: event.target.value
     }
+    setFormState(newState)
+  }
 
-    const handleCheckboxChange = (event) => {
-        const newState = {
-            ...formState,
-            [event.target.name]: event.target.checked
-        };
-        setFormState(newState);
+  const handleCheckboxChange = (event) => {
+    const newState = {
+      ...formState,
+      [event.target.name]: event.target.checked
     }
+    setFormState(newState)
+  }
 
-    const setImageAndFlagAsNew = (unsplashImage) => {
-        setUpdatedImage(true);
-        setImage(unsplashImage);
-    }
+  const setImageAndFlagAsNew = (unsplashImage) => {
+    setUpdatedImage(true)
+    setImage(unsplashImage)
+  }
 
-    const handleSelectedFile = (event) => {
-        const file = event.target.files[0];
-        setNewAudio(file);
-    }
+  const handleSelectedFile = (event) => {
+    const file = event.target.files[0]
+    setNewAudio(file)
+  }
 
-    if (loading) {
-      return <LoadingPage></LoadingPage>;
-    }
+  if (loading) {
+    return <LoadingPage></LoadingPage>
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -185,7 +184,7 @@ function ArticlePage () {
 
         {!audioURL && (
             <>
-            <label for='audio'>mp3 audio file</label>
+            <label htmlFor='audio'>mp3 audio file</label>
             <input type='file' name='audio' accept='audio/mp3' onChange={handleSelectedFile} />
             </>
         )}
@@ -196,12 +195,12 @@ function ArticlePage () {
         <TextArea name='article' value={formState.article || ''} placeholder='the summarized, translated article' defaultValue={formState.article} required onChange={handleFormState} />
 
         <div>
-            <label for='free'>Article is free?</label>
+            <label htmlFor='free'>Article is free?</label>
             <Checkbox type='checkbox' name='free' checked={formState.free || false} onChange={handleCheckboxChange} />
         </div>
 
         <div>
-            <label for='published'>Is the article ready to be published?</label>
+            <label htmlFor='published'>Is the article ready to be published?</label>
             <Checkbox type='checkbox' name='published' checked={formState.published || false} onChange={handleCheckboxChange} />
         </div>
 
@@ -211,10 +210,10 @@ function ArticlePage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default ArticlePage;
+export default ArticlePage
 
 const AudioWrapper = styled.div`
     display: flex;
@@ -225,7 +224,7 @@ const AudioWrapper = styled.div`
         margin-top: 10px;
         width: fit-content;
     }
-`;
+`
 
 const SelectorWrapper = styled.div`
     h6 {
@@ -236,4 +235,4 @@ const SelectorWrapper = styled.div`
     p {
         margin: 0 0 15px 0;
     }
-`;
+`

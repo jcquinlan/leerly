@@ -1,30 +1,30 @@
-import React, { useContext, useMemo, useState } from 'react';
-import moment from 'moment';
-import styled from 'styled-components';
-import {Button, Colors, GhostButton} from './styled';
-import appContext from '../contexts/appContext';
-import UserCartoonAvatar from './UserCartoonAvatar';
-import { createNewComment, deleteComment, getArticleComments, reportComment } from '../services/commentService';
-import { useToasts } from 'react-toast-notifications';
-import useAsync from '../hooks/useAsync';
-import ReportCommentModal from './modals/ReportCommentModal';
-import DeleteCommentModal from './modals/DeleteCommentModal';
+import React, { useContext, useMemo, useState } from 'react'
+import moment from 'moment'
+import styled from 'styled-components'
+import { Button, Colors, GhostButton } from './styled'
+import appContext from '../contexts/appContext'
+import UserCartoonAvatar from './UserCartoonAvatar'
+import { createNewComment, deleteComment, getArticleComments, reportComment } from '../services/commentService'
+import { useToasts } from 'react-toast-notifications'
+import useAsync from '../hooks/useAsync'
+import ReportCommentModal from './modals/ReportCommentModal'
+import DeleteCommentModal from './modals/DeleteCommentModal'
 
-const Comment = ({comment, onDelete, onReport}) => {
-    const {user} = useContext(appContext);
+const Comment = ({ comment, onDelete, onReport }) => {
+  const { user } = useContext(appContext)
 
-    const handleReport = () => {
-        onReport(comment.id);
-    }
+  const handleReport = () => {
+    onReport(comment.id)
+  }
 
-    const handleDelete = () => {
-        onDelete(comment.id);
-    }
+  const handleDelete = () => {
+    onDelete(comment.id)
+  }
 
-    return (
+  return (
         <CommentWrapper marked={!!comment.deleted_at || !!comment.reported}>
             <CommentHeader>
-                <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <UserCartoonAvatar size={20} userId={comment.userId} />
                     <span>{comment.userData.name}</span>
                 </div>
@@ -47,110 +47,110 @@ const Comment = ({comment, onDelete, onReport}) => {
                 {comment.text}
             </CommentBody>
         </CommentWrapper>
-    )
+  )
 }
 
-const ArticleComments = ({article}) => {
-    const {user, userProfile, userProfileIsComplete, setModal} = useContext(appContext);
-    const {addToast} = useToasts();
-    const [comment, setComment] = useState('');
-    const [isCreatingNewComment, setIsCreatingNewComment] = useState(false);
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-    };
+const ArticleComments = ({ article }) => {
+  const { user, userProfile, userProfileIsComplete, setModal } = useContext(appContext)
+  const { addToast } = useToasts()
+  const [comment, setComment] = useState('')
+  const [isCreatingNewComment, setIsCreatingNewComment] = useState(false)
+  const handleCommentChange = (e) => {
+    setComment(e.target.value)
+  }
 
-    const {data: comments, loading, error, reload: reloadComments} = useAsync(
-        () => getArticleComments(article.id),
-        (res) => res.comments
-    );
+  const { data: comments, loading, error, reload: reloadComments } = useAsync(
+    () => getArticleComments(article.id),
+    (res) => res.comments
+  )
 
-    const handleSubmitComment = () => {
-        setIsCreatingNewComment(true);
-        createNewComment({
-            userId: user.uid,
-            articleId: article.id,
-            text: comment,
-            userData: {
-                    name: userProfile.name
-            },
-            articleData: {
-                title: article.title
-            }
-        })
-        .then(() => {
-            setComment(''); // Clear the new comment text area
-            addToast('Comment created', {appearance: 'success'});
-            reloadComments();
-        })
-        .catch(() => {
-            addToast('Error saving comment', {appearance: 'error'});
-        })
-        .finally(() => {
-            setIsCreatingNewComment(false);
-        });
-    }
+  const handleSubmitComment = () => {
+    setIsCreatingNewComment(true)
+    createNewComment({
+      userId: user.uid,
+      articleId: article.id,
+      text: comment,
+      userData: {
+        name: userProfile.name
+      },
+      articleData: {
+        title: article.title
+      }
+    })
+      .then(() => {
+        setComment('') // Clear the new comment text area
+        addToast('Comment created', { appearance: 'success' })
+        reloadComments()
+      })
+      .catch(() => {
+        addToast('Error saving comment', { appearance: 'error' })
+      })
+      .finally(() => {
+        setIsCreatingNewComment(false)
+      })
+  }
 
-    const handleDelete = (commentId) => {
-        deleteComment(commentId)
-            .then(() => {
-                reloadComments();
-                addToast('Comment deleted', {appearance: 'success'});
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-            .finally(() => setModal(null));
-    }
+  const handleDelete = (commentId) => {
+    deleteComment(commentId)
+      .then(() => {
+        reloadComments()
+        addToast('Comment deleted', { appearance: 'success' })
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+      .finally(() => setModal(null))
+  }
 
-    const handleReport = (commentId) => {
-        reportComment(commentId)
-            .then(() => {
-                reloadComments();
-                addToast('Comment reported', {appearance: 'success'})
-            })
-            .catch(() => {
-                addToast('Error reporting comment', {appearance: 'error'});
-            })
-            .finally(() => setModal(null));
-    }
+  const handleReport = (commentId) => {
+    reportComment(commentId)
+      .then(() => {
+        reloadComments()
+        addToast('Comment reported', { appearance: 'success' })
+      })
+      .catch(() => {
+        addToast('Error reporting comment', { appearance: 'error' })
+      })
+      .finally(() => setModal(null))
+  }
 
-    const clickReportButton = (commentId) => {
-        setModal(
+  const clickReportButton = (commentId) => {
+    setModal(
             <ReportCommentModal
                 onClose={() => setModal(null)}
                 onReport={() => handleReport(commentId)}
             />
-        );
-    }
+    )
+  }
 
-    const clickDeleteButton = (commentId) => {
-        setModal(
+  const clickDeleteButton = (commentId) => {
+    setModal(
             <DeleteCommentModal
                 onClose={() => setModal(null)}
                 onDelete={() => handleDelete(commentId)}
             />
-        );
-    }
+    )
+  }
 
-    const commentsToDisplay = useMemo(() => {
-        if (!comments || !comments.length) return [];
+  const commentsToDisplay = useMemo(() => {
+    if (!comments || !comments.length) return []
 
-        return comments.sort((a, b) => {
-            return a.created_at.seconds - b.created_at.seconds;
-        })
-    }, [comments]);
+    return comments.sort((a, b) => {
+      return a.created_at.seconds - b.created_at.seconds
+    })
+  }, [comments])
 
-    const renderComments = () => {
-        if (loading) return 'Loading...'
+  const renderComments = () => {
+    if (loading) return 'Loading...'
 
-        if (!commentsToDisplay.length) return 'No comments for this article yet. Start the discussion!'
+    if (!commentsToDisplay.length) return 'No comments for this article yet. Start the discussion!'
 
-        return commentsToDisplay.map(comment => (
+    return commentsToDisplay.map(comment => (
             <Comment key={comment.id} comment={comment} onDelete={clickDeleteButton} onReport={clickReportButton} />
-        ));
-    }
+    ))
+  }
 
-    return (
+  return (
         <div>
             <NewCommentWrapper>
                 {!userProfileIsComplete && (
@@ -176,10 +176,10 @@ const ArticleComments = ({article}) => {
             </CommentsList>
 
         </div>
-    );
-};
+  )
+}
 
-export default ArticleComments;
+export default ArticleComments
 
 const NewCommentWrapper = styled.div`
     textarea {
@@ -196,15 +196,15 @@ const NewCommentWrapper = styled.div`
             border-color: ${Colors.Primary};
         }
     }
-`;
+`
 
 const ButtonRow = styled.div`
     margin-top: 10px;
-`;
+`
 
 const CommentsList = styled.div`
     margin-top: 30px;
-`;
+`
 const CommentWrapper = styled.div`
     border: 1px solid #eee;
     border-radius: 8px;
@@ -212,15 +212,17 @@ const CommentWrapper = styled.div`
     margin-bottom: 15px;
     z-index: -10;
 
-    ${props => props.marked ? `
+    ${props => props.marked
+? `
         opacity: 0.3; 
-    `: ``}
-`;
+    `
+: ''}
+`
 const CommentBody = styled.p`
     white-space: pre-wrap;
     line-height: 24px;
     margin-bottom: 0;
-`;
+`
 const CommentHeader = styled.div`
     display: flex;
     align-items: center;
@@ -230,16 +232,16 @@ const CommentHeader = styled.div`
     span {
         margin-left: 5px;
     }
-`;
+`
 
 const RightInfo = styled.div`
     display: flex;
-`;
+`
 
 const TimeAgo = styled.div`
     font-size: 14px;
     color: ${Colors.MediumGrey};
-`;
+`
 
 const WarningMessage = styled.div`
     color: red;
@@ -251,4 +253,4 @@ const WarningMessage = styled.div`
         color: red;
         text-decoration: underline;
     }
-`;
+`

@@ -1,17 +1,17 @@
-import React from 'react';
-import useUIStateContext from '../hooks/useUIStateContext';
+import React from 'react'
+import useUIStateContext from '../hooks/useUIStateContext'
 
-const defaultAppContext = {};
-const UIStateContext = React.createContext(defaultAppContext);
+const defaultAppContext = {}
+const UIStateContext = React.createContext(defaultAppContext)
 
-export const UIStateContextProvider = ({children}) => {
-    const value = useUIStateContext();
+export const UIStateContextProvider = ({ children }) => {
+  const value = useUIStateContext()
 
-    return (
+  return (
         <UIStateContext.Provider value={value}>
             {children}
         </UIStateContext.Provider>
-    )
-};
+  )
+}
 
-export default UIStateContext;
+export default UIStateContext

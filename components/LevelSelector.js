@@ -1,10 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import Colors from './styled/colors';
-import {UserLevels} from '../constants';
+import React from 'react'
+import styled from 'styled-components'
+import Colors from './styled/colors'
+import { UserLevels } from '../constants'
 
-const LevelSelector = ({level, onSelectLevel}) => {
-    return (
+const LevelSelector = ({ level, onSelectLevel }) => {
+  return (
         <Levels>
             <Level selected={level === UserLevels.A1} onClick={() => onSelectLevel(UserLevels.A1)}>
                 A1
@@ -30,12 +30,12 @@ const LevelSelector = ({level, onSelectLevel}) => {
                 C2
             </Level>
         </Levels>
-    )
-};
+  )
+}
 
-export default LevelSelector;
+export default LevelSelector
 
-const Levels = styled.div``;
+const Levels = styled.div``
 const Level = styled.div`
     display: inline-block;
     border: 1px solid #eee;
@@ -45,12 +45,14 @@ const Level = styled.div`
     margin-right: 10px;
     margin-bottom: 10px;
 
-    ${props => props.selected ? `
+    ${props => props.selected
+? `
         background-color: ${Colors.Primary};
         color: #fff;
-    `: ``}
+    `
+: ''}
 
     &:hover {
         background-color: ${props => props.selected ? Colors.Primary : Colors.PrimaryLight};
     }
-`;
+`

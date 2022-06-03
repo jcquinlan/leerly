@@ -1,23 +1,23 @@
-import React from 'react';
+import React from 'react'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Title,
-    Subtitle
-} from '../components/styled';
-import LoadingPage from '../components/LoadingPage';
-import ArticlePreview, {ArticlesList} from '../components/ArticlePreview';
-import useGetDemoOrUnpublishedArticles from '../hooks/useGetDemoOrUnpublishedArticles';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Title,
+  Subtitle
+} from '../components/styled'
+import LoadingPage from '../components/LoadingPage'
+import ArticlePreview, { ArticlesList } from '../components/ArticlePreview'
+import useGetDemoOrUnpublishedArticles from '../hooks/useGetDemoOrUnpublishedArticles'
 
 function DemoPage () {
-    const {articles, loading, error} = useGetDemoOrUnpublishedArticles({demo: true});
+  const { articles, loading, error } = useGetDemoOrUnpublishedArticles({ demo: true })
 
-    if (loading) {
-        return <LoadingPage></LoadingPage>
-    }
+  if (loading) {
+    return <LoadingPage></LoadingPage>
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -35,7 +35,7 @@ function DemoPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default DemoPage;
+export default DemoPage

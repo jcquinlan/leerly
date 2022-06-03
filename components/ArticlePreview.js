@@ -1,29 +1,28 @@
-import React, { useContext } from 'react';
-import {useRouter} from 'next/router';
-import styled from 'styled-components';
-import moment from 'moment';
-import TypeList from './TypeList';
-import {ReadCheck, devices} from './styled';
-import colors from './styled/colors';
-import appContext from '../contexts/appContext';
-import {Margin} from './styled';
-import DifficultyBadge from './DifficultyBadge';
+import React, { useContext } from 'react'
+import { useRouter } from 'next/router'
+import styled from 'styled-components'
+import moment from 'moment'
+import TypeList from './TypeList'
+import { ReadCheck, devices, Margin } from './styled'
+import colors from './styled/colors'
+import appContext from '../contexts/appContext'
+import DifficultyBadge from './DifficultyBadge'
 
-const ArticlePreview = ({article, read}) => {
-    const {userHasProPlan} = useContext(appContext);
-    const router = useRouter();
+const ArticlePreview = ({ article, read }) => {
+  const { userHasProPlan } = useContext(appContext)
+  const router = useRouter()
 
-    const goToArticle = () => {
-        if (!article.free && !userHasProPlan) {
-            return;
-        }
+  const goToArticle = () => {
+    if (!article.free && !userHasProPlan) {
+      return
+    }
 
-        router.push(`/articles/${article.id}`);
-    };
+    router.push(`/articles/${article.id}`)
+  }
 
-    const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
+  const imageUserURL = article?.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : ''
 
-    return (
+  return (
         <ArticlePreviewWrapper clickable={article.free || userHasProPlan} onClick={goToArticle}>
             <ArticleInfo>
                 <Header>
@@ -33,7 +32,7 @@ const ArticlePreview = ({article, read}) => {
                     </div>
                 </Header>
 
-                <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                     <Margin marginRight='5px'>
                         <DifficultyBadge difficulty={article.level} />
                     </Margin>
@@ -43,7 +42,7 @@ const ArticlePreview = ({article, read}) => {
 
                 {!!article?.image && (
                     <ImageAttribution>
-                        Image from Unsplash, credit to <a href={imageUserURL} target='_blank'>{article.image.user.name}</a>
+                        Image from Unsplash, credit to <a href={imageUserURL} target='_blank' rel="noreferrer">{article.image.user.name}</a>
                     </ImageAttribution>
                 )}
                 <MaskedText>{article.body}</MaskedText>
@@ -56,19 +55,19 @@ const ArticlePreview = ({article, read}) => {
                 )}
             </MetaInfo>
         </ArticlePreviewWrapper>
-    )
-};
+  )
+}
 
-export const MaskedText = ({children, maxHeight}) => {
-    return (
+export const MaskedText = ({ children, maxHeight }) => {
+  return (
         <BodyPreview maxHeight={maxHeight}>
             <BodyPreviewMask></BodyPreviewMask>
             <p>{children}</p>
         </BodyPreview>
-    )
+  )
 }
 
-export default ArticlePreview;
+export default ArticlePreview
 
 export const ArticlesList = styled.div`
     padding: 15px;
@@ -76,7 +75,7 @@ export const ArticlesList = styled.div`
     @media ${devices.laptop} {
         padding: 30px;
     }
-`;
+`
 
 export const Header = styled.div`
     display: flex;
@@ -91,14 +90,14 @@ export const Header = styled.div`
             font-size: 24px;
         }
     } 
-`;
+`
 
 export const ArticleTimestamp = styled.div`
     color: #aaa;
     font-size: 14px;
     text-align: right;
     margin-bottom: 5px;
-`;
+`
 
 export const ArticlePreviewWrapper = styled.div`
     display: flex;
@@ -110,14 +109,14 @@ export const ArticlePreviewWrapper = styled.div`
     box-shadow: 0px 10px 30px -30px rgba(0,0,0,0.3);
     transition: 0.3s;
     ${props => props.selected ? 'border-color: blue;' : ''}
-    ${props => props.clickable ? `cursor: pointer` : ``};
-    ${props => !props.clickable ? `opacity: 0.3` : ``};
+    ${props => props.clickable ? 'cursor: pointer' : ''};
+    ${props => !props.clickable ? 'opacity: 0.3' : ''};
 
     &:hover {
         transform: translateY(-8px);
         box-shadow: 0px 20px 30px -30px rgba(0,0,0,0.4);
     }
-`;
+`
 
 const ImageAttribution = styled.div`
     margin: 0;
@@ -130,17 +129,19 @@ const ImageAttribution = styled.div`
     @media ${devices.tablet} {
         display: block;
     }
-`;
+`
 const ImageBox = styled.div`
     width: 100px;
     height: 100px;
     background-color: blue;
-    ${props => props.backgroundImage ? `
+    ${props => props.backgroundImage
+? `
         background-image: url(${props.backgroundImage}); 
         background-repeat: no-repeat;
         background-size: cover;
-    `: ``}
-`;
+    `
+: ''}
+`
 
 const ArticleInfo = styled.div`
     width: 100%;
@@ -148,7 +149,7 @@ const ArticleInfo = styled.div`
     @media ${devices.tablet} {
         margin-right: 30px;
     }
-`;
+`
 const MetaInfo = styled.div`
     width: 100%;
     max-width: 100px;
@@ -157,7 +158,7 @@ const MetaInfo = styled.div`
     @media ${devices.tablet} {
         display: initial;
     }
-`;
+`
 
 const BodyPreview = styled.div`
     position: relative;
@@ -167,15 +168,15 @@ const BodyPreview = styled.div`
     p {
         margin: 0;
     }
-`;
+`
 
 const BodyPreviewMask = styled.div`
     position: absolute;
     width: 100%;
     height: 100%;
     background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.5) 20%, rgba(255,255,255,1));
-`;
+`
 
 const CommentCountWrapper = styled.span`
     font-size: 12px;
-`;
+`

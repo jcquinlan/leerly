@@ -1,48 +1,48 @@
-import React, {useState, useMemo, useContext} from 'react';
-import styled from 'styled-components';
-import {useToasts} from 'react-toast-notifications';
-import { useRouter } from 'next/router';
-import useGuardAdminRoute from '../../hooks/useGuardAdminRoute';
+import React, { useState, useMemo, useContext } from 'react'
+import styled from 'styled-components'
+import { useToasts } from 'react-toast-notifications'
+import { useRouter } from 'next/router'
+import useGuardAdminRoute from '../../hooks/useGuardAdminRoute'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Button,
-    Input,
-    Checkbox
-} from '../../components/styled';
-import TextareaAutosize from 'react-textarea-autosize';
-import TypeSelector from '../../components/TypeSelector';
-import QuestionCreator from '../../components/QuestionCreator';
-import ArticleImageSelector from '../../components/ArticleImageSelector';
-import LevelSelector from '../../components/LevelSelector';
-import AppContext from '../../contexts/appContext';
-import ArticlesContext from '../../contexts/articlesContext';
-import {uploadAudio} from '../../services/articleService';
-import {unsplashImageToSimplifiedImage, triggerUnsplashDownload} from '../../services/unsplashService';
-import {QuestionTypes} from 'types';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Divider,
+  Title,
+  Button,
+  Input,
+  Checkbox
+} from '../../components/styled'
+import TextareaAutosize from 'react-textarea-autosize'
+import TypeSelector from '../../components/TypeSelector'
+import QuestionCreator from '../../components/QuestionCreator'
+import ArticleImageSelector from '../../components/ArticleImageSelector'
+import LevelSelector from '../../components/LevelSelector'
+import AppContext from '../../contexts/appContext'
+import ArticlesContext from '../../contexts/articlesContext'
+import { uploadAudio } from '../../services/articleService'
+import { unsplashImageToSimplifiedImage, triggerUnsplashDownload } from '../../services/unsplashService'
+import { QuestionTypes } from 'types'
 
 function SubmitPage () {
-    useGuardAdminRoute();
+  useGuardAdminRoute()
 
-    const router = useRouter();
-    const {addToast} = useToasts();
-    const {saveArticle} = useContext(ArticlesContext);
-    const {user} = useContext(AppContext);
-    const [selectedTypes, setSelectedTypes] = useState([]);
-    const [formState, setFormState] = useState({});
-    const [audioURL, setAudioURL] = useState(null);
-    const [image, setImage] = useState(null);
-    const [level, setLevel] = useState(null);
-    const [audioFile, setAudioFile] = useState(null);
-    const [saving, setSaving] = useState(false);
-    const [questions, setQuestions] = useState([]);
+  const router = useRouter()
+  const { addToast } = useToasts()
+  const { saveArticle } = useContext(ArticlesContext)
+  const { user } = useContext(AppContext)
+  const [selectedTypes, setSelectedTypes] = useState([])
+  const [formState, setFormState] = useState({})
+  const [audioURL, setAudioURL] = useState(null)
+  const [image, setImage] = useState(null)
+  const [level, setLevel] = useState(null)
+  const [audioFile, setAudioFile] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [questions, setQuestions] = useState([])
 
-    const formIsFilled = useMemo(() => {
-        return !!(
-            formState.article &&
+  const formIsFilled = useMemo(() => {
+    return !!(
+      formState.article &&
             formState.url &&
             image &&
             level &&
@@ -51,80 +51,80 @@ function SubmitPage () {
             !!selectedTypes.length &&
             questions.length &&
             questions.some(question => question.type === QuestionTypes.OPEN_ENDED)
-        );
-    }, [formState, image, selectedTypes, level, questions]);
+    )
+  }, [formState, image, selectedTypes, level, questions])
 
-    const handleClick = async () => {
-        setSaving(true);
-        try {
-            await uploadAudio(audioFile);
-            const article = await saveArticle({
-                added_by: user.uid,
-                body: formState.article,
-                url: formState.url,
-                title: formState.title,
-                free: formState.free || false,
-                types: selectedTypes,
-                language: 'spanish',
-                questions,
-                level,
-                audio: `audios/${audioFile.name}`,
-                image: unsplashImageToSimplifiedImage(image),
-                transcriptId: formState.transcriptId,
-                published: false
-            });
+  const handleClick = async () => {
+    setSaving(true)
+    try {
+      await uploadAudio(audioFile)
+      const article = await saveArticle({
+        added_by: user.uid,
+        body: formState.article,
+        url: formState.url,
+        title: formState.title,
+        free: formState.free || false,
+        types: selectedTypes,
+        language: 'spanish',
+        questions,
+        level,
+        audio: `audios/${audioFile.name}`,
+        image: unsplashImageToSimplifiedImage(image),
+        transcriptId: formState.transcriptId,
+        published: false
+      })
 
-            await triggerUnsplashDownload(image);
+      await triggerUnsplashDownload(image)
 
-            addToast('Article submitted', {appearance: 'success'});
-            router.push(`/articles/${article.id}`);
-        } catch (error) {
-            addToast('An error occurred', {appearance: 'error'});
-        };
-        setSaving(false);
+      addToast('Article submitted', { appearance: 'success' })
+      router.push(`/articles/${article.id}`)
+    } catch (error) {
+      addToast('An error occurred', { appearance: 'error' })
     };
+    setSaving(false)
+  }
 
-    const handleSelectedType = (newType) => {
-        const typeIsAlreadySelected = selectedTypes.includes(newType);
-        if (typeIsAlreadySelected) {
-            setSelectedTypes(selectedTypes.filter(type => type !== newType));
-        } else {
-            setSelectedTypes([...selectedTypes, newType]);
-        }
+  const handleSelectedType = (newType) => {
+    const typeIsAlreadySelected = selectedTypes.includes(newType)
+    if (typeIsAlreadySelected) {
+      setSelectedTypes(selectedTypes.filter(type => type !== newType))
+    } else {
+      setSelectedTypes([...selectedTypes, newType])
     }
+  }
 
-    const handleFormState = (event) => {
-        const newState = {
-            ...formState,
-            [event.target.name]: event.target.value
-        };
-        setFormState(newState);
+  const handleFormState = (event) => {
+    const newState = {
+      ...formState,
+      [event.target.name]: event.target.value
     }
+    setFormState(newState)
+  }
 
-    const handleCheckboxChange = (event) => {
-        const newState = {
-            ...formState,
-            [event.target.name]: event.target.checked
-        };
-        setFormState(newState);
+  const handleCheckboxChange = (event) => {
+    const newState = {
+      ...formState,
+      [event.target.name]: event.target.checked
     }
+    setFormState(newState)
+  }
 
-    const handleSelectedFile = async (e) => {
-        const file = e.target.files[0];
-        setAudioFile(file);
-    }
+  const handleSelectedFile = async (e) => {
+    const file = e.target.files[0]
+    setAudioFile(file)
+  }
 
-    const textAreaStyles = {
-        width: '100%',
-        fontSize: '16px',
-        padding: '15px',
-        marginBottom: '30px',
-        border: 'none',
-        backgroundColor: '#eee',
-        borderRadius: '8px'
-    }
+  const textAreaStyles = {
+    width: '100%',
+    fontSize: '16px',
+    padding: '15px',
+    marginBottom: '30px',
+    border: 'none',
+    backgroundColor: '#eee',
+    borderRadius: '8px'
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -172,14 +172,14 @@ function SubmitPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default SubmitPage;
+export default SubmitPage
 
 const AudioWrapper = styled.div`
     margin-bottom: 30px;
-`;
+`
 const SelectorWrapper = styled.div`
     h6 {
         font-size: 20px;
@@ -189,4 +189,4 @@ const SelectorWrapper = styled.div`
     p {
         margin: 0 0 15px 0;
     }
-`;
+`

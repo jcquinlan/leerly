@@ -1,113 +1,112 @@
-import React, {useMemo, useState, useEffect, useRef} from 'react';
-import styled from 'styled-components';
-import Confetti from 'react-confetti';
-import { Card, Colors, Button } from './styled';
+import React, { useMemo, useState, useEffect, useRef } from 'react'
+import styled from 'styled-components'
+import Confetti from 'react-confetti'
+import { Card, Colors, Button } from './styled'
 
 const PointValues = {
-    easy: 15,
-    medium: 8,
-    hard: 2,
-    unknown: 0
-};
-
-function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-    while (0 !== currentIndex) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-  
-    return array;
+  easy: 15,
+  medium: 8,
+  hard: 2,
+  unknown: 0
 }
 
-const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
-    const cards = useMemo(() => {
-        const unshuffledCards = vocabItems.map(vocab => {
-            return [
-                {
-                    front: vocab.english,
-                    back: vocab.spanish
-                },
-                {
-                    front: vocab.spanish,
-                    back: vocab.english
-                }
-            ]
-        }).flat();
+function shuffle (array) {
+  let currentIndex = array.length; let temporaryValue; let randomIndex
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
+    temporaryValue = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temporaryValue
+  }
 
-        return shuffle(unshuffledCards);
-    }, [vocabItems]);
-    
-    useEffect(() => {
-        const clickListening = window.addEventListener('click', () => {
-            setShowAnswer(true);
-        });
+  return array
+}
 
-        return () => window.removeEventListener('click', clickListening);
-    }, []);
-
-    const [index, setIndex] = useState(0);
-    const [showAnswer, setShowAnswer] = useState(false);
-    const [showRules, setShowRules] = useState(false);
-    const [finalScore, setFinalScore] = useState(0);
-    const quizCardRef = useRef();
-    const currentVocab = useMemo(() => cards[index], [index, cards]);
-    const isFinished = useMemo(() => index >= cards.length, [index, cards]);
-    const maxScore = cards.length * PointValues['easy'];
-    const scoreRatio = finalScore / maxScore;
-
-    useEffect(() => {
-        if (isFinished) {
-            onFinish(index); // Pass in the # of cards the user studied
+const VocabQuiz = ({ vocab: vocabItems, onCloseQuiz, onFinish }) => {
+  const cards = useMemo(() => {
+    const unshuffledCards = vocabItems.map(vocab => {
+      return [
+        {
+          front: vocab.english,
+          back: vocab.spanish
+        },
+        {
+          front: vocab.spanish,
+          back: vocab.english
         }
-    }, [isFinished]);
+      ]
+    }).flat()
 
-    const finishedText = useMemo(() => {
+    return shuffle(unshuffledCards)
+  }, [vocabItems])
 
-        if (scoreRatio < .3) {
-            return 'Hmmm, a little more studying will help'
-        }
+  useEffect(() => {
+    const clickListening = window.addEventListener('click', () => {
+      setShowAnswer(true)
+    })
 
-        if (scoreRatio < .6) {
-            return 'Close, but no cigar'
-        }
+    return () => window.removeEventListener('click', clickListening)
+  }, [])
 
-        if (scoreRatio < .9) {
-            return 'Hey, not bad! You\'re close to a solid score'
-        }
+  const [index, setIndex] = useState(0)
+  const [showAnswer, setShowAnswer] = useState(false)
+  const [showRules, setShowRules] = useState(false)
+  const [finalScore, setFinalScore] = useState(0)
+  const quizCardRef = useRef()
+  const currentVocab = useMemo(() => cards[index], [index, cards])
+  const isFinished = useMemo(() => index >= cards.length, [index, cards])
+  const maxScore = cards.length * PointValues.easy
+  const scoreRatio = finalScore / maxScore
 
-        if (scoreRatio < 1) {
-            return '¡Bien hecho!'
-        }
+  useEffect(() => {
+    if (isFinished) {
+      onFinish(index) // Pass in the # of cards the user studied
+    }
+  }, [isFinished])
 
-        if (scoreRatio === 1) {
-            return 'A perfect score!'
-        }
-    }, [index, cards]);
-
-    const nextQuestion = (event, score) => {
-        event.stopPropagation();
-
-        setFinalScore(finalScore => finalScore + PointValues[score]);
-        setShowAnswer(false);
-        setIndex(index + 1);
+  const finishedText = useMemo(() => {
+    if (scoreRatio < 0.3) {
+      return 'Hmmm, a little more studying will help'
     }
 
-    const handleShowRules = (e) => {
-        e.stopPropagation();
-        setShowRules(true);
+    if (scoreRatio < 0.6) {
+      return 'Close, but no cigar'
     }
 
-    const {elementHeight, elementWidth} = useMemo(() => {
-        if (!quizCardRef.current) return {elementHeight: 0, elementWidth: 0};
+    if (scoreRatio < 0.9) {
+      return 'Hey, not bad! You\'re close to a solid score'
+    }
 
-        return {elementHeight: quizCardRef.current.offsetHeight, elementWidth: quizCardRef.current.offsetWidth};
-    });
+    if (scoreRatio < 1) {
+      return '¡Bien hecho!'
+    }
 
-    return (
+    if (scoreRatio === 1) {
+      return 'A perfect score!'
+    }
+  }, [index, cards])
+
+  const nextQuestion = (event, score) => {
+    event.stopPropagation()
+
+    setFinalScore(finalScore => finalScore + PointValues[score])
+    setShowAnswer(false)
+    setIndex(index + 1)
+  }
+
+  const handleShowRules = (e) => {
+    e.stopPropagation()
+    setShowRules(true)
+  }
+
+  const { elementHeight, elementWidth } = useMemo(() => {
+    if (!quizCardRef.current) return { elementHeight: 0, elementWidth: 0 }
+
+    return { elementHeight: quizCardRef.current.offsetHeight, elementWidth: quizCardRef.current.offsetWidth }
+  })
+
+  return (
         <div>
             <ButtonRow>
                 {!isFinished && <span>{index + 1}/{cards.length}</span>}
@@ -117,7 +116,7 @@ const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
             <QuizCard ref={quizCardRef}>
                 {isFinished && (
                     <div>
-                    {scoreRatio > .8 && (
+                    {scoreRatio > 0.8 && (
                         <Confetti
                             width={elementWidth}
                             height={elementHeight}
@@ -125,7 +124,7 @@ const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
                         />
                     )}
                     <CompletedMessage>{finishedText}</CompletedMessage>
-                    <Score>{finalScore} / {cards.length * PointValues['easy']}</Score>
+                    <Score>{finalScore} / {cards.length * PointValues.easy}</Score>
                     </div>
                 )}
 
@@ -163,27 +162,27 @@ const VocabQuiz = ({vocab: vocabItems, onCloseQuiz, onFinish}) => {
                  )}
              </ExplanationWrapper>
         </div>
-    )
+  )
 }
 
-export default VocabQuiz;
+export default VocabQuiz
 
 const ButtonRow = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     padding-bottom: 15px;
-`;
+`
 
 const QuizCard = styled(Card)`
     position: relative;
-`;
+`
 const Question = styled.h4`
     text-align: center;
     font-size: 24px;
     margin-bottom: 0px;
     margin-top: 0;
-`;
+`
 const ExplanationWrapper = styled.div`
     margin-top: 30px;
     display: flex;
@@ -201,37 +200,37 @@ const ExplanationWrapper = styled.div`
     }
 `
 
-const CompletedMessage = styled(Question)``;
+const CompletedMessage = styled(Question)``
 const Score = styled.div`
     display: flex;
     justify-content: center;
     font-size: 64px;
     font-weight: bold;
     color: ${Colors.Primary};
-`;
+`
 
 const Answer = styled.p`
     margin-top: 0px;
     text-align: center;
     opacity: ${props => props.show ? 1 : 0};
-`;
+`
 const AnswerOptions = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 30px;
-`;
+`
 const AnswerOption = styled(Button)`
     margin-right: 10px;
-`;
+`
 const ExplanationMessage = styled.p`
     margin-top: 10px;
     margin-bottom: 0;
     font-size: 14px;
     text-align: center;
     color: #666;
-`;
+`
 const Rules = styled(ExplanationMessage)`
     font-size: 16px;
     line-height: 24px;
     text-align: left;;
-`;
+`
