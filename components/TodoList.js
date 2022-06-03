@@ -1,15 +1,15 @@
-import React, { useContext } from 'react';
-import styled from 'styled-components';
-import appContext from '../contexts/appContext';
-import { useLocalStorage, ONE_TRANSLATION_DONE_KEY } from '../hooks/useLocalStorage';
+import React, { useContext } from 'react'
+import styled from 'styled-components'
+import appContext from '../contexts/appContext'
+import { useLocalStorage, ONE_TRANSLATION_DONE_KEY } from '../hooks/useLocalStorage'
 
-const TodoList = ({readStatuses, playTime, level}) => {
-    const {userProfileIsComplete} = useContext(appContext);
-    const [wordWasTranslated] = useLocalStorage(ONE_TRANSLATION_DONE_KEY, false)
-    const minutesListened = playTime / 60
-    const articlesRead = Object.keys(readStatuses).length;
+const TodoList = ({ readStatuses, playTime, level }) => {
+  const { userProfileIsComplete } = useContext(appContext)
+  const [wordWasTranslated] = useLocalStorage(ONE_TRANSLATION_DONE_KEY, false)
+  const minutesListened = playTime / 60
+  const articlesRead = Object.keys(readStatuses).length
 
-    return (
+  return (
         <TodoCard>
             <h5>Getting started</h5>
             <ul>
@@ -20,10 +20,10 @@ const TodoList = ({readStatuses, playTime, level}) => {
                 <Goal complete={level >= 3}>Get to level 3</Goal>
             </ul>
         </TodoCard>
-    )
+  )
 }
 
-export default TodoList;
+export default TodoList
 
 const TodoCard = styled.div`
     background: rgb(31,74,184);
@@ -44,11 +44,13 @@ const TodoCard = styled.div`
         margin: 0;
         padding-left: 20px;
     }
-`;
+`
 
 const Goal = styled.li`
     margin-bottom: 10px;
-    ${props => props.complete ? `
+    ${props => props.complete
+? `
         text-decoration: line-through; 
-    `: ``}
-`;
+    `
+: ''}
+`

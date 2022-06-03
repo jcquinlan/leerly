@@ -1,31 +1,31 @@
-import React, {useState} from 'react';
-import {useToasts} from 'react-toast-notifications';
-import {Container, HeroWrapper, HeroContent, Divider, Title, Button, Input} from '../../components/styled';
-import {auth} from '../../services';
+import React, { useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
+import { Container, HeroWrapper, HeroContent, Divider, Title, Button, Input } from '../../components/styled'
+import { auth } from '../../services'
 
 function ResetPasswordPage () {
-    const {addToast} = useToasts();
-    const [formState, setFormState] = useState({});
+  const { addToast } = useToasts()
+  const [formState, setFormState] = useState({})
 
-    const sendResetEmail = (e) => {
-        e.preventDefault();
+  const sendResetEmail = (e) => {
+    e.preventDefault()
 
-        auth.sendPasswordResetEmail(formState.email).then(function() {
-            // Email sent.
-            addToast('Email sent.', {appearance: 'success'});
-            setFormState({});
-          }).catch(function(error) {
-            // An error happened.
-            console.error(error);
-            addToast(error.message, {appearance: 'error'});
-          });
-    }
+    auth.sendPasswordResetEmail(formState.email).then(function () {
+      // Email sent.
+      addToast('Email sent.', { appearance: 'success' })
+      setFormState({})
+    }).catch(function (error) {
+      // An error happened.
+      console.error(error)
+      addToast(error.message, { appearance: 'error' })
+    })
+  }
 
-    const handleInputChange = (e) => {
-        setFormState({...formState, [e.target.name]: e.target.value});
-    }
+  const handleInputChange = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value })
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -43,7 +43,7 @@ function ResetPasswordPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default ResetPasswordPage;
+export default ResetPasswordPage

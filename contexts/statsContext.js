@@ -1,19 +1,19 @@
-import React from 'react';
-import useStatsContext from '../hooks/useStatsContext';
+import React from 'react'
+import useStatsContext from '../hooks/useStatsContext'
 
 const defaultStatsContext = {
-    wordCountRecords: []
-};
-const StatsContext = React.createContext(defaultStatsContext);
+  wordCountRecords: []
+}
+const StatsContext = React.createContext(defaultStatsContext)
 
-export const StatsContextProvider = ({children}) => {
-    const value = useStatsContext();
+export const StatsContextProvider = ({ children }) => {
+  const value = useStatsContext()
 
-    return (
+  return (
         <StatsContext.Provider value={value}>
             {children}
         </StatsContext.Provider>
-    )
-};
+  )
+}
 
-export default StatsContext;
+export default StatsContext

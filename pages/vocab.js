@@ -1,90 +1,90 @@
-import React, {useState, useEffect, useContext} from 'react';
-import styled from 'styled-components';
-import {ExportToCsv} from 'export-to-csv';
+import React, { useState, useEffect, useContext } from 'react'
+import styled from 'styled-components'
+import { ExportToCsv } from 'export-to-csv'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Subtitle,
-    Card,
-    Colors,
-    NoticeCard,
-    NoticeCardMain,
-    Button,
-    devices
-} from '../components/styled';
-import LoadingPage from '../components/LoadingPage';
-import useGuardRoute from '../hooks/useGuardRoute';
-import AppContext from '../contexts/appContext';
-import {getAllVocab, deleteVocab} from '../services/vocabService';
-import VocabQuiz from '../components/VocabQuiz';
-import useUserMetrics from '../hooks/useUserMetrics';
-import { updateUserCardsStudiedActivityMetric } from '../services/articleService';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Divider,
+  Title,
+  Subtitle,
+  Card,
+  Colors,
+  NoticeCard,
+  NoticeCardMain,
+  Button,
+  devices
+} from '../components/styled'
+import LoadingPage from '../components/LoadingPage'
+import useGuardRoute from '../hooks/useGuardRoute'
+import AppContext from '../contexts/appContext'
+import { getAllVocab, deleteVocab } from '../services/vocabService'
+import VocabQuiz from '../components/VocabQuiz'
+import useUserMetrics from '../hooks/useUserMetrics'
+import { updateUserCardsStudiedActivityMetric } from '../services/articleService'
 
 function VocabPage () {
-    useGuardRoute();
+  useGuardRoute()
 
-    const {user, userHasProPlan} = useContext(AppContext);
-    const [loading, setLoading] = useState(true);
-    const [vocabList, setVocabList] = useState([]);
-    const [disableDelete, setDisableDelete] = useState(false);
-    const [isStudying, setIsStudying] = useState(false);
-    const {cardsStudied} = useUserMetrics();
+  const { user, userHasProPlan } = useContext(AppContext)
+  const [loading, setLoading] = useState(true)
+  const [vocabList, setVocabList] = useState([])
+  const [disableDelete, setDisableDelete] = useState(false)
+  const [isStudying, setIsStudying] = useState(false)
+  const { cardsStudied } = useUserMetrics()
 
-    const hasSufficientCardsToStudy = vocabList.length > 9;
+  const hasSufficientCardsToStudy = vocabList.length > 9
 
-    useEffect(() => {
-        if (!!user && userHasProPlan) {
-            getAllVocab(user.uid)
-                .then(vocab => {
-                    const vocabData = vocab.docs.map(current => {
-                        return {id: current.id, ...current.data()};
-                    });
-                    setVocabList(vocabData);
-                })
-                .finally(() => setLoading(false));
-        }
-    }, [user, userHasProPlan]);
+  useEffect(() => {
+    if (!!user && userHasProPlan) {
+      getAllVocab(user.uid)
+        .then(vocab => {
+          const vocabData = vocab.docs.map(current => {
+            return { id: current.id, ...current.data() }
+          })
+          setVocabList(vocabData)
+        })
+        .finally(() => setLoading(false))
+    }
+  }, [user, userHasProPlan])
 
-    const handleDeleteVocab = async (vocabId) => {
-        if (disableDelete) return;
+  const handleDeleteVocab = async (vocabId) => {
+    if (disableDelete) return
 
-        setDisableDelete(true);
-        await deleteVocab(vocabId);
-        setDisableDelete(false);
-        setVocabList(vocabList => vocabList.filter(item => item.id !== vocabId));
+    setDisableDelete(true)
+    await deleteVocab(vocabId)
+    setDisableDelete(false)
+    setVocabList(vocabList => vocabList.filter(item => item.id !== vocabId))
+  }
+
+  const handleQuizFinished = (completedCards) => {
+    updateUserCardsStudiedActivityMetric(user.uid, completedCards + cardsStudied)
+  }
+
+  const handleExportVocab = () => {
+    const options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      showLabels: true,
+      title: 'leerly vocab export',
+      useTextFile: false,
+      useKeysAsHeaders: true
     }
 
-    const handleQuizFinished = (completedCards) => {
-        updateUserCardsStudiedActivityMetric(user.uid, completedCards + cardsStudied);
-    }
+    const csvExporter = new ExportToCsv(options)
+    const data = vocabList.map(vocab => {
+      return {
+        english: vocab.english,
+        spanish: vocab.spanish,
+        sentence: vocab.sentence
+      }
+    })
 
-    const handleExportVocab = () => {
-        const options = { 
-            fieldSeparator: ',',
-            quoteStrings: '"',
-            showLabels: true, 
-            title: 'leerly vocab export',
-            useTextFile: false,
-            useKeysAsHeaders: true
-          };
-         
-        const csvExporter = new ExportToCsv(options);
-        const data = vocabList.map(vocab => {
-            return {
-                english: vocab.english,
-                spanish: vocab.spanish,
-                sentence: vocab.sentence
-            }
-        });
-         
-        csvExporter.generateCsv(data);
-    }
+    csvExporter.generateCsv(data)
+  }
 
-    if (!userHasProPlan) {
-        return (
+  if (!userHasProPlan) {
+    return (
             <>
             <Container>
                 <HeroWrapper>
@@ -96,12 +96,12 @@ function VocabPage () {
 
                 <Divider />
 
-                <p style={{textAlign: 'center'}}>
+                <p style={{ textAlign: 'center' }}>
                     Paying customers can save words and their translations <br /> directly from articles, and study
                     them here in leerly.
                 </p>
 
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <a href="/settings"><Button>Upgrade your plan</Button></a>
                 </div>
 
@@ -111,14 +111,14 @@ function VocabPage () {
                 </ImageContainer>
             </Container>
             </>
-        )
-    }
+    )
+  }
 
-    if (loading) {
-        return <LoadingPage></LoadingPage>
-    }
+  if (loading) {
+    return <LoadingPage></LoadingPage>
+  }
 
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -145,14 +145,14 @@ function VocabPage () {
                     <NoticeCard theme="Warm" onClick={() => setIsStudying(true)}>
                         <span>Review your flashcards right in leerly</span> <br />
                         <NoticeCardMain>Click here to start studying</NoticeCardMain>
-                    </NoticeCard> 
+                    </NoticeCard>
                 )}
 
                 {!hasSufficientCardsToStudy && (
                     <NoticeCard theme="Grey">
                         <span>Once you have some vocab saved, you can study it.</span> <br />
                         <NoticeCardMain>{vocabList.length}/10 vocab cards saved</NoticeCardMain>
-                    </NoticeCard> 
+                    </NoticeCard>
                 )}
 
                 {vocabList.map(vocab => (
@@ -180,16 +180,16 @@ function VocabPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default VocabPage;
+export default VocabPage
 
 const ButtonRow = styled.div`
     display: flex;
     margin-bottom: 30px;
     flex-flow: row-reverse;
-`;
+`
 
 const VocabHeader = styled.div`
     position: absolute;
@@ -214,7 +214,7 @@ const VocabHeader = styled.div`
             opacity: 1;
         }
     }
-`;
+`
 const VocabCard = styled(Card)`
     margin-bottom: 30px;
     position: relative;
@@ -224,19 +224,19 @@ const VocabCard = styled(Card)`
             display: flex;
         }
     }
-`;
+`
 
 const Foreign = styled.h4`
     text-align: center;
     font-size: 24px;
     margin-bottom: 0px;
     margin-top: 0;
-`;
+`
 
 const Translation = styled.p`
     margin-top: 0px;
     text-align: center;
-`;
+`
 
 const Sentence = styled.p`
     line-height: 24px;
@@ -244,12 +244,12 @@ const Sentence = styled.p`
     font-size: 18px;
     margin-top: 5px;
     font-weight: normal;
-`;
+`
 const Example = styled.div`
     margin-bottom: 0px;
     font-weight: bold;
     color: #666;
-`;
+`
 
 const ImageContainer = styled.div`
     display: flex;
@@ -272,5 +272,4 @@ const ImageContainer = styled.div`
             margin-bottom: 0;
         }
     }
-`;
-
+`

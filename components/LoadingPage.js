@@ -1,16 +1,16 @@
-import React from 'react';
-import styled from 'styled-components';
-import LoadingSpinner from './LoadingSpinner';
+import React from 'react'
+import styled from 'styled-components'
+import LoadingSpinner from './LoadingSpinner'
 
 const LoadingPage = () => {
-    return (
+  return (
         <FullPageWrapper>
             <LoadingSpinner />
         </FullPageWrapper>
-    )
+  )
 }
 
-export default LoadingPage;
+export default LoadingPage
 
 const FullPageWrapper = styled.div`
     height: 65vh;
@@ -18,4 +18,4 @@ const FullPageWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`;
+`

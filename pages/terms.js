@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import {Container, HeroWrapper, HeroContent, Divider, Title} from '../components/styled';
+import React from 'react'
+import styled from 'styled-components'
+import { Container, HeroWrapper, HeroContent, Divider, Title } from '../components/styled'
 
 function TermsPage () {
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -51,11 +51,11 @@ We reserve all rights to terminate accounts, edit or remove content and cancel o
 
         </Container>
         </>
-    );
+  )
 }
 
-export default TermsPage;
+export default TermsPage
 
 const Pre = styled.p`
     white-space: pre-wrap;
-`;
+`

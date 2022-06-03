@@ -1,209 +1,209 @@
-import React, {useState, useMemo, useEffect, useContext} from 'react';
-import styled from 'styled-components';
-import {useToasts} from 'react-toast-notifications';
+import React, { useState, useMemo, useEffect, useContext } from 'react'
+import styled from 'styled-components'
+import { useToasts } from 'react-toast-notifications'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Divider,
-    Title,
-    Button,
-    Input,
-    Card,
-    Colors,
-    devices,
-    HelpText
-} from '../components/styled';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Divider,
+  Title,
+  Button,
+  Input,
+  Card,
+  Colors,
+  devices,
+  HelpText
+} from '../components/styled'
 import {
-    Plans,
-    PlanContainer,
-    PlanBody,
-    PlanHeader
-} from '../components/Plans';
-import LoadingPage from '../components/LoadingPage';
-import {useRouter} from 'next/router';
-import {NextSeo} from 'next-seo';
+  Plans,
+  PlanContainer,
+  PlanBody,
+  PlanHeader
+} from '../components/Plans'
+import LoadingPage from '../components/LoadingPage'
+import { useRouter } from 'next/router'
+import { NextSeo } from 'next-seo'
 import {
-    redirectToStripeCheckout,
-    createStripeCustomer,
-    createStripeSubscription
-} from '../services/stripeService';
-import {registerUser} from '../services/authService';
-import {addUserToProductionMailingList} from '../services/emailService';
+  redirectToStripeCheckout,
+  createStripeCustomer,
+  createStripeSubscription
+} from '../services/stripeService'
+import { registerUser } from '../services/authService'
+import { addUserToProductionMailingList } from '../services/emailService'
 import {
-    updateCustomerSubscribedStatus,
-} from '../services/userService';
-import {UserLevels, mapUserLevelToWordDifficulty} from '../constants';
-import {useLocalStorage, REFERRAL_CODE_KEY} from '../hooks/useLocalStorage';
-import mixpanelContext from '../contexts/mixpanelContext';
+  updateCustomerSubscribedStatus
+} from '../services/userService'
+import { UserLevels, mapUserLevelToWordDifficulty } from '../constants'
+import { useLocalStorage, REFERRAL_CODE_KEY } from '../hooks/useLocalStorage'
+import mixpanelContext from '../contexts/mixpanelContext'
 
 const PLANS = {
-    LEERLY_STARTER: 'leerly-starter',
-    LEERLY_PRO: 'leerly-pro'
+  LEERLY_STARTER: 'leerly-starter',
+  LEERLY_PRO: 'leerly-pro'
 }
 const UI_STATES = {
-    BASIC_INFO: 'basic-info',
-    DIFFICULTY: 'difficulty',
-    DIFFICULTY_2: 'difficulty-2',
-    PLAN_INFO: 'plan-info'
-};
+  BASIC_INFO: 'basic-info',
+  DIFFICULTY: 'difficulty',
+  DIFFICULTY_2: 'difficulty-2',
+  PLAN_INFO: 'plan-info'
+}
 const DIFFICULTY_DESCRIPTIONS = {
-    [UserLevels.A1]: `You're just starting out, and maybe know how to say "Hello", or introduce yourself.`,
-    [UserLevels.A2]: `You can understand very basic phrases said to you slowly, and know basic vocabulary for colors, numbers, etc.`,
-    [UserLevels.B1]: `You can understand the main points of texts, and can perform basic transactions with native speakers, if they speak slowly and help you.`,
-    [UserLevels.B2]: `You can manage to hold a conversation with a native speaker about most topics, with some help and patience.`,
-    [UserLevels.C1]: `You can perform basically any transaction or conversation with a native speaker, and can understand basically all written text.`,
-    [UserLevels.C2]: `You can understand basically everything you hear and read, and can express yourself effortlessly.`,
+  [UserLevels.A1]: 'You\'re just starting out, and maybe know how to say "Hello", or introduce yourself.',
+  [UserLevels.A2]: 'You can understand very basic phrases said to you slowly, and know basic vocabulary for colors, numbers, etc.',
+  [UserLevels.B1]: 'You can understand the main points of texts, and can perform basic transactions with native speakers, if they speak slowly and help you.',
+  [UserLevels.B2]: 'You can manage to hold a conversation with a native speaker about most topics, with some help and patience.',
+  [UserLevels.C1]: 'You can perform basically any transaction or conversation with a native speaker, and can understand basically all written text.',
+  [UserLevels.C2]: 'You can understand basically everything you hear and read, and can express yourself effortlessly.'
 }
 
-const STARTING = 'starting';
-const PICK_MY_LEVEL = 'pick-my-level';
+const STARTING = 'starting'
+const PICK_MY_LEVEL = 'pick-my-level'
 
-const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 function RegisterPage () {
-    const mixpanel = useContext(mixpanelContext);
-    const router = useRouter();
-    const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null);
-    const referralCode = useMemo(() => router.query.referralCode || savedReferralCode, [router, savedReferralCode]);
+  const mixpanel = useContext(mixpanelContext)
+  const router = useRouter()
+  const [savedReferralCode, storeReferralCode] = useLocalStorage(REFERRAL_CODE_KEY, null)
+  const referralCode = useMemo(() => router.query.referralCode || savedReferralCode, [router, savedReferralCode])
 
-    const {addToast} = useToasts();
-    const [formState, setFormState] = useState({});
-    const [submitting, setSubmitting] = useState(false);
-    const formIsFilled = useMemo(() => {
-        return !!(
-            formState.email &&
+  const { addToast } = useToasts()
+  const [formState, setFormState] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const formIsFilled = useMemo(() => {
+    return !!(
+      formState.email &&
             formState.name &&
             formState.password &&
             formState.confirmPassword
-        );
-    }, [formState]);
+    )
+  }, [formState])
 
-    const [uiState, setUIState] = useState(UI_STATES.BASIC_INFO);
-    const [selectedPlan, setSelectedPlan] = useState(null);
-    const [selectedDifficultyType, setSelectedDifficultyType] = useState(STARTING);
-    const [selectedDifficultyLevel, setSelectedDifficultyLevel] = useState(UserLevels.A1);
+  const [uiState, setUIState] = useState(UI_STATES.BASIC_INFO)
+  const [selectedPlan, setSelectedPlan] = useState(null)
+  const [selectedDifficultyType, setSelectedDifficultyType] = useState(STARTING)
+  const [selectedDifficultyLevel, setSelectedDifficultyLevel] = useState(UserLevels.A1)
 
-    useEffect(() => {
-        if (mixpanel) {
-            const ref = router.query.ref;
-            mixpanel.trackEvent('register-page-loaded', {ref});
+  useEffect(() => {
+    if (mixpanel) {
+      const ref = router.query.ref
+      mixpanel.trackEvent('register-page-loaded', { ref })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (router.query.referralCode) {
+      storeReferralCode(router.query.referralCode)
+    }
+  }, [router])
+
+  const submitRegistration = async (e) => {
+    e.preventDefault()
+
+    const paidPlan = selectedPlan === PLANS.LEERLY_PRO
+
+    try {
+      const ref = router.query.ref
+
+      if (!formIsFilled) {
+        throw Error('Please fill out all information')
+      }
+
+      if (formState.password !== formState.confirmPassword) {
+        throw Error('Passwords do not match.')
+      }
+
+      setSubmitting(true)
+
+      // Create the user's record, and their profile record on the server.
+      const userData = await registerUser(
+        formState.email,
+        formState.password,
+        {
+          spanish: selectedDifficultyLevel,
+          name: formState.name
         }
-    }, []);
+      )
 
-    useEffect(() => {
-        if (router.query.referralCode) {
-            storeReferralCode(router.query.referralCode);
-        }
-    }, [router]);
+      await mixpanel.trackEvent('account-created', { ref })
 
-    const submitRegistration = async (e) => {
-        e.preventDefault();
+      if (paidPlan) {
+        redirectToStripeCheckout(userData.uid, formState.email, referralCode)
+        return
+      } else {
+        const customerData = await createStripeCustomer(formState.email)
+        const customerId = customerData.id
 
-        const paidPlan = selectedPlan === PLANS.LEERLY_PRO;
+        // Create subscription for new user in Stripe.
+        await createStripeSubscription(customerId)
 
-        try {
-            const ref = router.query.ref;
+        // Add the Stripe customerId to the user profile (and set subscribed to true)
+        await updateCustomerSubscribedStatus(userData.uid, customerId)
 
-            if (!formIsFilled) {
-                throw Error('Please fill out all information');
-            }
+        // Put the user onto the production mailing list
+        await addUserToProductionMailingList(formState.email)
 
-            if (formState.password !== formState.confirmPassword) {
-                throw Error('Passwords do not match.');
-            }
+        addToast('Account created', { appearance: 'success' })
+        router.push('/sign-in?registered=true')
+      }
+    } catch (error) {
+      console.error(error)
+      addToast(error.message, { appearance: 'error' })
+      setUIState(UI_STATES.BASIC_INFO)
+      setSubmitting(false)
+    }
+  }
 
-            setSubmitting(true);
+  const handleFormState = (event) => {
+    const newState = {
+      ...formState,
+      [event.target.name]: event.target.value
+    }
+    setFormState(newState)
+  }
 
-            // Create the user's record, and their profile record on the server.
-            const userData = await registerUser(
-                formState.email,
-                formState.password,
-                {
-                    spanish: selectedDifficultyLevel,
-                    name: formState.name
-                }
-            );
-
-            await mixpanel.trackEvent('account-created', {ref});
-
-            if (paidPlan) {
-                redirectToStripeCheckout(userData.uid, formState.email, referralCode);
-                return;
-            } else {
-                const customerData = await createStripeCustomer(formState.email);
-                const customerId = customerData.id;
-
-                // Create subscription for new user in Stripe.
-                await createStripeSubscription(customerId);
-
-                // Add the Stripe customerId to the user profile (and set subscribed to true)
-                await updateCustomerSubscribedStatus(userData.uid, customerId);
-
-                // Put the user onto the production mailing list
-                await addUserToProductionMailingList(formState.email);
-
-                addToast('Account created', {appearance: 'success'});
-                router.push('/sign-in?registered=true');
-            }
-        } catch (error) {
-            console.error(error);
-            addToast(error.message, {appearance: 'error'});
-            setUIState(UI_STATES.BASIC_INFO);
-            setSubmitting(false);
-        }
-    };
-
-    const handleFormState = (event) => {
-        const newState = {
-            ...formState,
-            [event.target.name]: event.target.value
-        };
-        setFormState(newState);
+  const handleBasicInfoFormSubmit = () => {
+    if (!EMAIL_REGEX.test(formState.email)) {
+      addToast('Email is invalid', { appearance: 'error' })
+      return
     }
 
-    const handleBasicInfoFormSubmit = () => {
-        if (!EMAIL_REGEX.test(formState.email)) {
-            addToast('Email is invalid', {appearance: 'error'});
-            return;
-        }
-
-        if (formState.password !== formState.confirmPassword) {
-            addToast('Passwords do not match', {appearance: 'error'});
-            return;
-        }
-
-        setUIState(UI_STATES.DIFFICULTY);
+    if (formState.password !== formState.confirmPassword) {
+      addToast('Passwords do not match', { appearance: 'error' })
+      return
     }
 
-    const handleDifficultyTypeSubmit = () => {
-        if (selectedDifficultyType === STARTING) {
-            setUIState(UI_STATES.PLAN_INFO);
-        } else {
-            setUIState(UI_STATES.DIFFICULTY_2);
-        }
-    }
+    setUIState(UI_STATES.DIFFICULTY)
+  }
 
-    const handlePlanInfoBack = () => {
-        if (selectedDifficultyType === STARTING) {
-            setUIState(UI_STATES.DIFFICULTY);
-        } else {
-            setUIState(UI_STATES.DIFFICULTY_2);
-        }
+  const handleDifficultyTypeSubmit = () => {
+    if (selectedDifficultyType === STARTING) {
+      setUIState(UI_STATES.PLAN_INFO)
+    } else {
+      setUIState(UI_STATES.DIFFICULTY_2)
     }
+  }
 
-    const selectNewToSpanish = () => {
-        setSelectedDifficultyType(STARTING);
-        setSelectedDifficultyLevel(UserLevels.A1);
+  const handlePlanInfoBack = () => {
+    if (selectedDifficultyType === STARTING) {
+      setUIState(UI_STATES.DIFFICULTY)
+    } else {
+      setUIState(UI_STATES.DIFFICULTY_2)
     }
+  }
 
-    if (submitting) {
-        return <LoadingPage />;
-    }
+  const selectNewToSpanish = () => {
+    setSelectedDifficultyType(STARTING)
+    setSelectedDifficultyLevel(UserLevels.A1)
+  }
 
-    return (
+  if (submitting) {
+    return <LoadingPage />
+  }
+
+  return (
         <>
-        <NextSeo 
+        <NextSeo
             title="leerly - register"
             description="start reading articles in Spanish"
         />
@@ -217,12 +217,12 @@ function RegisterPage () {
         <Divider />
 
         <ExplanationText>
-            <RegistrationStep selected={uiState === UI_STATES.BASIC_INFO}>1. Basic info</RegistrationStep> - 
+            <RegistrationStep selected={uiState === UI_STATES.BASIC_INFO}>1. Basic info</RegistrationStep> -
             <RegistrationStep
                 selected={uiState === UI_STATES.DIFFICULTY || uiState === UI_STATES.DIFFICULTY_2}>
                     2. Your goals
-            </RegistrationStep> - 
-            <RegistrationStep selected={uiState === UI_STATES.PLAN_INFO}>3. Select a plan</RegistrationStep> - 
+            </RegistrationStep> -
+            <RegistrationStep selected={uiState === UI_STATES.PLAN_INFO}>3. Select a plan</RegistrationStep> -
             <RegistrationStep>4. Billing (paid plans only)</RegistrationStep>
         </ExplanationText>
 
@@ -250,7 +250,7 @@ function RegisterPage () {
                         onClick={selectNewToSpanish}
                         selected={selectedDifficultyType === STARTING}
                     >
-                        <DifficultyImage style={{marginBottom: 10}} src="/images/difficulties/super-beginner.png" />
+                        <DifficultyImage style={{ marginBottom: 10 }} src="/images/difficulties/super-beginner.png" />
                         <DifficultySelectionTitle>I'm new to Spanish</DifficultySelectionTitle>
                         <div>I'm starting from the beginning.</div>
                     </DifficultySelectionCard>
@@ -259,7 +259,7 @@ function RegisterPage () {
                         onClick={() => setSelectedDifficultyType(PICK_MY_LEVEL)}
                         selected={selectedDifficultyType === PICK_MY_LEVEL}
                     >
-                        <DifficultyImage style={{marginBottom: 10}} src="/images/difficulties/advanced.png" />
+                        <DifficultyImage style={{ marginBottom: 10 }} src="/images/difficulties/advanced.png" />
                         <DifficultySelectionTitle>I'm looking to build my skills</DifficultySelectionTitle>
                         <div>Let me pick my level.</div>
                     </DifficultySelectionCard>
@@ -281,21 +281,21 @@ function RegisterPage () {
 
                 <DifficultyLevelWrapper>
                     {Object.values(UserLevels).map(level => {
-                        const difficultyImage = `/images/difficulties/${mapUserLevelToWordDifficulty(level)}.png`
-                        return (
+                      const difficultyImage = `/images/difficulties/${mapUserLevelToWordDifficulty(level)}.png`
+                      return (
                             <DifficultyLevel
                                 onClick={() => setSelectedDifficultyLevel(level)}
                                 selected={selectedDifficultyLevel === level}
                             >
-                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <DifficultyImage src={difficultyImage} />
                                 </div>
-                                <div style={{paddingLeft: 20}}>
+                                <div style={{ paddingLeft: 20 }}>
                                     <DifficultyTitle>{mapUserLevelToWordDifficulty(level, true)}</DifficultyTitle>
                                     <DifficultyDescription>{DIFFICULTY_DESCRIPTIONS[level]}</DifficultyDescription>
                                 </div>
                             </DifficultyLevel>
-                        )
+                      )
                     })}
                 </DifficultyLevelWrapper>
 
@@ -343,7 +343,7 @@ function RegisterPage () {
                             <li>Priority access to the weekly speaking sessions</li>
                         </ul>
                         </PlanBody>
-                        <HelpText style={{padding: '0 30px'}}>We will redirect you to Stripe.com to securely handle your payment info.</HelpText>
+                        <HelpText style={{ padding: '0 30px' }}>We will redirect you to Stripe.com to securely handle your payment info.</HelpText>
                     </PlanContainer>
                 </Plans>
 
@@ -358,19 +358,21 @@ function RegisterPage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default RegisterPage;
+export default RegisterPage
 
 const RegistrationStep = styled.span`
     color: ${Colors.MediumGrey};
 
-    ${props => props.selected ? `
+    ${props => props.selected
+? `
         color: ${Colors.Primary};
         font-weight: bold;
-    `: ``}
-`;
+    `
+: ''}
+`
 const ExplanationText = styled.div`
     display: none;
     text-align: center;
@@ -387,13 +389,13 @@ const ExplanationText = styled.div`
         display: block;
         width: 100%;
     }
-`;
+`
 
 const PlanSection = styled.div`
     ${Plans} {
         margin: 30px 0;
     }
-`;
+`
 
 const DifficultySelectionCards = styled.div`
     display: flex;
@@ -403,7 +405,7 @@ const DifficultySelectionCards = styled.div`
     @media ${devices.tablet} {
         flex-direction: row;
     }
-`;
+`
 
 const DifficultySelectionCard = styled.div`
     padding: 20px 30px;
@@ -425,38 +427,38 @@ const DifficultySelectionCard = styled.div`
             margin-right: 20px;
         }
     }
-`;
+`
 
 const DifficultySelectionTitle = styled.h4`
     font-weight: 700;
     margin:  0;
-`;
+`
 
 const GreetingWrapper = styled.div`
     text-align: center;
     margin: 40px 0;
-`;
+`
 
 const Greeting = styled.h3`
     margin: 0;
-`;
+`
 
 const SubGreeting = styled.p`
     margin: 0;
-`;
+`
 
 const ButtonRow = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 0 60px;
     margin-top: 30px;
-`;
+`
 
 const DifficultyLevelWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`;
+`
 
 const DifficultyLevel = styled.div`
     display: flex;
@@ -471,17 +473,17 @@ const DifficultyLevel = styled.div`
     &:hover {
         transform: scale(1.05);
     }
-`;
+`
 
 const DifficultyImage = styled.img`
     width: 50px;
-`;
+`
 
 const DifficultyTitle = styled.h3`
     font-weight: 500;
     margin: 0;
-`;
+`
 
 const DifficultyDescription = styled.p`
     margin: 0;
-`;
+`

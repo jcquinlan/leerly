@@ -1,15 +1,15 @@
-import React from 'react';
-import styled from 'styled-components';
-import {Colors} from './styled';
-import {ArticleTypeList} from '../services/articleService';
+import React from 'react'
+import styled from 'styled-components'
+import { Colors } from './styled'
+import { ArticleTypeList } from '../services/articleService'
 
-const TypeSelector = ({onSelect, selectedTypes}) => {
-    return (
+const TypeSelector = ({ onSelect, selectedTypes }) => {
+  return (
         <TypeSelectorWrapper>
             {ArticleTypeList.map(type => {
-                const selected = selectedTypes.includes(type.type);
+              const selected = selectedTypes.includes(type.type)
 
-                return (
+              return (
                     <TypePill
                         key={type.type}
                         selected={selected}
@@ -18,15 +18,15 @@ const TypeSelector = ({onSelect, selectedTypes}) => {
                         onClick={() => onSelect(type.type)}>
                         {type.display}
                     </TypePill>
-                );
+              )
             })}
         </TypeSelectorWrapper>
-    )
-};
+  )
+}
 
 const TypeSelectorWrapper = styled.div`
     margin-bottom: 30px;
-`;
+`
 
 const TypePill = styled.div`
     display: inline-block;
@@ -38,9 +38,6 @@ const TypePill = styled.div`
     margin-top: 5px;
     cursor: pointer;
     transition: 0.3s;
-`;
+`
 
-
-
-
-export default TypeSelector;
+export default TypeSelector

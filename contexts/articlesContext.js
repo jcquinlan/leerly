@@ -1,17 +1,17 @@
-import React from 'react';
-import useArticlesContext from '../hooks/useArticlesContext';
+import React from 'react'
+import useArticlesContext from '../hooks/useArticlesContext'
 
-const defaultAppContext = {};
-const ArticlesContext = React.createContext(defaultAppContext);
+const defaultAppContext = {}
+const ArticlesContext = React.createContext(defaultAppContext)
 
-export const ArticlesContextProvider = ({children}) => {
-    const value = useArticlesContext();
+export const ArticlesContextProvider = ({ children }) => {
+  const value = useArticlesContext()
 
-    return (
+  return (
         <ArticlesContext.Provider value={value}>
             {children}
         </ArticlesContext.Provider>
-    )
-};
+  )
+}
 
-export default ArticlesContext;
+export default ArticlesContext

@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import {Colors} from './index';
+import React from 'react'
+import styled from 'styled-components'
+import { Colors } from './index'
 
-const ReadCheck = ({checked}) => {
-    return <CheckMark checked={checked}>✓</CheckMark>
+const ReadCheck = ({ checked }) => {
+  return <CheckMark checked={checked}>✓</CheckMark>
 }
 
 const CheckMark = styled.div`
@@ -17,10 +17,12 @@ const CheckMark = styled.div`
     background-color: ${Colors.LightGrey};
     color: ${Colors.MediumGrey};
 
-    ${props => props.checked ? `
+    ${props => props.checked
+? `
         background-color: ${Colors.Green};
         color: #fff; 
-    `: ''}
-`;
+    `
+: ''}
+`
 
-export default ReadCheck;
+export default ReadCheck

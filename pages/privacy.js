@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import {Container, HeroWrapper, HeroContent, Divider, Title} from '../components/styled';
+import React from 'react'
+import styled from 'styled-components'
+import { Container, HeroWrapper, HeroContent, Divider, Title } from '../components/styled'
 
 function PrivacyPage () {
-    return (
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -46,11 +46,11 @@ If you have any questions about this Privacy Policy, please contact us at uesode
 
         </Container>
         </>
-    );
+  )
 }
 
-export default PrivacyPage;
+export default PrivacyPage
 
 const Pre = styled.p`
     white-space: pre-wrap;
-`;
+`

@@ -1,59 +1,59 @@
-import React, {useState, useEffect, useContext} from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect, useContext } from 'react'
+import styled from 'styled-components'
 import {
-    Container,
-    HeroWrapper,
-    HeroContent,
-    Title,
-    Divider,
-    Subtitle,
-    Button
-} from '../components/styled';
-import useGuardRoute from '../hooks/useGuardRoute';
-import {createNewReferralCode, getUserReferralCode} from '../services/referralService';
-import AppContext from '../contexts/appContext';
+  Container,
+  HeroWrapper,
+  HeroContent,
+  Title,
+  Divider,
+  Subtitle,
+  Button
+} from '../components/styled'
+import useGuardRoute from '../hooks/useGuardRoute'
+import { createNewReferralCode, getUserReferralCode } from '../services/referralService'
+import AppContext from '../contexts/appContext'
 
 function ArticlePage () {
-    useGuardRoute();
-    const {user, userProfile, loading} = useContext(AppContext);
-    const [referralCode, setReferralCode] = useState();
-    const [loadingReferralCode, setLoadingReferralCode] = useState(true);
-    const [copied, setCopied] = useState(false);
+  useGuardRoute()
+  const { user, userProfile, loading } = useContext(AppContext)
+  const [referralCode, setReferralCode] = useState()
+  const [loadingReferralCode, setLoadingReferralCode] = useState(true)
+  const [copied, setCopied] = useState(false)
 
-    useEffect(() => {
-        if (user) {
-            getUserReferralCode(user.uid)
-                .then(referralCodeRef => {
-                    if (referralCodeRef.exists) {
-                        setReferralCode(referralCodeRef.data().referralCode);
-                    }
-                })
-                .finally(() => {
-                    setLoadingReferralCode(false);
-                })
-        }
-    }, [user]);
-
-    useEffect(() => {
-        // If the request to get the user's referral code is complete,
-        // and there is no code, we know we need to make one.
-        if (!loadingReferralCode && !loading && !referralCode) {
-            createNewReferralCode({userId: user.uid, email: user.email, customerId: userProfile.customerId})
-                .then((referralCode) => {
-                    setReferralCode(referralCode);
-                    setLoadingReferralCode(false);
-                });
-        }
-    }, [loadingReferralCode, loading, referralCode]);
-
-    const referralURL = `https://leerly.io/register?referralCode=${referralCode}`;
-
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(referralURL);
-        setCopied(true);
+  useEffect(() => {
+    if (user) {
+      getUserReferralCode(user.uid)
+        .then(referralCodeRef => {
+          if (referralCodeRef.exists) {
+            setReferralCode(referralCodeRef.data().referralCode)
+          }
+        })
+        .finally(() => {
+          setLoadingReferralCode(false)
+        })
     }
+  }, [user])
 
-    return (
+  useEffect(() => {
+    // If the request to get the user's referral code is complete,
+    // and there is no code, we know we need to make one.
+    if (!loadingReferralCode && !loading && !referralCode) {
+      createNewReferralCode({ userId: user.uid, email: user.email, customerId: userProfile.customerId })
+        .then((referralCode) => {
+          setReferralCode(referralCode)
+          setLoadingReferralCode(false)
+        })
+    }
+  }, [loadingReferralCode, loading, referralCode])
+
+  const referralURL = `https://leerly.io/register?referralCode=${referralCode}`
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(referralURL)
+    setCopied(true)
+  }
+
+  return (
         <>
         <Container>
         <HeroWrapper>
@@ -84,10 +84,10 @@ function ArticlePage () {
 
         </Container>
         </>
-    );
+  )
 }
 
-export default ArticlePage;
+export default ArticlePage
 
 const ReferralURL = styled.p`
     margin-top: 30px;

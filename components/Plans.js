@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { Colors, devices } from './styled';
+import styled from 'styled-components'
+import { Colors, devices } from './styled'
 
 export const PlanContainer = styled.div`
   margin-right: 10px;
@@ -13,10 +13,12 @@ export const PlanContainer = styled.div`
     min-width: 400px;
   }
 
-  ${props => props.selected ? `
+  ${props => props.selected
+? `
     border: 1px solid ${Colors.Primary};
-  `: ``}
-`;
+  `
+: ''}
+`
 
 export const PlanHeader = styled.div`
   border-bottom: 1px solid #eee;
@@ -26,17 +28,19 @@ export const PlanHeader = styled.div`
   text-align: center;
   color: #333;
 
-  ${props => props.special ? `
+  ${props => props.special
+? `
     color: ${Colors.Primary};
-  `: ``}
-`;
+  `
+: ''}
+`
 export const PlanBody = styled.div`
     padding: 15px;
     li {
         margin-bottom: 10px;
     }
 
-`;
+`
 
 export const Plans = styled.div`
   display: flex;
@@ -48,7 +52,8 @@ export const Plans = styled.div`
       flex-direction: row;
   }
 
-  ${props => props.selectable ? `
+  ${props => props.selectable
+? `
     margin-top: 0; 
 
     ${PlanContainer} {
@@ -58,5 +63,6 @@ export const Plans = styled.div`
             border: 1px solid ${Colors.Primary};
         }
     }
-  `: ``}
-`;
+  `
+: ''}
+`

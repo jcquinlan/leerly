@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import styled from 'styled-components';
-import { DefaultSeo } from 'next-seo';
-import { useRouter } from 'next/router';
+import React, { useContext, useEffect } from 'react'
+import styled from 'styled-components'
+import { DefaultSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import {
   PageContainer,
   Container,
@@ -16,45 +16,45 @@ import {
   Card,
   Flex,
   NarrowContainer
-} from '../components/styled';
+} from '../components/styled'
 import {
   Plans,
   PlanContainer,
   PlanBody,
   PlanHeader
-} from '../components/Plans';
-import mixpanelContext from '../contexts/mixpanelContext';
+} from '../components/Plans'
+import mixpanelContext from '../contexts/mixpanelContext'
 
-function App() {
-  const mixpanel = useContext(mixpanelContext);
-  const router = useRouter();
+function App () {
+  const mixpanel = useContext(mixpanelContext)
+  const router = useRouter()
 
   useEffect(() => {
-    const hasRef = router.asPath.includes('?');
-    const ref = router.query.ref;
+    const hasRef = router.asPath.includes('?')
+    const ref = router.query.ref
 
     // While our router object is returns syncronously,
     // the query params are not hydrated that quickly,
     // so we need to wait until they are loaded before issuing the event.
-    const refsAreStillLoading = hasRef && !ref;
+    const refsAreStillLoading = hasRef && !ref
 
     if (mixpanel && !refsAreStillLoading) {
-      const ref = router.query.ref;
-      mixpanel.trackEvent('landing-page-loaded', {ref});
+      const ref = router.query.ref
+      mixpanel.trackEvent('landing-page-loaded', { ref })
     }
-  }, [router]);
+  }, [router])
 
   const goToFreeArticle = async () => {
-    const ref = router.query.ref;
-    await mixpanel.trackEvent('visited-free-article', {ref});
-    router.push('https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n');
+    const ref = router.query.ref
+    await mixpanel.trackEvent('visited-free-article', { ref })
+    router.push('https://leerly.io/articles/vpYjCXYQhULjO2PY6P6n')
   }
 
   const registerUrl = () => {
-    const ref = router.query.ref;
-    return ref ?
-      `/register?ref=${ref}` :
-      `/register`;
+    const ref = router.query.ref
+    return ref
+      ? `/register?ref=${ref}`
+      : '/register'
   }
 
   return (
@@ -72,9 +72,9 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           {
             url: 'https://firebasestorage.googleapis.com/v0/b/leerly.appspot.com/o/images%2Fleerly.png?alt=media',
             alt: `Improve your Spanish by listening to and reading popular articles from major
-news sites, all summarized and translated to intermediate Spanish by native speakers.`,
-          },
-        ],
+news sites, all summarized and translated to intermediate Spanish by native speakers.`
+          }
+        ]
       }}
     />
 
@@ -87,7 +87,7 @@ news sites, all summarized and translated to intermediate Spanish by native spea
             <Faint> Qué guay.</Faint>
           </Subtitle>
 
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <a href={registerUrl()}><SignUpButton>Start now for free</SignUpButton></a>
           </div>
         </MainHeroContent>
@@ -99,13 +99,13 @@ news sites, all summarized and translated to intermediate Spanish by native spea
 
       <ImageSectionDivider />
 
-      <div style={{display: 'flex', justifyContent: 'center', marginBottom: '60px'}}>
-        <a href="https://www.producthunt.com/posts/leerly?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-leerly" target="_blank">
-          <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=296854&theme=light" alt="leerly - Learn Spanish with compelling, comprehensible input | Product Hunt" style={{width: "250px", height: "54px"}} width="250" height="54" />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
+        <a href="https://www.producthunt.com/posts/leerly?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-leerly" target="_blank" rel="noreferrer">
+          <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=296854&theme=light" alt="leerly - Learn Spanish with compelling, comprehensible input | Product Hunt" style={{ width: '250px', height: '54px' }} width="250" height="54" />
         </a>
       </div>
 
-      <div style={{marginBottom: '90px'}}>
+      <div style={{ marginBottom: '90px' }}>
         <NarrowContainer>
           <SectionExplanation>We give you popular articles every week in basic Spanish, because learning a language is as simple as…</SectionExplanation>
         </NarrowContainer>
@@ -143,10 +143,9 @@ news sites, all summarized and translated to intermediate Spanish by native spea
           </SectionExplanation>
         </NarrowContainer> */}
 
-
         <FreeArticleWrapper>
           <h4>See for yourself by reading a free article</h4>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Button role="link" onClick={goToFreeArticle}>Read a free article now</Button>
           </div>
         </FreeArticleWrapper>
@@ -233,7 +232,6 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         </Testimonial>
       </TestimonialRow>
 
-
     <PageContainer paddingTop="0px">
       <SectionDivider />
 
@@ -300,8 +298,8 @@ news sites, all summarized and translated to intermediate Spanish by native spea
       <Question>
         <QuestionText>What about refunds?</QuestionText>
         <DescriptionText>
-          We can refund you, no questions asked. Just contact us using 
-          <a target='_blank' href='https://forms.gle/SwWbhoD9mwpQ2JLx9'> this form</a>.
+          We can refund you, no questions asked. Just contact us using
+          <a target='_blank' href='https://forms.gle/SwWbhoD9mwpQ2JLx9' rel="noreferrer"> this form</a>.
         </DescriptionText>
       </Question>
 
@@ -325,22 +323,22 @@ news sites, all summarized and translated to intermediate Spanish by native spea
         <QuestionText>That's it?</QuestionText>
         <DescriptionText>
           As <i>if</i>. We think there is a lot we can do to make reading in intermediate Spanish more engaging, so we have a
-          long list of things we want to finish building. <a href="/roadmap">Check out our public roadmap</a> to get an idea of what we mean.
+          long list of things we want to finish building.
         </DescriptionText>
       </Question>
     </PageContainer>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
 
 const MainImage = styled.div`
   margin-top: 90px;
   img {
     width: 100%;
   }
-`;
+`
 const FreeArticleWrapper = styled.div`
   text-align: center;
   margin: 120px 0 120px 0;
@@ -348,20 +346,20 @@ const FreeArticleWrapper = styled.div`
   h4 {
     font-size: 20px;
   }
-`;
+`
 const GroupCallSection = styled.div`
   img {
     width: 100%;
     margin-top: 60px;
   }
-`;
+`
 const ExperiencesList = styled(Flex)`
   align-items: center;
   justify-contenter: center;
   flex-direction: column;
   padding-top: 60px;
   margin-bottom: 80px;
-`;
+`
 const Feature = styled.div`
   max-width: 400px;
   margin-bottom: 80px;
@@ -384,14 +382,14 @@ const Feature = styled.div`
   img {
     width: 100%;
   }
-`;
+`
 
 const SectionDivider = styled(Divider)`
   margin: 90px 0;
-`;
+`
 const ImageSectionDivider = styled(SectionDivider)`
   margin-top: -2px;
-`;
+`
 const TestimonialRow = styled.div`
   display: flex;
   flex-direction: column;
@@ -403,7 +401,7 @@ const TestimonialRow = styled.div`
     flex-direction: row;
     align-items: flex-start;
   }
-`;
+`
 const Testimonial = styled.div`
   margin-bottom: 30px;
   padding: 15px;
@@ -421,7 +419,7 @@ const Testimonial = styled.div`
     margin-bottom: 0;
     margin-right: 30px;
 
-`;
+`
 const Portrait = styled.div`
   width: 50px;
   height: 50px;
@@ -431,22 +429,22 @@ const Portrait = styled.div`
     width: 50px;
     border-radius: 25px;
   }
-`;
-const TestimonialWrapper = styled.div``;
+`
+const TestimonialWrapper = styled.div``
 const Name = styled.p`
   margin: 0;
   font-weight: bold;
-`;
+`
 const Location = styled.p`
   margin: 0;
   font-size: 12px;
   color: #666;
   margin-bottom: 5px;
-`;
+`
 const Quote = styled.p`
   margin: 0;
   line-height: 26px;
-`;
+`
 
 const FeaturesList = styled.ul`
   font-size: 18px;
@@ -455,11 +453,11 @@ const FeaturesList = styled.ul`
   li {
     margin-bottom: 15px;
   }
-`;
+`
 const SectionHeader = styled(Subtitle)`
   color: black;
   font-size: 30px;
-`;
+`
 const SectionExplanation = styled(Subtitle)`
   font-size: 20px;
   line-height: 36px;
@@ -470,27 +468,27 @@ const SectionExplanation = styled(Subtitle)`
     font-weight: bold;
     font-family: Poppins, sans-serif;
   }
-`;
+`
 const QuestionText = styled(Subtitle)`
   color: black;
-`;
+`
 const MainHeroContent = styled(HeroContent)`
   max-width: 400px;
   @media ${devices.laptop} {
     margin: 90px 0 30px 0;
   }
-`;
+`
 const Faint = styled.span`
   color: ${Colors.Primary};
   font-family: 'Poppins', sans-serif;
-`;
+`
 
 const DescriptionText = styled.p`
   color: #666;
   margin: 0;
   line-height: 32px;
   font-size: 18px;
-`;
+`
 
 const Question = styled.div`
   margin-top: 60px;
@@ -498,14 +496,14 @@ const Question = styled.div`
   &:first-child {
     margin-top: 0;
   }
-`;
+`
 
 const Free = styled.b`
   color: #000;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-`;
+`
 
 const SignUpButton = styled(Button)`
   margin-top: 60px;
-`;
+`
