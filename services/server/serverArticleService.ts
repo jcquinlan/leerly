@@ -1,12 +1,20 @@
 import { sbClient } from ".";
 
-export const getArticles = async (filters?: string[]) => {
-    return await sbClient
+export const getArticles = async (filters: string[], query?: string) => {
+    const req = sbClient
         .from('articles')
         .select()
         .contains('types', filters || [])
         .order('added_at', {ascending: false})
         .limit(50);
+
+    if (query) {
+        req.textSearch('body', query, {
+            type: 'websearch'
+        })
+    }
+
+    return await req;
 }
 
 export const getArticle = async (articleId: string) => {
@@ -21,7 +29,7 @@ export const getArticle = async (articleId: string) => {
 }
 
 export const updateArticle = async (articleId: string, data: any) => {
-    const response = await sbClient
+    await sbClient
         .from('articles')
         .update(data)
         .eq('id', articleId)

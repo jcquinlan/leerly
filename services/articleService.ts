@@ -74,8 +74,20 @@ export const getUnpublishedArticles = () => {
 }
 
 
-export const getArticles = (idToken, filters) => {
-    return fetch(`/api/articles${filters.length ? `?filters=${filters.join(',')}` : ''}`, {
+export const getArticles = (idToken, filters, query) => {
+    const params = [];
+
+    if (filters.length) {
+       params.push(`filters=${filters.join(',')}`);
+    }
+
+    if (query) {
+        params.push(`query=${query}`);
+    }
+
+    const paramsString = params.join('&')
+
+    return fetch(`/api/articles?${paramsString}`, {
         headers: {
             'x-leerly-token': idToken
         }
