@@ -5,10 +5,10 @@ import React, {
   useRef,
   useMemo,
   useCallback
-} from 'react'
-import styled from 'styled-components'
-import ReactAudioPlayer from 'react-audio-player'
-import { useRouter } from 'next/router'
+} from 'react';
+import styled from 'styled-components';
+import ReactAudioPlayer from 'react-audio-player';
+import { useRouter } from 'next/router';
 import {
   Container,
   HeroWrapper,
@@ -23,17 +23,17 @@ import {
   HelpText,
   NarrowContainer,
   Margin
-} from '../../components/styled'
-import LoadingPage from '../../components/LoadingPage'
-import SelectedTextPopover from '../../components/SelectedTextPopover'
-import TypeList from '../../components/TypeList'
-import PlaybackRateSelector from '../../components/PlaybackRateSelector'
-import VocabCounter from '../../components/VocabCounter'
-import ArticleQuestions from '../../components/ArticleQuestions.tsx'
-import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover'
-import DifficultyBadge from '../../components/DifficultyBadge'
-import useGuardArticle from '../../hooks/useGuardArticle'
-import AppContext from '../../contexts/appContext'
+} from '../../components/styled';
+import LoadingPage from '../../components/LoadingPage';
+import SelectedTextPopover from '../../components/SelectedTextPopover';
+import TypeList from '../../components/TypeList';
+import PlaybackRateSelector from '../../components/PlaybackRateSelector';
+import VocabCounter from '../../components/VocabCounter';
+import ArticleQuestions from '../../components/ArticleQuestions.tsx';
+import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
+import DifficultyBadge from '../../components/DifficultyBadge';
+import useGuardArticle from '../../hooks/useGuardArticle';
+import AppContext from '../../contexts/appContext';
 import {
   createArticleReadStatus,
   getArticleReadStatus,
@@ -41,13 +41,14 @@ import {
   getArticleAudioURL,
   getUserMetrics,
   updateUserListeningTimeActivityMetric
-} from '../../services/articleService'
+} from '../../services/articleService';
 import {
   fetchArticleTranscription,
   renderTranscriptForReading
-} from '../../services/transcriptionService'
-import PrintButton from '../../components/PrintButton'
-import StatsContext from '../../contexts/statsContext'
+} from '../../services/transcriptionService';
+import PrintButton from '../../components/PrintButton';
+import StatsContext from '../../contexts/statsContext';
+import ArticlesContext from '../../contexts/articlesContext';
 
 const RightButtons = styled.div`
     display: flex;
@@ -60,32 +61,33 @@ const RightButtons = styled.div`
             margin-right: 0;
         }
     }
-`
+`;
 
 // Every 30 seconds, we update the user's time metric in Firebase.
-const TIME_METRIC_BATCH_LENGTH = 30
+const TIME_METRIC_BATCH_LENGTH = 30;
 
 function ArticlePage () {
-  const router = useRouter()
-  const { article, loading, error } = useGuardArticle(router.query.articleId)
+  const router = useRouter();
+  const { article, loading } = useGuardArticle(router.query.articleId);
+  const { getRecommendedArticles } = useContext(ArticlesContext);
+  const { user, userProfile } = useContext(AppContext);
+  const { updateWordCounts } = useContext(StatsContext);
 
-  const { user, userProfile } = useContext(AppContext)
-  const { updateWordCounts } = useContext(StatsContext)
-  const [playAudio, setPlayAudio] = useState(false)
-  const [readStatus, setReadStatus] = useState(null)
-  const [audioURL, setAudioURL] = useState(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [elapsedPlayTime, setElapsedPlayTime] = useState(0)
-  const [collectedVocabWords, setCollectedVocabWords] = useState({})
-  const [totalPlayTime, setTotalPlaytime] = useState(null)
-  const articleBodyRef = useRef()
+  const [playAudio, setPlayAudio] = useState(false);
+  const [readStatus, setReadStatus] = useState(null);
+  const [audioURL, setAudioURL] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [elapsedPlayTime, setElapsedPlayTime] = useState(0);
+  const [collectedVocabWords, setCollectedVocabWords] = useState({});
+  const [totalPlayTime, setTotalPlaytime] = useState(null);
+  const articleBodyRef = useRef();
   // We can't use a conventional React ref due to the specific API
   // of react-audio-player. Instead, we can just use state to maintain an element
   // reference. It's weird, but it works.
-  const [audioPlayerRef, setAudioPlayerRef] = useState(null)
-  const [transcript, setTranscript] = useState(null)
-  const [playbackRate, setPlaybackRate] = useState(null)
-  const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false)
+  const [audioPlayerRef, setAudioPlayerRef] = useState(null);
+  const [transcript, setTranscript] = useState(null);
+  const [playbackRate, setPlaybackRate] = useState(null);
+  const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false);
 
   useEffect(() => {
     if (article?.transcriptId && userProfile) {
@@ -94,25 +96,25 @@ function ArticlePage () {
           // If the transcript isn't ready yet, or doesn't exist,
           // we just get a null response, but with a 2XX code (202, specifically)
           if (json) {
-            setTranscript(json.transcript)
+            setTranscript(json.transcript);
           }
-        })
+        });
     }
-  }, [article?.transcriptId, userProfile])
+  }, [article?.transcriptId, userProfile]);
 
   useEffect(() => {
     if (user) {
       const getUserMetricsAsync = async () => {
-        const userMetrics = await getUserMetrics(user.uid)
+        const userMetrics = await getUserMetrics(user.uid);
         if (userMetrics.exists) {
-          const userMetricData = userMetrics.data()
-          setTotalPlaytime(userMetricData.time_listening || 0)
+          const userMetricData = userMetrics.data();
+          setTotalPlaytime(userMetricData.time_listening || 0);
         }
-      }
+      };
 
-      getUserMetricsAsync()
+      getUserMetricsAsync();
     }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
     if (article) {
@@ -120,222 +122,224 @@ function ArticlePage () {
         getArticleReadStatus(user.uid, article.id)
           .then(readStatusRef => {
             if (readStatusRef.docs.length > 0) {
-              setReadStatus(readStatusRef.docs[0])
+              setReadStatus(readStatusRef.docs[0]);
             }
-          })
+          });
       }
 
       if (article.audio) {
         getArticleAudioURL(article.audio)
           .then(url => setAudioURL(url))
-          .catch(error => console.log(error))
+          .catch(error => console.log(error));
       }
+
+      getRecommendedArticles(article.id);
     }
-  }, [article])
+  }, [article]);
 
   useEffect(() => {
     // If the audio has been playing for 30 seconds since the last sync
     // go ahead and update the user's listening time.
     if (elapsedPlayTime >= TIME_METRIC_BATCH_LENGTH) {
-      updateListeningMetric(elapsedPlayTime)
+      updateListeningMetric(elapsedPlayTime);
     }
-  }, [elapsedPlayTime])
+  }, [elapsedPlayTime]);
 
   useEffect(() => {
     const playingInterval = setInterval(() => {
       if (isPlaying) {
-        setElapsedPlayTime(currentPlayTime => currentPlayTime + 1)
+        setElapsedPlayTime(currentPlayTime => currentPlayTime + 1);
       }
-    }, 1000)
+    }, 1000);
 
     return () => {
-      clearInterval(playingInterval)
-    }
-  }, [isPlaying])
+      clearInterval(playingInterval);
+    };
+  }, [isPlaying]);
 
   const collectVocabWord = (word) => {
-    const cleanedWord = word.trim().toLowerCase()
+    const cleanedWord = word.trim().toLowerCase();
 
     setCollectedVocabWords(currentCollectedVocabWords => {
-      const currentValue = currentCollectedVocabWords[cleanedWord]
+      const currentValue = currentCollectedVocabWords[cleanedWord];
 
       if (currentValue) {
         return {
           ...currentCollectedVocabWords,
           [cleanedWord]: currentValue + 1
-        }
+        };
       } else {
         return {
           ...currentCollectedVocabWords,
           [cleanedWord]: 1
-        }
+        };
       }
-    })
+    });
 
-    updateWordCounts({ [cleanedWord]: 1 })
-  }
+    updateWordCounts({ [cleanedWord]: 1 });
+  };
 
   const updateListeningMetric = (timeDelta) => {
     if (!user) {
-      return
+      return;
     }
 
     updateUserListeningTimeActivityMetric(user.uid, totalPlayTime + timeDelta)
       .then(() => {
-        setTotalPlaytime(totalPlayTime + timeDelta)
-        setElapsedPlayTime(0)
-      })
-  }
+        setTotalPlaytime(totalPlayTime + timeDelta);
+        setElapsedPlayTime(0);
+      });
+  };
 
   const handlePlay = () => {
-    setIsPlaying(true)
-  }
+    setIsPlaying(true);
+  };
 
   const handleStop = () => {
-    setIsPlaying(false)
-  }
+    setIsPlaying(false);
+  };
 
   const handleMarkAsRead = async () => {
     try {
       if (readStatus) {
-        await deleteArticleReadStatus(readStatus.id)
-        setReadStatus(null)
+        await deleteArticleReadStatus(readStatus.id);
+        setReadStatus(null);
       } else {
-        const readStatusRef = await createArticleReadStatus(user.uid, article.id)
-        setReadStatus(readStatusRef)
+        const readStatusRef = await createArticleReadStatus(user.uid, article.id);
+        setReadStatus(readStatusRef);
 
         // Make sure that we only update the user's word counts once per article session,
         // even if they repeatedly mark and unmark an article as having been read.
         if (!hasMarkedAsReadOnce) {
-          setHasMarkedAsReadOnce(true)
+          setHasMarkedAsReadOnce(true);
           const totalWordCounts = transcript.reduce((memo, glyph) => {
             if (glyph.text && glyph.wordMapEntry) {
-              const glyphText = glyph.text.trim().toLowerCase()
-              const previousVocabCount = memo[glyphText]
+              const glyphText = glyph.text.trim().toLowerCase();
+              const previousVocabCount = memo[glyphText];
 
               if (previousVocabCount) {
-                memo[glyphText] = memo[glyphText] + 1
+                memo[glyphText] = memo[glyphText] + 1;
               } else {
-                memo[glyphText] = 1
+                memo[glyphText] = 1;
               }
             }
 
-            return memo
-          }, {})
+            return memo;
+          }, {});
 
           const finalWordCounts = Object.keys(totalWordCounts).reduce((memo, word) => {
             if (!collectedVocabWords[word]) {
-              memo[word] = totalWordCounts[word]
+              memo[word] = totalWordCounts[word];
             } else {
-              const numberOfTimeSeenWord = collectedVocabWords[word]
+              const numberOfTimeSeenWord = collectedVocabWords[word];
               // If the user hasn't seen the word the maxiumum number of times
               // increment the word count for this word by the difference between the two
               if (numberOfTimeSeenWord < totalWordCounts[word]) {
-                memo[word] = totalWordCounts[word] - numberOfTimeSeenWord
+                memo[word] = totalWordCounts[word] - numberOfTimeSeenWord;
               }
             }
 
-            return memo
-          }, {})
+            return memo;
+          }, {});
 
-          updateWordCounts(finalWordCounts)
+          updateWordCounts(finalWordCounts);
         }
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 
   const handleWordClick = (startTime) => {
     if (audioPlayerRef) {
-      audioPlayerRef.currentTime = startTime
+      audioPlayerRef.currentTime = startTime;
     }
-  }
+  };
 
   const handleListen = (e) => {
     const updatedTranscript = transcript.reduce((memo, glyph) => {
       if (glyph.type !== 'word') {
-        memo.push(glyph)
-        return memo
+        memo.push(glyph);
+        return memo;
       }
 
-      const wordIsActive = glyph.start_time <= e && glyph.end_time >= e
-      const wordIsVocab = !!glyph.wordMapEntry
+      const wordIsActive = glyph.start_time <= e && glyph.end_time >= e;
+      const wordIsVocab = !!glyph.wordMapEntry;
 
       if (wordIsActive) {
         memo.push({
           ...glyph,
           highlight: true,
           seen: true
-        })
+        });
 
-        const isBeingSeenForTheFirstTime = !glyph.seen
+        const isBeingSeenForTheFirstTime = !glyph.seen;
         if (wordIsVocab && isBeingSeenForTheFirstTime) {
-          collectVocabWord(glyph.text)
+          collectVocabWord(glyph.text);
         }
       } else {
         memo.push({
           ...glyph,
           highlight: false
-        })
+        });
       }
 
-      return memo
-    }, [])
+      return memo;
+    }, []);
 
-    setTranscript(updatedTranscript)
-  }
+    setTranscript(updatedTranscript);
+  };
 
   const getArticleBody = useCallback(() => {
-    if (!article) return ''
-    return article.body
-  }, [article])
+    if (!article) return '';
+    return article.body;
+  }, [article]);
 
   const renderArticleBody = useCallback(() => {
     if (!transcript) {
-      return article.body
+      return article.body;
     }
 
     return renderTranscriptForReading(transcript, {
       component: TranscriptWordWithPopover,
       onClickWord: (word) => handleWordClick(word.start_time),
       getArticleBody
-    })
-  }, [transcript, article, userProfile, getArticleBody])
+    });
+  }, [transcript, article, userProfile, getArticleBody]);
 
   const handleAudioPlayerInitialization = (ref) => {
     if (!audioPlayerRef && !!ref) {
-      setAudioPlayerRef(ref.audioEl.current)
+      setAudioPlayerRef(ref.audioEl.current);
 
       if (playbackRate) {
-        ref.audioEl.current.playbackRate = playbackRate
+        ref.audioEl.current.playbackRate = playbackRate;
       }
     }
-  }
+  };
 
   const handlePlaybackRateChange = (option) => {
     if (audioPlayerRef) {
-      audioPlayerRef.playbackRate = option.value
+      audioPlayerRef.playbackRate = option.value;
     }
 
-    setPlaybackRate(option.value)
-  }
+    setPlaybackRate(option.value);
+  };
 
   const totalVocabWords = useMemo(() => {
     if (!transcript) {
-      return []
+      return [];
     }
 
-    return transcript.filter(glyph => !!glyph.wordMapEntry).map(glyph => glyph.text?.trim().toLowerCase())
-  }, [transcript])
+    return transcript.filter(glyph => !!glyph.wordMapEntry).map(glyph => glyph.text?.trim().toLowerCase());
+  }, [transcript]);
 
   if (loading) {
-    return <LoadingPage></LoadingPage>
+    return <LoadingPage></LoadingPage>;
   }
 
-  if (!article) return null
+  if (!article) return null;
 
-  const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : ''
+  const imageUserURL = article.image ? `${article.image.user.profile}?utm_source=leerly&utm_medium=referral` : '';
 
   return (
         <>
@@ -459,20 +463,20 @@ function ArticlePage () {
 
         </WideContainer>
         </>
-  )
+  );
 }
 
-export default ArticlePage
+export default ArticlePage;
 
 const CustomAudioWrapper = styled(AudioWrapper)`
     @media ${devices.tablet} {
         margin-left: -100px;
     }
-`
+`;
 const PlaybackRateRow = styled.div`
     display: flex;
     justify-content: center;
-`
+`;
 const PlaybackRateSelectorWrapper = styled.div`
     width: 90px;
     z-index: 9;
@@ -487,13 +491,13 @@ const PlaybackRateSelectorWrapper = styled.div`
         margin-right: -320px;
         margin-top: 17px;
     }
-`
+`;
 const ArticleSubheader = styled.div`
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-`
+`;
 
 const WideContainer = styled(Container)`
     max-width: 1200px;
@@ -502,7 +506,7 @@ const WideContainer = styled(Container)`
     @media ${devices.laptop} {
         padding-top: 30px;
     }
-`
+`;
 const ArticleWrapper = styled.div`
     display: flex;
     margin-top: 30px;
@@ -510,11 +514,11 @@ const ArticleWrapper = styled.div`
     @media ${devices.mobileL} {
         margin-top: 60px;
     }
-`
+`;
 const BackLink = styled.span`
     color: ${Colors.Primary};
     cursor: pointer;
-`
+`;
 const AudioOffsetWrapper = styled.div`
     display: flex;
     justify-content: center;
@@ -536,13 +540,13 @@ const AudioOffsetWrapper = styled.div`
         }
     }
 
-`
+`;
 const Psst = styled.p`
     text-align: center;
     color: #666;
     font-size: 16px;
-`
-const TitleWrapper = styled(HeroWrapper)``
+`;
+const TitleWrapper = styled(HeroWrapper)``;
 
 const UpgradeWrapper = styled.div`
     display: flex;
@@ -553,12 +557,12 @@ const UpgradeWrapper = styled.div`
     span {
         max-width: 300px;
     }
-`
+`;
 const ButtonRow = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 30px;
-`
+`;
 const MarkAsReadButton = styled(Button)`
     ${props => props.read
 ? `
@@ -571,7 +575,7 @@ const MarkAsReadButton = styled(Button)`
     `
 : ''}
 
-`
+`;
 
 const ArticleBody = styled.div`
     flex: 1;
@@ -584,7 +588,7 @@ const ArticleBody = styled.div`
     @media ${devices.laptop} {
         padding: 0 30px;
     }
-`
+`;
 
 const ArticleData = styled.div`
     margin-bottom: 15px;
@@ -593,7 +597,7 @@ const ArticleData = styled.div`
         font-size: 16px;
         font-weight: bold;
     }
-`
+`;
 
 const WordCounterContainer = styled.div`
     position: absolute;
@@ -614,11 +618,11 @@ const WordCounterContainer = styled.div`
         top: -12px;
         left: -170px;
     }
-`
+`;
 
 const WordCounterNumber = styled.span`
     font-size: 14px;
     font-weight: bold;
     color: #333;
     margin-bottom: -10px;
-`
+`;
