@@ -1,6 +1,9 @@
 import { sbClient } from '.';
 
-export const getArticles = async (filters: string[], query?: string) => {
+interface GetArticlesOptions {
+  free?: boolean;
+}
+export const getArticles = async (filters: string[], query?: string, options?: GetArticlesOptions) => {
   const req = sbClient
     .from('articles')
     .select()
@@ -9,6 +12,10 @@ export const getArticles = async (filters: string[], query?: string) => {
 
   if (filters?.length) {
     req.overlaps('types', filters);
+  }
+
+  if (options?.free) {
+    req.eq('free', true);
   }
 
   if (query) {

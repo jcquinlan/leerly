@@ -22,7 +22,9 @@ import {
   FakeAudioWidget,
   HelpText,
   NarrowContainer,
-  Margin
+  Margin,
+  Divider,
+  SectionTitle
 } from '../../components/styled';
 import LoadingPage from '../../components/LoadingPage';
 import SelectedTextPopover from '../../components/SelectedTextPopover';
@@ -32,6 +34,7 @@ import VocabCounter from '../../components/VocabCounter';
 import ArticleQuestions from '../../components/ArticleQuestions.tsx';
 import TranscriptWordWithPopover from '../../components/TranscriptWordWithPopover';
 import DifficultyBadge from '../../components/DifficultyBadge';
+import MiniArticlePreview, { MiniArticlePreviewWrapper } from '../../components/MiniArticlePreview';
 import useGuardArticle from '../../hooks/useGuardArticle';
 import AppContext from '../../contexts/appContext';
 import {
@@ -88,6 +91,7 @@ function ArticlePage () {
   const [transcript, setTranscript] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(null);
   const [hasMarkedAsReadOnce, setHasMarkedAsReadOnce] = useState(false);
+  const [recommendedArticles, setRecommendedArticles] = useState([]);
 
   useEffect(() => {
     if (article?.transcriptId && userProfile) {
@@ -133,7 +137,8 @@ function ArticlePage () {
           .catch(error => console.log(error));
       }
 
-      getRecommendedArticles(article.id);
+      getRecommendedArticles(article.id)
+        .then(articles => setRecommendedArticles(articles));
     }
   }, [article]);
 
@@ -424,7 +429,7 @@ function ArticlePage () {
                                 onListen={transcript ? handleListen : undefined}
                                 listenInterval={100}
                                 controls
-                            />
+                           />
                         </div>
                     </CustomAudioWrapper>
                 )}
@@ -459,6 +464,26 @@ function ArticlePage () {
                     <p>Enjoyed reading this? Want to improve your Spanish?</p>
                     <Button onClick={() => router.push('/register')}>Join now with a free month</Button>
                 </UpgradeWrapper>
+            )}
+
+            {!!recommendedArticles.length && (
+              <>
+                <Divider />
+
+                <SectionTitle>Recommended articles</SectionTitle>
+
+                <RecommendedArticlesWrapper>
+                  {recommendedArticles.map((article, index) => {
+                    const areMany = recommendedArticles.length > 1;
+                    const direction = areMany
+                      ? index === 0
+                        ? 'left'
+                        : 'right'
+                      : 'left';
+                    return <MiniArticlePreview key={article.id} article={article} direction={direction} />;
+                  })}
+                </RecommendedArticlesWrapper>
+              </>
             )}
 
         </WideContainer>
@@ -574,7 +599,6 @@ const MarkAsReadButton = styled(Button)`
         }
     `
 : ''}
-
 `;
 
 const ArticleBody = styled.div`
@@ -625,4 +649,32 @@ const WordCounterNumber = styled.span`
     font-weight: bold;
     color: #333;
     margin-bottom: -10px;
+`;
+
+const RecommendedArticlesWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    ${MiniArticlePreviewWrapper} {
+      margin-bottom: 10px;
+
+      &:first-child {
+        margin-right: 0px;
+      }
+    }
+
+    @media ${devices.tablet} {
+      flex-direction: row;
+      align-items: flex-start;
+
+      ${MiniArticlePreviewWrapper} {
+        margin-bottom: 0px;
+
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+    }
 `;

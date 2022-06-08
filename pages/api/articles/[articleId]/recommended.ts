@@ -1,9 +1,17 @@
+import { isUserOnPremiumPlan } from 'services/server/stripeService';
+import { getUserProfile } from 'services/server/userService';
 import { getArticle, getArticles, getSpecificArticles } from '../../../../services/server/serverArticleService';
 
 export default async (req, res) => {
   if (req.method === 'GET') {
     try {
+      const userProfileRef = await getUserProfile(req);
+      const customerId = userProfileRef.data().customerId;
+
+      console.log(customerId);
+
       const { data: article, error } = await getArticle(req.query.articleId);
+      const userIsOnPremiumPlan = await isUserOnPremiumPlan(customerId);
 
       if (error) {
         throw error;
@@ -11,7 +19,7 @@ export default async (req, res) => {
 
       const types = article.types;
 
-      const { data: articlesBySimilarType, error: recommendationsError } = await getArticles(types);
+      const { data: articlesBySimilarType, error: recommendationsError } = await getArticles(types, undefined, { free: !userIsOnPremiumPlan });
 
       if (recommendationsError) {
         throw recommendationsError;
