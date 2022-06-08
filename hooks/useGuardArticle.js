@@ -1,43 +1,43 @@
-import { useContext, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import AppContext from '../contexts/appContext'
-import useGetArticle from './useGetArticle'
+import { useContext, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import AppContext from '../contexts/appContext';
+import useGetArticle from './useGetArticle';
 
 const useGuardArticle = (articleId) => {
-  const { article, loading: articleLoading, error } = useGetArticle(articleId)
-  const { user, userProfile, userHasProPlan, loading: userLoading } = useContext(AppContext)
-  const router = useRouter()
+  const { article, loading: articleLoading, error } = useGetArticle(articleId);
+  const { user, userProfile, userHasProPlan, loading: userLoading } = useContext(AppContext);
+  const router = useRouter();
 
   // Guard the route with a check to see if the user can access the article.
   useEffect(() => {
     if (userLoading || articleLoading) {
-      return
+      return;
     }
 
     if (article && article.demo) {
-      return
+      return;
     }
 
     if (!user) {
-      router.replace(`/sign-in?redirect=${router.asPath}`)
-      return
+      router.replace(`/sign-in?redirect=${router.asPath}`);
+      return;
     }
 
     if (!userProfile?.subscribed) {
-      router.replace('/cancel')
-      return
+      router.replace('/cancel');
+      return;
     }
 
     if (!userHasProPlan && !article.free) {
-      router.replace('/dashboard')
+      router.replace('/dashboard');
     }
-  }, [user, userProfile, articleLoading, userLoading, article])
+  }, [user, userProfile, articleLoading, userLoading, article]);
 
   return {
     article,
     loading: userLoading || articleLoading,
     error
-  }
-}
+  };
+};
 
-export default useGuardArticle
+export default useGuardArticle;

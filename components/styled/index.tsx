@@ -1,9 +1,10 @@
+import React from 'react';
 import styled from 'styled-components';
-import {devices} from './mediaQueries';
+import { devices } from './mediaQueries';
 import Colors from './colors';
-export {default as Colors} from './colors';
-export {default as ReadCheck} from './ReadCheck';
-export {devices} from './mediaQueries';
+export { default as Colors } from './colors';
+export { default as ReadCheck } from './ReadCheck';
+export { devices } from './mediaQueries';
 
 interface MarginProps {
   margin?: string;
@@ -38,9 +39,11 @@ export const Subtitle = styled.h3<SubtitleProps>`
     margin-bottom: 10px;
     margin-top: 0px;
 
-    ${props => props.center ? (
-        `text-align: center;`
-    ): ``}
+    ${props => props.center
+? (
+        'text-align: center;'
+    )
+ : ''}
 
     @media ${devices.laptop} {
       font-size: 22px;
@@ -68,7 +71,7 @@ export const PageContainer = styled(Container)`
   @media ${devices.laptop} {
     padding-bottom: 90px;
   }
-`
+`;
 
 export const HeroWrapper = styled.div`
   display: flex;
@@ -107,50 +110,60 @@ export const Button = styled.button<ButtonProps>`
         background-color: #375ebf;
     }
 
-    ${props => props.secondary ? `
+    ${props => props.secondary
+? `
       background-color: #eee;
       color: ${Colors.MediumGrey};
 
       &:hover {
           background-color: #ddd;
       }
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.vibe === 'danger' ? `
+    ${props => props.vibe === 'danger'
+? `
       background-color: ${Colors.LightDanger};
       color: ${Colors.Danger};
 
       &:hover {
           background-color: ${Colors.LightDangerHover};
       }
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.vibe === 'hard' ? `
+    ${props => props.vibe === 'hard'
+? `
       background-color: ${Colors.HardLight};
       color: ${Colors.Hard};
 
       &:hover {
           background-color: ${Colors.HardLightHover};
       }
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.vibe === 'medium' ? `
+    ${props => props.vibe === 'medium'
+? `
       background-color: ${Colors.MediumLight};
       color: ${Colors.Medium};
 
       &:hover {
           background-color: ${Colors.MediumLightHover};
       }
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.vibe === 'easy' ? `
+    ${props => props.vibe === 'easy'
+? `
       background-color: ${Colors.EasyLight};
       color: ${Colors.Easy};
 
       &:hover {
           background-color: ${Colors.EasyLightHover};
       }
-    `: ``}
+    `
+ : ''}
 
     &:disabled {
       background: #ddd;
@@ -231,9 +244,14 @@ export const TextArea = styled.textarea`
 `;
 
 export const HelpText = styled.p`
-    font-size: 14px;
-    line-height: 24px;
-    color: #888;
+  font-size: 14px;
+  line-height: 24px;
+  color: #888;
+`;
+
+export const SectionTitle = styled.h5`
+  font-size: 16px;
+  font-weight: 300;
 `;
 
 export const NoticeCard = styled(Card)`
@@ -244,19 +262,23 @@ export const NoticeCard = styled(Card)`
     border: none;
     cursor: pointer;
 
-    ${props => (props.theme === 'Warm' ? `
+    ${props => (props.theme === 'Warm'
+? `
       background: rgb(31,160,184);
-      background: linear-gradient(157deg, rgba(31,160,184,1) 0%, rgba(189,76,233,1) 100%);` : ``
+      background: linear-gradient(157deg, rgba(31,160,184,1) 0%, rgba(189,76,233,1) 100%);`
+: ''
     )}
 
-    ${props => (props.theme === 'Grey' ? `
+    ${props => (props.theme === 'Grey'
+? `
       background: #eee;
       color: #333;
       cursor: initial;
       
       ${NoticeCardMain} {
         color: #333;
-      }` : ``
+      }`
+: ''
     )}
 `;
 
@@ -280,7 +302,6 @@ export const ImageAttribution = styled.p`
     color: #666;
     margin-bottom: 15px;
 `;
-
 
 export const AudioWrapper = styled.div`
     margin-top: 30px;
@@ -318,15 +339,21 @@ const NarrowContainerContent = styled.div<NarrowContainerContentProps>`
     width: 100%;
     max-width: ${props => props.width};
 `;
-export const NarrowContainer = ({children, width = '600px'}) => {
+
+interface NarrowContainerProps {
+  children: React.ReactChild;
+  width?: string;
+}
+
+export const NarrowContainer = ({ children, width = '600px' }: NarrowContainerProps) => {
   return (
     <NarrowContainerWrapper>
       <NarrowContainerContent width={width}>
         {children}
       </NarrowContainerContent>
     </NarrowContainerWrapper>
-  )
-}
+  );
+};
 
 interface TranscriptWordProps {
   isVocab?: boolean;
@@ -337,19 +364,24 @@ export const TranscriptWord = styled.span<TranscriptWordProps>`
     cursor: pointer;
     border-radius: 8px;
 
-    ${props => props.isVocab ? `
+    ${props => props.isVocab
+? `
       background-color: ${Colors.EasyLight};
       color: ${Colors.Easy};
       font-weight: bold;
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.seen && props.isVocab ? `
+    ${props => props.seen && props.isVocab
+? `
       background-color: ${Colors.LightGrey};
       color: ${Colors.MediumGrey};
       font-weight: normal;
-    `: ``}
+    `
+ : ''}
 
-    ${props => props.isActive ? `
+    ${props => props.isActive
+? `
         background-color: ${Colors.Primary};
         color: #fff;
 
@@ -357,7 +389,8 @@ export const TranscriptWord = styled.span<TranscriptWordProps>`
             font-weight: bold;
             background-color: ${Colors.PrimaryLight};
         }
-    `: ``}
+    `
+ : ''}
 
     &:hover {
       color: ${Colors.Primary};
@@ -429,17 +462,21 @@ export const StatNumber = styled.p`
     font-family: 'Poppins', sans-serif;
 `;
 
-export const ButtonWithLoading = ({loading, children, ...props}) => {
+interface ButtonWithLoadingProps {
+  loading: boolean;
+  children: React.ReactChild[];
+}
+export const ButtonWithLoading = ({ loading, children, ...props }: ButtonWithLoadingProps) => {
   return (
     <Button disabled={loading} {...props}>
-      {loading ? 'Loading...': children}
+      {loading ? 'Loading...' : children}
     </Button>
-  )
-}
+  );
+};
 
-export const Icon = ({icon, ...rest}) => {
-  return <span {...rest} className='material-symbols-outlined'>{icon}</span>
-}
+export const Icon = ({ icon, ...rest }: any) => {
+  return <span {...rest} className='material-symbols-outlined'>{icon}</span>;
+};
 
 const SearchInputWrapper = styled.div`
   position: relative;
@@ -456,7 +493,11 @@ const IconWrapper = styled.div`
     opacity: 1;
   }
 `;
-export const SearchInput = ({value, onChange, ...rest}) => {
+interface SearchInputProps {
+  value: any;
+  onChange: (args: any) => void;
+}
+export const SearchInput = ({ value, onChange, ...rest }: SearchInputProps) => {
   const clearInput = () => {
     onChange('');
   };
@@ -473,5 +514,5 @@ export const SearchInput = ({value, onChange, ...rest}) => {
         {!value && <Icon icon='search' />}
       </IconWrapper>
     </SearchInputWrapper>
-  )
-}
+  );
+};

@@ -1,46 +1,63 @@
-import { sbClient } from ".";
+import { sbClient } from '.';
 
-export const getArticles = async (filters: string[], query?: string) => {
-    const req = sbClient
-        .from('articles')
-        .select()
-        .contains('types', filters || [])
-        .order('added_at', {ascending: false})
-        .limit(50);
-
-    if (query) {
-        req.textSearch('body', query, {
-            type: 'websearch'
-        })
-    }
-
-    return await req;
+interface GetArticlesOptions {
+  free?: boolean;
 }
+export const getArticles = async (filters: string[], query?: string, options?: GetArticlesOptions) => {
+  const req = sbClient
+    .from('articles')
+    .select()
+    .order('added_at', { ascending: false })
+    .limit(50);
+
+  if (filters?.length) {
+    req.overlaps('types', filters);
+  }
+
+  if (options?.free) {
+    req.eq('free', true);
+  }
+
+  if (query) {
+    req.textSearch('body', query, {
+      type: 'websearch'
+    });
+  }
+
+  return await req;
+};
+
+export const getSpecificArticles = async (ids: string[]) => {
+  return await sbClient
+    .from('articles')
+    .select()
+    .in('id', ids);
+};
 
 export const getArticle = async (articleId: string) => {
-    const data = await sbClient
-        .from('articles')
-        .select()
-        .eq('id', articleId)
-        .limit(1)
-        .single();
-    
-    return data;
-}
+  const data = await sbClient
+    .from('articles')
+    .select()
+    .eq('id', articleId)
+    .limit(1)
+    .single();
+
+  return data;
+};
 
 export const updateArticle = async (articleId: string, data: any) => {
-    await sbClient
-        .from('articles')
-        .update(data)
-        .eq('id', articleId)
-    
-    return data;
-}
+  await sbClient
+    .from('articles')
+    .update(data)
+    .eq('id', articleId);
+
+  return data;
+};
 
 export const saveArticle = async (data: any) => {
-    const response = await sbClient
-        .from('articles')
-        .insert([data]);
-    
-    return response;
-}
+  const response = await sbClient
+    .from('articles')
+    .insert([data]);
+
+  return response;
+};
