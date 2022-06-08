@@ -516,3 +516,14 @@ export const SearchInput = ({ value, onChange, ...rest }: SearchInputProps) => {
     </SearchInputWrapper>
   );
 };
+
+export const LinkSpan = styled.span`
+    display: block;
+    margin-bottom: 15px;
+    font-size: 24px;
+    transition: 0.3s;
+
+    &:hover {
+      transform: translateX(10px);
+    }
+`;
