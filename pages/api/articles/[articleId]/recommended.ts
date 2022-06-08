@@ -7,11 +7,9 @@ export default async (req, res) => {
     try {
       const userProfileRef = await getUserProfile(req);
       const customerId = userProfileRef.data().customerId;
-
-      console.log(customerId);
+      const userIsOnPremiumPlan = await isUserOnPremiumPlan(customerId);
 
       const { data: article, error } = await getArticle(req.query.articleId);
-      const userIsOnPremiumPlan = await isUserOnPremiumPlan(customerId);
 
       if (error) {
         throw error;
